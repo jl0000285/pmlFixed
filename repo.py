@@ -128,8 +128,7 @@ def get_session():
     session=Session()
     return session
 
-def craftSystem():
-    import create_db as cdb
+def defineMeta():
     data_all = data_set_factory('DatasetAll','all_data')
     base_a = data_set_factory('DatasetA','base_set_a')
     base_b = data_set_factory('DatasetB','base_set_b')
@@ -143,7 +142,10 @@ def craftSystem():
     runExA = run_factory('RunExA','run_ex_a',base_a)
     runExB = run_factory('RunExB','run_ex_b',base_b)
     runExC = run_factory('RunExC','run_ex_c',base_c)
-    
+
+def craftSystem():
+    import create_db as cdb
+    repo.defineMeta()
     cdb.create_tables(metadata)
 
 def add_dset(dname,dpath, dset, nc, session):

@@ -41,30 +41,28 @@ class DbHandler(object):
         Create and populate 
         """
         repo.craftSystem()
-        self.session = repo.get_session()
+        self.session = repo.get_session()        
         print("Performing data init")
-        dbh.data_init(self.session)
+        self.data_init()
         print("Performing Alg Class Init")
-        dbh.alg_class_init(self.session)
+        self.alg_class_init()
         print("Perfomring Algorithms init")
-        dbh.algorithms_init(self.session)
-        print("Performing Runs init")
-        dbh.run_active(self.session)
-
-        
+        self.algorithms_init()
+     
     def extInit(self):
         """
         Create and populate extended metabase
         """
         repo.craftSystem()
-        self.session = repo.get_session()
+        self.get_session()        
         print("Performing ext data init")
         self.ext_data_init()
         print("Performing Algorithms init")
-        dbh.alg_class_init(session)
+        self.alg_class_init()
         print("Perfoming ext run init")
-        dbh.run_exhaustive(session)
-        
+        #self.run_exhaustive()
+        #print("Performing Runs init")
+        #self.run_active()
         
         
     def data_init(self):
@@ -109,7 +107,7 @@ class DbHandler(object):
             repo.ext_add_dset(all_tup[0],
                               all_tup[1],
                               tup[1],
-                              tup[0]
+                              tup[0],
                               full_set,
                               len(full_set[0]),
                               self.session)
@@ -155,9 +153,15 @@ class DbHandler(object):
             class_id = class_id.class_id
             repo.add_alg(key,algTypes[key][0],class_id,self.session)
 
-    def run_exhaustive(self):
+    def runs_all(self):
         import sk_handler as skh
-        d_sets = self.session.query(repo.Dataset).all()
+        try:
+            d_sets = self.session.query(repo.DatasetAll).all()
+        except AttributeError:
+            print('Repo metabases likely not defined, defining now')
+            repo.defineMeta()
+            d_sets = self.session.query(repo.DatasetAll).all()
+            
         algs = self.session.query(repo.Algorithm).all()
         for d_set in d_sets:
             print("Analyzing dataset: {}".format(d_set.data_name))
@@ -176,9 +180,28 @@ class DbHandler(object):
                 durr,acc = eval(evstring)
                 repo.add_run(data_id,alg_id,durr,acc,session)
 
-    def active_run(self):
+    def run_active(self):
+        """
+        Steps: 
+        1. Obtain metabase candidate datasets
+        2. Train half of them the conventional way 
+        3. Decided on another fourth of them using active learning
+        4. Compare metalearner results of active learner with generic learner 
+        """
+        pass
+    
+    def guesses_exhaustive(self):
+        """"""
         pass
 
+    def guesses_active(self):
+        """"""
+        pass
+        
+    def guesses_sampling(self):
+        """"""
+        pass
+        
     def print_databases(self):
         cnx = mysql.connector.connect(user='root', password='Welcome07', host='127.0.0.1')
         cursor = cnx.cursor()
