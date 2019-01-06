@@ -47,7 +47,7 @@ class Parser():
         ----------
        last column : variable that tells the parser how to treat the last column of data within a given file
            last column values:
-                 1. Default (all data in one file)
+                 1. Default (all data in one file) 
                  2. Seperate last column
                  3. Modfify lasts column values to be 1 or -1
                  4. Modify lasts column values to be -1 or +1
@@ -213,12 +213,24 @@ class Parser():
 
         return target_input
 
+    def limit_size(self,target_input,limit=2000):
+        """Limit size of data set to given limit """
+        import random
+        if limit < len(target_input):
+            repl_input = []
+            for i in range(limit):
+                inx = random.randint(0,limit)
+                repl_input.append(target_input[inx])
+            return repl_input
+        else:
+            return target_input
+        
     def write_csv(self, target_input):
-        """ CSV writing handler method.
+        """ CSV writing handler method. 
         """
         #Prepare target_input for writing
         if self.test_par==True:
-            target_input_A,target_input_B = self.__partition__(target_input, self.per)
+            target_input_A,target_input_B = self.partition(target_input, self.per)
 
 
         if(self.last_column == Parser.LC_SINGLE):
@@ -277,12 +289,15 @@ class Parser():
         X = []
         y = []
         row_length = len(target_input[0])
-        for item in target_input:
-            X.append(item[:row_length-2])
-            y.append(item[row_length-1])
+        try: 
+            for item in target_input:
+                X.append(item[:row_length-2])
+                y.append(item[row_length-1])
+        except Exception as ex:
+            print "There was an exception while spliting last column, returning null arrays"
         return X,y
 
-    def __partition__(self,target_input, per):
+    def partition(self,target_input, per=0.25):
         """Method to partition data set into
            training and testing set
         """
@@ -311,7 +326,7 @@ class Parser():
         print(len(target_input))
         print(len(t_lb))
 
-    def __labels_on_front(self, target_input):
+    def __labels_on_front__(self, target_input):
         """Move sample labels column to front of data set
         """
         pass
