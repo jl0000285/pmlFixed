@@ -1,0 +1,137 @@
+TOC
+*Scrap
+0. Abstract ABS
+1. Introduction   INT
+2. Overview of Strategies that will be compared STATS
+3. Overview of producable machines  PRODS
+4. Setup description DESC
+5. Experiment description EXP
+6. Results and analysis RES
+7. Biblography
+8. Keywords dump
+
+
+----------------------------------------
+*Scrap
+-----------------------------------------
+First question of thesis should be "Does the no free lunch theorem apply to metalearning strategies with the same decision algorithm?"
+Second question could be "How do various metalearning strategies perform with different decision algorithms?"
+
+
+
+-----------------------------------------
+0.Abstract   ABS 
+-----------------------------------------
+A comparison of metalearning strategies
+
+Determining what algorithm to use when analyzing a dataset is a problem as old as machine learning itself. In some cases, the
+individuals wishing to perform an analysis have access to an expert that can simply tell them which algorithm is best in the
+given situation. In other situations, the individuals wishing to perform analysis may not have the budget neccessary to 
+acquire access to such an export, in which case the usage of a metalearner becomes appropriate. With a metalearner one feeds 
+the metalearner a dataset and it returns to the user what it thinks is the most appropriate machine with which to perform
+analysis. To get to the point wherein a decision can be made on new datasets the metalearner itself must first be trained, 
+and this training itself requires some sort of learning strategy. The comparison of the learning strategies used to train a
+metalearner will be the central focus of this project. 
+The act of utilizing a metalearning strategy generally involves the following activities: one must take a set of datasets, 
+get a measure of how well those datasets perform with a given body of algorithms then use the information contained within 
+this "metabase" to run an algorithm that will then spit out a resulting machine for consideration. Here in lies the meat of 
+the work that must be done to accomplish my stated goal. The system that I will build will first iterate thru the set of 
+learning strategies to be compared, building metabases for each of them and recording how long it took to build each of 
+these metabases. It will then take a set of test datasets and have machines spit out for each of these datasets, with the 
+resulting choice being recorded as the choices are made. A type of traing/accuracy analysis will then be performed between 
+the different learning strategies 
+
+
+Candidate metalearning algorithms: 
+1. Active metalearning (Ranking of classifiers based on dataset charactersitics using active meta learning)
+2. A generic clustering algorithms
+3. Sampling strategy outlined in (Predicting relative performance of classifiers from samples)
+
+---------------------------------------------
+1. Introduction INT
+---------------------------------------------
+
+What should be in this introduction?
+	1. Descibe the problem of metalearning
+		1. Metalearning: a survey of trends and technologies has a good section on the what defines a metalearning problem
+		2. The no free lunch theorem has to be addressed: 
+			1. A review of recent research in metareasoning and metalearning has a good paragraph on it: section "work on metalearning",
+			paragraph 2
+	2. Talk about the different approaches to the problem in depth enough to waste time
+	3. Introduce the idea of a system with which to make the decision as to which metalearning system to choose
+	4. Phrase the thesis/core point of the thesis as the test as to whether or not a system that produces the best metalearner 
+		for some set of datasets is valid 
+		
+	Possible paragraphs
+		1. Maybe a paragraph about classification
+			1. Consider mentioning/talking about the no free lunch theorem, even extending it to the concept of choosing an algorithm	
+		2. A paragraph about different types of classification algorithms 
+			1. Maybe mention the classification algorithms that will actually be producable from the metalearner 
+		3. A paragraph introducing metalearning 
+			1. If we can find it, referencing the seminal paper on metalearning would be good
+		4. A paragraph talking about different metalearning techniques
+			1. Mentioning the related works we sample might be worth while here
+		5. A paragraph introducing the concept of a metalearner on top of the different meta learners 
+			1. Consider once again refering to the no free lunch theorem
+			
+			
+			
+-----------------------------------------------------------
+2. Overview of Strategies that will be compared   STRATS
+-----------------------------------------------------------
+Strategies that will be included
+	1. Active Metalearning
+	In [1], Burr states that an active learner is one in which the learner may pose queries in the form of
+ 	unlabeled data instances to be lableed by an oracle. In this paper, the authors propose a metalearning
+	strategy in which the metalearner choses which datasets to analyze for its metabase via the usage of active learning. With
+	2. Sampling strategy outlined in (Predicting relatvive performance of classifiers from samples) 
+	3. A generic clustering algorithm
+
+---------------------------------------------------------
+3. Overview of producable machines PRODS
+---------------------------------------------------------
+	1. Support vector machines
+	2. K-means clustering 
+	3. Neural Networks
+	4. Naive Bayes
+	5. Regression 
+---------------------------------------------------------
+4. Setup description DESC
+---------------------------------------------------------	
+	1. System run in ipython terminal 
+	
+----------------------------------------
+5. Experiment description EXP
+----------------------------------------
+
+-------------------------------------------
+6. Results and analysis
+-------------------------------------------
+	1. Use T-test and other applicable statistical analysis techniques to 
+	   reject or be unable to reject null hypothesis
+----------------------------
+7. Biblography BIB
+-----------------------------
+Metalearning 
+1.  Lemke, Christiane; Budka, Marcin (2015) "Metalearning: a survey of trends and technologies"
+2.  Bhatt, Thakkar; Ganatra, Bhatt (2013) "Ranking of Classifiers based on dataset charactersistics using active meta learning" 
+3.  Leite, Rui; Brazdil, Pavel (??) "Predicting Relative Performance of Classifiers from Samples"
+
+Active learning
+?. 	Settles, Burr (2010), "Active Learning Literature Survey" (PDF), Computer Sciences Technical Report 1648. University of Wisconsin–Madison, retrieved 2014-11
+
+svm
+?.  "support vector networks" Cortes, C. & Vapnik, V. Machine Learning (1995) 20: 273. https://doi.org/10.1023/A:1022627411411
+
+k-means
+?. MacQueen, J (?) "Some methods for classification and analysis of multivariate observations"
+?. Arthur,David; Vassilvitskii,Sergei "k-means++: The advantages of careful seeding"
+
+Neural Networks
+? Rosenblatt, F. (1958). "The Perceptron: A Probabilistic Model For Information Storage And Organization In The Brain". {Paywalled}
+? Schmindhuber, Jurgen (2014) "Deep learning in neural networks: An overview" 
+
+-----------------------------
+8. Keywords dump DUMP
+-----------------------------
+Classification, K-Nearest Neighbor (K-NN), Meta Lerning, Success Rate Ratio (SRR),
