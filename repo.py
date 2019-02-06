@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Float, MetaData, ForeignKey, create_engine
+from sqlalchemy import Boolean, Column, String, Integer, Float, MetaData, ForeignKey, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 import pdb
@@ -57,7 +57,7 @@ def data_set_factory(classname,tablename):
 
     globals()[classname] = dataset
     return dataset
-        
+
 class AlgClass(Base):
     __tablename__= 'alg_class'
 
@@ -98,6 +98,22 @@ class Run(Base):
                                                                                                 self.train_time,
                                                                                                 self.accuracy)
 
+def guess_factory(classname,tablename,dataset):
+    def __repr__(self):
+        return '<guess_set()>'.format()
+
+    guess_set = type(classname,(Base,),{
+        "__tablename__": tablename,
+        "data_id": Column(Integer, ForeignKey('{}.data_id'.format(dataset.__tablename__))),
+        "data_name": Column(String),
+        "guess_id": Column(Integer, primary_key = True),
+        "guess_algorithm": Column(String),
+        "guess_algorithm_id": Column(Integer, ForeignKey('algorithm.alg_id')),
+        "actual_algorithm": Column(String),
+        "actual_algorithm_id": Column(Integer, ForeignKey('algorithm.alg_id')),
+        "correct": Boolean()
+    })
+    
 def run_factory(classname,tablename,dataset):
     def __repr__(self):
         return '<run(run_id={},alg_name={},data_name={},train_time={},accuracy={})>'.format(self.run_id,
@@ -117,7 +133,7 @@ def run_factory(classname,tablename,dataset):
         "data": relationship(dataset.__name__, backref=tablename),
         "__repr__": __repr__
     })
-
+    
     globals()[classname] = run
     return run
 
@@ -128,8 +144,7 @@ def get_session():
     session=Session()
     return session
 
-def craftSystem():
-    import create_db as cdb
+def defineMeta():
     data_all = data_set_factory('DatasetAll','all_data')
     base_a = data_set_factory('DatasetA','base_set_a')
     base_b = data_set_factory('DatasetB','base_set_b')
@@ -139,11 +154,23 @@ def craftSystem():
     train_b = data_set_factory('TestsetB','test_set_b')
     train_c = data_set_factory('TestsetC','test_set_c')
 
-    run_all = run_factory('RunAll','run_all',data_all)
-    runExA = run_factory('RunExA','run_ex_a',base_a)
-    runExB = run_factory('RunExB','run_ex_b',base_b)
-    runExC = run_factory('RunExC','run_ex_c',base_c)
+    run_all = run_factory('RunAll','run_all', data_all)
     
+    run_sampling_a = run_factory('RunSamplingA','sampling_runs_a', base_a)
+    run_sampling_b = run_factory('RunSamplingB','sampling_runs_b', base_b)
+    run_sampling_c = run_factory('RunSamplingC','sampling_runs_c', base_c)
+    
+    guesses_act = guess_factory('GuessesActive','guesses_active', data_all)
+    guesses_ex = guess_factory('GuessesEx','guesses_ex', data_all)
+    guesses_samp = guess_factory('GuessesSamp','guesses_samp', data_all)
+    
+    # runExA = run_factory('RunExA','run_ex_a',base_a)
+    # runExB = run_factory('RunExB','run_ex_b',base_b)
+    # runExC = run_factory('RunExC','run_ex_c',base_c)
+
+def craftSystem():
+    import create_db as cdb
+    repo.defineMeta()
     cdb.create_tables(metadata)
 
 def add_dset(dname,dpath, dset, nc, session):
@@ -181,7 +208,16 @@ def ext_add_dset(classname,tablename,dname,dpath,dset,nc,session):
                  information=minfo)
     session.add(d_set)
     session.commit()
-    
+
+def ext_add_run(classname,tablename,data_id,alg_id,train_time,accuracy,session):
+    base = globals()[classname]
+            
+    n_run = base(data_id=data_id,
+                 alg_id=alg_id,
+                 train_time=train_time,
+                 accuracy=accuracy)
+    session.add(n_run)
+    session.commit()
 
 def add_factory_dset(dname,dpath,dset,nc,session):
     """
@@ -216,3 +252,19 @@ def add_algClass(class_name,session):
     n_class = AlgClass(class_name=class_name)
     session.add(n_class)
     session.commit()
+
+def add_to_guesses(className, tableName,data_id,guess,solution):
+    """Add guess to correct guess table"""
+    base = globals()[guess_tup[0]]
+    #Add logic here 
+    
+    guess = base(data_id,
+                 data_name,
+                 guess_algorithm,
+                 guess_algorithm_id,
+                 actual_algorithm,
+                 actual_algorithm_id,
+                 correct)
+    session.add(guess)
+    session.commit()
+    
