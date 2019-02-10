@@ -204,7 +204,8 @@ class DbHandler(object):
         Steps: 
         1. Obtain metabase candidate datasets
         2. Add half of them to active base for training
-        3. Decided on another fourth of them using active learning (by comparing amount of information in datasets)
+        3. Decide on another fourth of them using active learning 
+          (by comparing amount of information in datasets)
         4. Return active base
         """
         bases = self.session.query(base_name)
