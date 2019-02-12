@@ -23,7 +23,7 @@ earning algorithms will comprise the rest of this chapter.
 \section{Regression}
 %--------------------------------------------------------------------------------------------
 \section{K-Means clustering}
-The objective of the k-means algorithm is to partition a dataset into
+The objective of the k-means algorithm (which results in a k-means model) is to partition a dataset into
 k groups such that the points within some group are all closest to
 the mean of that group than they are to any other group. A clear
 informal explanation of the work that the k-means algorith performs
@@ -33,12 +33,28 @@ single random point, and thereafter adding each new point to the
 group whose mean the new point is nearest. After a point is added to
 a group, the mean of that group is adjusted in order to take account
 of the new point. Thus at each stage the k-means are, in fact, the
-means of the groups the represent."\cite{McQueen} Formally stated, given an integer
-\textit{k} and a set of \textit{n} data points in $\mathbb{R}^{d}$
-the K-means algorithm seeks to minimize  \Phi, the over all total summed in class distance between
-each point and its closest center such that $$\mathbb\Phi = \sum_{x \in X} min_{c \in C}\left x-c \right^{2} $$
+means of the groups the represent."\cite{McQueen} Formally stated,
+given an integer \textit{k} and a set of \textit{n} data points in
+$\mathbb{R}^{d}$ the K-means algorithm seeks to minimize  \Phi, the
+over all total summed in class distance between each point and its
+closest center such that $$\mathbb\Phi = \sum_{x \in X} min_{c \in C}\left x-c \right^{2} $$
 \cite{Arthur}.
-
+The k-means model is a type of mixture model that is trained with a procedure
+called expectation maximization. Given a set of distributions with missing data
+, mixture models tend to have derivitaves that are either difficult to define
+or entirely undefinable. On the other hand, the calculation of some ML/MAP
+estimates for some set of models can generally be calculated with little
+difficulty if every point within the distributions is known (at which point our
+learner would obviously have nothing to do) and thus calculus would be entirely
+unneccessary (i.e it wouldn't matter that the derivitive cant be defined).
+Expectation maximization uses this fact in order to obtain an estimation of the
+ML/MAP in a roundabout way. The algorithm consists of two steps: first, a guess
+is made as to which of the given distributions the observed data points belongs
+to; this is called the expectation step, the system estimates what clusters we
+should expect the points to be within given the current distribution parameters
+. The second step consists of the parameters being altered to maximize the
+log-likelihood defined in the previous step. These steps are then repeated
+until some convergance criteria is met.
 %--------------------------------------------------------------------------------------------
 \section{Neural Networks}
 A neural network is a type of machine learning algorithm that mimics
