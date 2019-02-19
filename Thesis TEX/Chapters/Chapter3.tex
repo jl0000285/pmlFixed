@@ -16,15 +16,41 @@
 The strategies mentioned in the previous section must be able to produce learning algorithms
 to be considered metalearing machines. The machines that these strategies can produce are
 the K-means clusterer, a neural network, a naive bayes classifier, the support vector machine,
-and regression; with the results coming from the regression machine being cast into classificatory bins
-from the real valued result that it would produce. An in depth description of each of these different
-earning algorithms will comprise the rest of this chapter.
+and regression; with the results coming from the regression machine being cast into
+classificatory bins from the real valued result that it would produce. An in depth
+description of each of these different earning algorithms will comprise the rest of
+this chapter.
 %--------------------------------------------------------------------------------------------
-\section{Regression}
+\section{Linear Regression}
+Linear regression is one of the most common and oldest machine learning techniques within
+literature. It asserts that the response is a linear function of the inputs. \cite{murphy}.
+This relation takes the following form:
+$$ y(\textbf{x}) = \textbf{w}^T\textbf{x} + \epsilon = \sum_{j=1}^{D}w_jx_j + \epsilon $$
+where $$w^Tx$$ represents the inner or scalar product between the input vector x and the
+model's weight vector w^T, and \epsilon is the residual error between our linear predictions
+and the true response.
+To fit a linear regression model, the least squares approach is usually used. Given some
+ ``overdetermined'' linear system (that is to say a system in which there are more data points
+ than parameters) one can write an expression for the sum of squares of the system $$S(\beta) =
+ (y_1 - \betax_1)^2 + (y_2 - \betax_2)^2 + ... (y_3 - \betax_3)$$ then take the partial deriviate
+ of this sum of sqaured deviations with respect to each of the components of \beta, set them to
+ zero, then solve the resulting equations to directly determine what the values of the parameters
+ are that minimizes the sum of the squared errors of the system. With linear regression in two dimensions
+ (one dimension in the independant variable and one dimension in the dependant variable) we see a system
+ with two parameters \beta_0 = y intercept and \beta_1 = slope. If we had for example 3 data points
+ (2,1),(3,7), and (4,5) we would have the equations $$\beta_0 + 2*\beta_1 = 1$$, $$\beta_0 + 3*\beta_1 = 7$$,
+ and $$\beta_0 + 4*\beta_1 = 5$$. The sum of squared errors would then be
+ $$S(\beta_0,\beta_1)= [1 - (\beta_0 + 2*\beta_1)]^2 + [7 - (\beta_0 + 3*\beta_1)]^2 + [5 - (\beta_0 + 4*\beta_1)]^2$$
+ ,which we could then differentiate with respect to \beta_0 and \beta_1 then directly solve the resulting set
+ of linear equations directly for the minimum of the summed squares.
+%--------------------------------------------------------------------------------------------
+\section{Naive Bayes}
+%--------------------------------------------------------------------------------------------
+\section{Support Vector Machine}
 %--------------------------------------------------------------------------------------------
 \section{K-Means clustering}
-The objective of the k-means algorithm (which results in a k-means model) is to partition a dataset into
-k groups such that the points within some group are all closest to
+The objective of the k-means algorithm (which results in a k-means model) is to partition
+a dataset into k groups such that the points within some group are all closest to
 the mean of that group than they are to any other group. A clear
 informal explanation of the work that the k-means algorith performs
 was given by James McQueen in 1967: "...the k-means procedure
@@ -33,13 +59,13 @@ single random point, and thereafter adding each new point to the
 group whose mean the new point is nearest. After a point is added to
 a group, the mean of that group is adjusted in order to take account
 of the new point. Thus at each stage the k-means are, in fact, the
-means of the groups the represent."\cite{McQueen} Formally stated,
+means of the groups they represent."\cite{McQueen} Formally stated,
 given an integer \textit{k} and a set of \textit{n} data points in
 $\mathbb{R}^{d}$ the K-means algorithm seeks to minimize  \Phi, the
 over all total summed in class distance between each point and its
 closest center such that $$\mathbb\Phi = \sum_{x \in X} min_{c \in C}\left x-c \right^{2} $$
 \cite{Arthur}.
-The k-means model is a type of mixture model that is trained with a procedure
+The k-means model is a type of gaussian mixture model that is trained with a procedure
 called expectation maximization. Given a set of distributions with missing data
 , mixture models tend to have derivitaves that are either difficult to define
 or entirely undefinable. On the other hand, the calculation of some ML/MAP
@@ -48,13 +74,15 @@ difficulty if every point within the distributions is known (at which point our
 learner would obviously have nothing to do) and thus calculus would be entirely
 unneccessary (i.e it wouldn't matter that the derivitive cant be defined).
 Expectation maximization uses this fact in order to obtain an estimation of the
-ML/MAP in a roundabout way. The algorithm consists of two steps: first, a guess
-is made as to which of the given distributions the observed data points belongs
-to; this is called the expectation step, the system estimates what clusters we
-should expect the points to be within given the current distribution parameters
-. The second step consists of the parameters being altered to maximize the
-log-likelihood defined in the previous step. These steps are then repeated
-until some convergance criteria is met.
+ML/MAP in a roundabout way.The algorithm consists of two steps. First, an estimate as
+to what the expected value of the hidden data is based off the current guess for the
+parameters is made. Then the likelihood function for the parameters is maximized under
+the assumption that the data discovered in the previous step is complete i.e that there
+is no longer any hidden data. These steps are then repeated until some convergance criteria
+is met. The k-means is exactly this type of algorithm but with the covariance matrix
+\Sigma_{k} = \Rho^{2}*I_{D} and the mixing weights \Pi_{k} = 1/K all being fixed such
+that the only free parameters are the cluster centers \mu_{k} \in \R^{D}
+and such that the hidden data that is the ground truth label of the data points.
 %--------------------------------------------------------------------------------------------
 \section{Neural Networks}
 A neural network is a type of machine learning algorithm that mimics
@@ -141,5 +169,3 @@ earlier in the network being calculable by continuing usage of the
 chain rule. \begin{figure}\end{figure}. For an excellent and intuitive
 explanation of how neural networks work, pls consider viewing the
 animated overview of the method at 3Blue1Brown's youtube channel.
-%--------------------------------------------------------------------------------------------
-\section{Naive Bayes}

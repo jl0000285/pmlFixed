@@ -1,0 +1,31 @@
+\usepackage{amsmath}
+K-means clustering equations
+1. Loss function $$L = \sum_{j=i}^{k} \sum_{i=1}^{n}$$a_{ij}(x_i - \mu_j)^2$$
+where a_{ij} is whether or not input i is assigned to cluster j and x_i - u_j
+is the distance from the center of input i (which only impacts the loss function
+when a_{ij} is 1 and not 0 aka when the point is assigned to the currently evaluated cluster j)
+
+2. Update function for the maxization step of kmeans
+$$\mu_j=1/n_j\sum_{i:x_i is assigned to j}x_i $$ , emperical mean of all points assigned to j. Is undefined when number of assigned points n_{j} is 0
+
+3. Update function for expectation step of kmeans requires amsmath
+a_{ij} =
+\begin{cases}
+    1,& \text{if } j = argmin_{l} ||x_i-\mu_l||^2 \\
+    0,              & \text{otherwise}
+\end{cases}
+
+
+Expectation maximization stuff
+1. Expectation step
+Q(\theta,\theta_{t}) = E_{\theta_{t}}(logP_{\theta}(x,z)|x=x)
+2. Maximization step
+\theta_{t+1} \in argmax_{\theta} Q(\theta,\theta_{t})
+
+
+Linear regression
+1. Primary linear regression equation
+$$ y(\textbf{x}) = \textbf{w}^T\textbf{x} + \epsilon = \sum_{j=1}^{D}w_jx_j + \epsilon $$
+where $$w^Tx$$ represents the inner or scalar product between the input vector x and the
+model's weight vector w^T, and \epsilon is the residual error between our linear predictions
+and the true response \cite{Murphy}
