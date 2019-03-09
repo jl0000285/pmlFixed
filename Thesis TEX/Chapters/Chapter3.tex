@@ -45,8 +45,39 @@ To fit a linear regression model, the least squares approach is usually used. Gi
  of linear equations directly for the minimum of the summed squares.
 %--------------------------------------------------------------------------------------------
 \section{Naive Bayes}
+The Naive Bayes classifier algorithm fits a set of data to Bayes theorem with a strong assumption of
+feature independance. Given a set of discrete-valued features $$x \in {1,...,K}^D$$, we can calculate
+the class conditional density for each feature, then with our assumption of independance easily generate
+a guess at what the class should be for a new input by multiplying the conditional likelihood values
+for each of the new inputs features times the prior on the desired to be known class, that is to say
+$$p(y|\textbf{x}) \propto p(y) \sum_{j}^{D}p(x_j|y)$$. The calculation of the posterior probability for a new
+example can be done so \quote{by hand} or can be done so from distributions that are infered from the
+provided data. Consider, for example, a collection of data listing individuals that did or did not purchase
+a house from a real estate agent, where, for some reason or another the only data remaining pertaining to
+these individuals is what their income level was, what their age was, and how far they have to or would have
+to drive to work from their new home. A set of possible example points is as follows:
+
+Say we get a new datapoint: $$25,000 30 10$$. In this case the conditional likelihood of this data given a
+yes for each of the individual features is 2/9, 1/9, and 2/9 respectively. The prior on yes is 1/3. The
+marginal likelihoods of each the individual features are 2/9, 1/9 and 2/9 respectively. As such the
+posteriors for our new datapoint are $$p(y=yes|x)=\frac{(2/9)*(1/9)*(2/9)*(9/27)}{(6/27)*(3/27)*(6/27)} = \frac{0.00182}{0.00548} = 0.33$$ and $$p(y=no|x)=\frac{(4/18)(2/18)(4/18)(18/27)}{(6/27)(3/27)(6/27)} = \frac{0.0036}{0.00548} = 0.66$$. Note that 0.66 > 0.33 and as such our classifier would label this datapoint with
+a no, this individual is not likely to purchase a house.
+This ``by hand'' calculation of the posterior for every new data point is fine when the number of
+examples is low but can quickly grow out of hand when the number of data points is very large. In
+this case it is better to extract the parameters of the assumed distributions of the various
+portions of the equation (for the data likelihoods, the prior, the marginals, etc). For this example
+the data likelihoods and marginals are all gaussians. The relative means of each of the distributions can
+easily be seen from the data table (35,000, 40, 15 for each of the features marginal and conditionl
+probabilities). The variances can be calculated by summing the distances from the means and dividing by
+the number of points in each given distribution, at which point all the means and variances will be known.
+Plugging this values into the definition of the gaussian $$p(x|\mu,\rho^{2})=\frac{1}{\sqrt{2\pi\rho^{2}}}e^{\frac{x-\mu^{2}}{\rho^{2}}}$$ would give us the probability for each of the values for a given new data point, at
+which point the calculation of the posterior would follow in exactly the same fashion as the ``by hand''
+example.
+
 %--------------------------------------------------------------------------------------------
 \section{Support Vector Machine}
+
+
 %--------------------------------------------------------------------------------------------
 \section{K-Means clustering}
 The objective of the k-means algorithm (which results in a k-means model) is to partition
