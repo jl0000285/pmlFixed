@@ -1,0 +1,152 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{amsmath,amsfonts,amsthm,dsfont,amssymb}
+\usepackage[blocks]{authblk}
+\newenvironment{keywords}{\noindent\textbf{Keywords:}}{}
+\newenvironment{classification}{\noindent\textbf{AMS subject classifications.}}{}
+\date{}
+\newcommand{\email}[1]{\texttt{\small #1}}
+
+
+
+\begin{document}
+% % % % %--------------------------------------------------------------------
+% % % % %          Title of the Paper and Acknowledgement
+% % % % %--------------------------------------------------------------------
+	\title{Planning Document
+	}
+% % % % %--------------------------------------------------------------------
+% % % % %         Authors,, Affiliations and email ids
+% % % % %--------------------------------------------------------------------
+
+\author{John Liddell}
+\affil{ \email{jl0000285@gmail.com}}
+
+% % % % %--------------------------------------------------------------------
+
+
+\maketitle
+
+\section{Background and Significance}
+  Determining what algorithm to use when analyzing a dataset is a problem as old
+  as machine learning itself. The primary issue with regards to choice of learning
+  algorithms lies with the fact that learners tend to have differing performances
+  depending on the sort of data that the learner is learning on. The decision
+  of what algorithm is most likely to perform well with some given dataset its often
+  times left up to an expert,  an individual that is well versed in machine learning
+  literature and who understands the problem well enough to make an informed decision.
+  Often times such an expert is not available, however, in which case the fallback is
+  often times the application of a meta-learner which is a learning algorithm that
+  produces a learning machine that it believes will best do the job of fitting a given
+  dataset when given that dataset.
+
+  The issue of what learning algorithm performs best on what kinds of dataset is
+  summerized by noting that the elevated peformance of any optimization algorithm for one class of
+  problems will be payed for by reduced performance of said optimization algorithm on  another class
+  of algorithms. \cite{Wolpert} In otherwords, no one optimization algorithm or even strategy should
+  simply be better than any other, it should depend on the class of problem for which one wishes to find
+  an optimum solution.
+
+  Metalearning machines hope to discover this best algorithm with an algorithm. As such, they themselves
+  should be subject to this constraint: no one metalearning strategy should simply be better at determining
+  what learning algorithm will best perform on a given dataset, the choice of which algorithm best
+  determines the best algorithm should itself be succeptable to this ``No free lunch'' constraint.
+%-------------------------------------------------------------------------------------------
+
+\section{Problem Statement and Hypothesis}
+  The goal of this study is to determine whether or not the ``No free lunch'' optimization problem
+  constraint applies to metalearning systems or whether or not some metalearning stratagies are strictly
+  better than others. Being that metalearning machines are just a type of machine learning algorithm
+  leads me to presume the null hypothesis to be yes, metalearning machines are subject to the
+  ``No free lunch'' theorem. I also do not currently believe they should be free from the NFL theorem
+  and am thus adopting the null hypothesis as my own.
+%--------------------------------------------------------------------------------------------
+
+\section{Summary of theories/algorithms used within study}
+\subsection{No Free lunch theorem}
+Introduced in Wolpert and MacReady's ``No Free Lunch Theorems for Optimization'' 1997 paper,
+the No Free Lunch theorem states that the perfomance of all algorithms when averaged out across all
+  datasets should be the same, that is to say there is no one algorithm that is universally the best.
+  The root cause of this observation is in that differing algorithms make different assumptions about the
+  distributions from which the data the algorithms work with arises. A learning algorithm with an implicit
+  assumption of a random distriubtion will have a far lower test case classification accuracy than an
+  algorithm that assumes a gaussian distribution if the distribution from which the set of observed
+  samples derives from is truly normal and vice versa, if the distribution is truly random the gaussian
+  classifier's accuracy will suffer relative to the classifier with a random assumption. {Figure here
+    showing the difference}
+
+\subsection{K-Means clustering}
+The objective of the k-means algorithm (which results in a k-means model) is to partition
+a dataset into k groups such that the points within some group are all closest to
+the mean of that group than they are to any other group. A clear
+informal explanation of the work that the k-means algorith performs
+was given by James McQueen in 1967: "...the k-means procedure
+consists of simply starting with k groups each of which consists of a
+single random point, and thereafter adding each new point to the
+group whose mean the new point is nearest. After a point is added to
+a group, the mean of that group is adjusted in order to take account
+of the new point. Thus at each stage the k-means are, in fact, the
+means of the groups they represent."\cite{McQueen} Formally stated,
+given an integer \textit{k} and a set of \textit{n} data points in
+$\mathbb{R}^{d}$ the K-means algorithm seeks to minimize  \Phi, the
+over all total summed in class distance between each point and its
+closest center such that $$\mathbb\Phi = \sum_{x \in X} min_{c \in C}\left x-c \right^{2} $$
+\cite{Arthur}.
+The k-means model is a type of gaussian mixture model that is trained with a procedure
+called expectation maximization. Given a set of distributions with missing data
+, mixture models tend to have derivitaves that are either difficult to define
+or entirely undefinable. On the other hand, the calculation of some ML/MAP
+estimates for some set of models can generally be calculated with little
+difficulty if every point within the distributions is known (at which point our
+learner would obviously have nothing to do) and thus calculus would be entirely
+unneccessary (i.e it wouldn't matter that the derivitive cant be defined).
+Expectation maximization uses this fact in order to obtain an estimation of the
+ML/MAP in a roundabout way.The algorithm consists of two steps. First, an estimate as
+to what the expected value of the hidden data is based off the current guess for the
+parameters is made. Then the likelihood function for the parameters is maximized under
+the assumption that the data discovered in the previous step is complete i.e that there
+is no longer any hidden data. These steps are then repeated until some convergance criteria
+is met. The k-means is exactly this type of algorithm but with the covariance matrix
+\Sigma_{k} = \Rho^{2}*I_{D} and the mixing weights \Pi_{k} = 1/K all being fixed such
+that the only free parameters are the cluster centers \mu_{k} \in \R^{D}
+and such that the hidden data that is the ground truth label of the data points.
+
+%--------------------------------------------------------------------------------------
+\section{Methodology}
+The form in which this experiment will take is that of a program in which a set of meta-learners
+will be built, each operating in accordance with one of the meta-learning strategies described in
+the previous section. The system and each of its components will be coded in Python and run from either
+a linux bash or windows powershell terminal. What follows is description of the important non-standard
+library modules from which the system will be built.
+
+\subsection{Libraries and hardware}
+\subsubsection{scikit-learn}
+Scikit-learn is a machine learning library that is written almost entirely in python, with a few
+bindings in Cython being present to increase performance where applicable. The use of Scikit-learn
+within this project comes with several significant advantages: the individual machine algorithms
+will already be written and optimized, the algorithms will be garunteed to work in pretty much any
+environment, and the relative performance of the algorithms is garunteed, that is to say an algorithm
+that should theoretically perform better with some given dataset (for example a gaussian svm kernel
+with data points from a gaussian distribution vs any other kernel) will do so leading to more honest
+metalearning databases.
+
+\subsubsection{sqlalchemy}
+SQL-Alchemy is an Object Relational Mapper that allow application developers to interface with
+databases via python. This makes it possible to persist and manipulate the large amount of data
+associated with an experiment of this type in a clean, consistant, and comprehensible fashion.
+
+\subsection{unit hardware}
+The unit on which the experiment will be carried out on has still not been determined, though in
+a pinch my personal desktop computer might possibly suffice.
+%-------------------------------------------------------------------------------------
+\section{Timeline}
+  Gather datasets, apply learning algorithms to determine which datasets can be used or need to be cleaned
+  Build metalearning system
+  Set up experiment, gather evidence
+  Analayze evidence to determine likelihood of hypothesis
+  Complete thesis paper
+  Defend thesis
+%--------------------------------------------------------------------------------------
+\begin(References)
+\end(References)
+
+\end(document)
