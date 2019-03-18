@@ -62,7 +62,7 @@
   and am thus adopting the null hypothesis as my own.
 %--------------------------------------------------------------------------------------------
 
-  \section{Summary of theories/algorithms used within study}
+  \section{Summary of theories and algorithms}
 
   In order to test the validity of the NFL theorem as it applies to metalearning systems,
   we have need of metalearning strategies to compare and producable learning machines.
@@ -100,7 +100,7 @@ a group, the mean of that group is adjusted in order to take account
 of the new point. Thus at each stage the k-means are, in fact, the
 means of the groups they represent."\cite{McQueen} Formally stated,
 given an integer \textit{k} and a set of \textit{n} data points in
-$\mathbb{R}^{d}$ the K-means algorithm seeks to minimize $$\Phi$$, the
+$\mathbb{R}^{d}$ the K-means algorithm seeks to minimize $\Phi$, the
 over all total summed in class distance between each point and its
 closest center such that $$\Phi = \sum_{x \in X} min_{c \in C}\left. x-c \right.^{2} $$
 \cite{Arthur}.
@@ -114,47 +114,42 @@ difficulty if every point within the distributions is known (at which point our
 learner would obviously have nothing to do) and thus calculus would be entirely
 unneccessary (i.e it wouldn't matter that the derivitive cant be defined).
 Expectation maximization uses this fact in order to obtain an estimation of the
-ML/MAP in a roundabout way.The algorithm consists of two steps. First, an estimate as
+ML/MAP in a roundabout way. The algorithm consists of two steps. First, an estimate as
 to what the expected value of the hidden data is based off the current guess for the
 parameters is made. Then the likelihood function for the parameters is maximized under
 the assumption that the data discovered in the previous step is complete i.e that there
 is no longer any hidden data. These steps are then repeated until some convergance criteria
 is met. The k-means is exactly this type of algorithm but with the covariance matrix
-$$\Sigma_{k} = \rho^{2}*I_{D}$$ and the mixing weights $$\pi_{k} = 1/K$$ all being fixed such
-that the only free parameters are the cluster centers $$\mu_{k} \in \mathbb{R}^{D}$$
+$\Sigma_{k} = \rho^{2}*I_{D}$ and the mixing weights $\pi_{k} = 1/K$ all being fixed such
+that the only free parameters are the cluster centers $\mu_{k} \in \mathbb{R}^{D}$
 and such that the hidden data that is the ground truth label of the data points.
 
 \subsection{Linear Regression}
 Linear regression is one of the most common and oldest machine learning techniques within
-literature. It asserts that the response is a linear function of the inputs. \cite{murphy}.
+literature. It asserts that the response is a linear function of the inputs. \cite{Murphy}.
 This relation takes the following form:
-$$ y(\textbf{x}) = \textbf{w}^T\textbf{x} + \epsilon = \sum_{j=1}^{D}w_jx_j + \epsilon $$
-where $$w^Tx$$ represents the inner or scalar product between the input vector x and the
-model's weight vector w^T, and \epsilon is the residual error between our linear predictions
+$$y(\textbf{x}) = \textbf{w}^T\textbf{x} + \epsilon = \sum_{j=1}^{D}w_jx_j + \epsilon$$
+where $w^Tx$ represents the inner or scalar product between the input vector x and the
+model's weight vector $w^T$, and $\epsilon$ is the residual error between our linear predictions
 and the true response.
-To fit a linear regression model, the least squares approach is usually used. Given some
- ``overdetermined'' linear system (that is to say a system in which there are more data points
- than parameters) one can write an expression for the sum of squares of the system $$S(\beta) =
- (y_1 - \betax_1)^2 + (y_2 - \betax_2)^2 + ... (y_3 - \betax_3)$$ then take the partial deriviate
- of this sum of sqaured deviations with respect to each of the components of \beta, set them to
- zero, then solve the resulting equations to directly determine what the values of the parameters
- are that minimizes the sum of the squared errors of the system. With linear regression in two dimensions
- (one dimension in the independant variable and one dimension in the dependant variable) we see a system
- with two parameters \beta_0 = y intercept and \beta_1 = slope. If we had for example 3 data points
- (2,1),(3,7), and (4,5) we would have the equations $$\beta_0 + 2*\beta_1 = 1$$, $$\beta_0 + 3*\beta_1 = 7$$,
- and $$\beta_0 + 4*\beta_1 = 5$$. The sum of squared errors would then be
- $$S(\beta_0,\beta_1)= [1 - (\beta_0 + 2*\beta_1)]^2 + [7 - (\beta_0 + 3*\beta_1)]^2 + [5 - (\beta_0 + 4*\beta_1)]^2$$
- ,which we could then differentiate with respect to \beta_0 and \beta_1 then directly solve the resulting set
- of linear equations directly for the minimum of the summed squares.
+
+ To fit a linear regression model, the least squares approach is usually used. Given some
+ ``overdetermined'' linear system (that is to say a system in which there are more equations
+than parameters) one can write an expression for the sum of squares of the system
+$$S(\beta) = (y_1 - \beta x_1)^2 + (y_2 - \beta x_2)^2 + ... (y_3 - \beta x_3)$$
+ then take the partial deriviate of this sum of sqaured deviations with respect to each of
+the components of $\beta$, set them to zero, then solve the resulting equations to directly
+determine what the values of the parameters are that minimizes the sum of the squared errors of
+the system.
 
  \subsection{Naive Bayes}
 The Naive Bayes classifier algorithm fits a set of data to Bayes theorem with a strong assumption of
-feature independance. Given a set of discrete-valued features $$x \in {1,...,K}^D$$, we can calculate
+feature independance. Given a set of discrete-valued features $x \in {1,...,K}^D$, we can calculate
 the class conditional density for each feature, then with our assumption of independance easily generate
 a guess at what the class should be for a new input by multiplying the conditional likelihood values
 for each of the new inputs features times the prior on the desired to be known class, that is to say
 $$p(y|\textbf{x}) \propto p(y) \sum_{j}^{D}p(x_j|y)$$. The calculation of the posterior probability for a new
-example can be done so \quote{by hand} or can be done so from distributions that are infered from the
+example can be done so ``by hand'' or can be done so from distributions that are infered from the
 provided data.
 
 \subsection{Support Vector Machine}
@@ -162,12 +157,13 @@ The support vector machine is a two-group classification algorithm that attempts
 plane that seperates the inputs within the given input space with a maximum margin of seperation
 between the hyper plane and the ``support vectors'', those vectors on either side of the hyper plane
 that are closest too it. The support vector machine can use ``kernels'', to map input vectors into
-non-linear high-demensional feature space \{Vapnik} without actually calculating the position of
-the vectors within that feature space. The kernel accomplishes this by calculating the distance, or
-similarity of its two input vecotrs in this space without reference to their exact position. This
-then allows the computation of a linear seperation between the points in this higher dimensional space
-which translates into a non-linear seperation for the vectors in their original lower dimensional space
-where a seperation might other wise not have been discoverable.
+non-linear high-demensional feature space without actually calculating the position of
+the vectors within that feature space \cite{Vapnik}. The kernel accomplishes this by calculating the
+distance between (or similarity) of its two input vectors in this space without reference to their exact
+position within this higher space. This then allows the computation of a linear seperation between
+the points in this higher dimensional space which translates into a non-linear seperation for the
+vectors in their original lower dimensional space where a seperation might other wise not have been
+discoverable.
 
 \subsection{Neural Networks}
 A neural network is a type of machine learning algorithm that mimics
@@ -193,22 +189,42 @@ final layer being either another logicstic regression or linear
 regression model depending on whether or not a classification or
 regression problem is being solved.\cite{Murphy}. The leftmost
 layer of this stack is called the input layer and consists of a set of
-neurons {x_i|x_1,x_2,x_3...,x_m} representing the input's
+neurons $${x_i|x_1,x_2,x_3...,x_m}$$ representing the input's
 features. Each neuron in the hidden layer transforms the values from
-the previous layer via weighted linear summation w_1X_1 + w_2x_2 +
-...w_mx_m \cite{Scikit} which is then passed into a non linear-action
-function g(), such as the logistic function or the hyperbolic tangent
-function. It is important to note that g must be non-linear, otherwise
+the previous layer via weighted linear summation $$w_1X_1 + w_2x_2 +...w_mx_m$$ \cite{Scikit}
+which is then passed into a non linear-action function g(), such as the logistic function or
+the hyperbolic tangent function. It is important to note that g must be non-linear, otherwise
 the entire model will collapse into a large linear regression model of
-the form y = w^T(Vx). \cite{Murphy}
+the form $y = w^T(V*x)$. \cite{Murphy}
+
+\subsection{Brute force metabase}
+The most basic meta machine learning algorithm involves the collecting of the run statistics
+of the set of machines that a given meta learner can produce applied to a metabase with a clustering
+algorithm to produce results with new datasets. This version of metalearning will act as a sort of control
+for this study, the results of the more complicated meta learning strategies that follow only really mean
+anything with respect to how long it would've taken to train and how long it would've performed if we had
+just trained it via brute force.
 
 \subsection{Active Meta Learning}
 The first of the metalearning strategies implemented within the study; Active
 Meta Learning is a meta learning technique  ``that reduces the cost of generating Meta examples
 by selecting relevant Meta examples'' \cite{Bhatt}. What this entails is a decision on what
 datasets to allow into a metalearners metabase, rather than analyze every candidate meta base dataset
-an active metalearner will analyze the next dataset given that its inclusion causes the largest leap
-in the sum total amount of information contained within the metabase. What this
+an active metalearner will analyze the next dataset with the highest uncertainty. The relative uncertainty
+between two datasets is defined by
+$$\delta(V_x,d_i,V_x,d_j) = \frac{|V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$
+where $V_x,d_k$ is the value of some metaparameter $V_x$ for dataset $d_k$,
+$Max_{k\neq i}(V_x,d_k)$ is the maximum value of $V_x,d_k$ when dataset i is removed and
+$Min_{k\neq i}(V_x,d_k)$ is its corrosponding minimum.
+
+\subsection{Predicting relative performance of classifiers from samples}
+The second of the metalearning strategies implemented within this study is one in which
+a representive subsection of the metabase is trained with each algorithm entirely, after
+which point the rest of the metabase under goes a sort of curve sampling analysis in which
+the results of future learning is predicted based off what dataset the new datasets learning
+curve most resembles. \cite{Leite} As with the other two meta learning strategies, the label
+for new datsets is the determined via clustering with the datasets within this post trained
+metabase.
 
 %--------------------------------------------------------------------------------------
 \section{Methodology}
@@ -239,13 +255,14 @@ The unit on which the experiment will be carried out on has still not been deter
 a pinch my personal desktop computer might possibly suffice.
 %-------------------------------------------------------------------------------------
 \section{Timeline}
-  Gather datasets, apply learning algorithms to determine which datasets can be used or need to be cleaned
-  Build metalearning system
-  Set up experiment, gather evidence
-  Analayze evidence to determine likelihood of hypothesis
-  Complete thesis paper
-  Defend thesis
-
+  \begin{itemize}
+  \item Gather datasets, apply learning algorithms to determine which datasets can be used or need to be cleaned
+  \item Build metalearning system
+  \item Set metalearning system up on applicable machine and gather evidence by running system
+  \item Analayze evidence to determine likelihood of hypothesis
+  \item Complete thesis paper
+  \item Defend thesis
+  \end{itemize}
 %-----------------------------------------------------------------------------------------------------
 \begin{thebibliography}{9}
 \bibitem{Wolpert}
@@ -273,6 +290,18 @@ a pinch my personal desktop computer might possibly suffice.
 \bibitem{Hornik}
   Hornik, Kurt
   \textit{Approximation Capabilities of Multilayer Feedforward Networks}
+
+\bibitem{Murphy}
+  Kevin P. Murphy
+  \textit{Machine Learning: A probabilistic Perspective}
+
+\bibitem{Arthur}
+  Arthur, David; Vassilvitskii, Sergei
+  \textit{k-means++: The advantages of careful seeding}
+
+\bibitem{Scikit}
+  scikit-learn.org
+  \textit{https://scikit-learn.org/stable/modules/neural networks superivsed.html}
 
 \end{thebibliography}
 
