@@ -23,7 +23,7 @@
 %----------------------------------------------------------------------------------------
 
 \documentclass[
-11pt, % The default document font size, options: 10pt, 11pt, 12pt
+12pt, % The default document font size, options: 10pt, 11pt, 12pt
 %oneside, % Two side (alternating margins) for binding by default, uncomment to switch to one side
 english, % ngerman for German
 singlespacing, % Single line spacing, alternatives: onehalfspacing or doublespacing
@@ -40,12 +40,13 @@ headsepline, % Uncomment to get a line under the header
 
 \usepackage[utf8]{inputenc} % Required for inputting international characters
 \usepackage[T1]{fontenc} % Output font encoding for international characters
-
-\usepackage{mathpazo} % Use the Palatino font by default
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+%\usepackage{mathpazo} % Use the Palatino font by default
 
 \usepackage[backend=bibtex,style=authoryear,natbib=true]{biblatex} % Use the bibtex backend with the authoryear citation style (which resembles APA)
 
-\addbibresource{example.bib} % The filename of the bibliography
+\addbibresource{Thesis.bib} % The filename of the bibliography
 
 \usepackage[autostyle=true]{csquotes} % Required to generate language-dependent quotes in the bibliography
 
@@ -159,30 +160,6 @@ headsepline, % Uncomment to get a line under the header
 \end{declaration}
 
 %----------------------------------------------------------------------------------------
-%	ABSTRACT PAGE
-%----------------------------------------------------------------------------------------
-
-\begin{abstract}
-\addchaptertocentry{\abstractname} % Add the abstract to the table of contents
-Determining what algorithm to use when analyzing a dataset is a problem as old as machine learning itself. In some cases, the
-individuals wishing to perform an analysis have access to an expert that can simply tell them which algorithm is best in the
-given situation. In other situations, the individuals wishing to perform analysis may not have the budget neccessary to
-acquire access to such an export, in which case the usage of a metalearner becomes appropriate. With a metalearner one feeds
-the metalearner a dataset and it returns to the user what it thinks is the most appropriate machine with which to perform
-analysis. To get to the point wherein a decision can be made on new datasets the metalearner itself must first be trained,
-and this training itself requires some sort of learning strategy. The comparison of the learning strategies used to train a
-metalearner will be the central focus of this project.
-The act of utilizing a metalearning strategy generally involves the following activities: one must take a set of datasets,
-get a measure of how well those datasets perform with a given body of algorithms then use the information contained within
-this "metabase" to run an algorithm that will then spit out a resulting machine for consideration. Here in lies the meat of
-the work that must be done to accomplish my stated goal. The system that I will build will first iterate thru the set of
-learning strategies to be compared, building metabases for each of them and recording how long it took to build each of
-these metabases. It will then take a set of test datasets and have machines spit out for each of these datasets, with the
-resulting choice being recorded as the choices are made. A time of traing/accuracy analysis will then be performed between
-the different learning strategies
-\end{abstract}
-
-%----------------------------------------------------------------------------------------
 %	ACKNOWLEDGEMENTS
 %----------------------------------------------------------------------------------------
 
@@ -276,77 +253,6 @@ $\omega$ & angular frequency & \si{\radian} \\
 \include{Appendices/AppendixA}
 %\include{Appendices/AppendixB}
 %\include{Appendices/AppendixC}
-
-%----------------------------------------------------------------------------------------
-%	BIBLIOGRAPHY
-%----------------------------------------------------------------------------------------
-
-\begin{thebibliography}
-%General
-\bibitem(Murphy)
-Kevin P. Murphy
-\textit{Machine Learning: A probabilistic Perspective}
-
-\bibitem{Wolpert}
-  David H. Wolpert; William G. Macready
-  \textit{No free Lunch Theorems for Optimization}
-  IEEE Transactions on evolutionary computation vol 1 no.1 April 1997
-
-%Metalearning
-\bibitem{Lemke}
- Lemke, Christiane; Budka, Marcin
- \textit{Metalearning: a survey of trends and technologies} 2015
-
-\bibitem{Bhatt}
- Bhatt, Thakkar; Ganatra, Bhatt
- \textit{Ranking of Classifiers based on dataset charactersistics using active meta learning} 2013
-
-\bibitem{Leite}
- Leite, Rui; Brazdil, Pavel
-\ltextit{Predicting Relative Performance of Classifiers from Samples}
-
-%Active learning
-\bibitem{Settles}
-Settles, Burr
-\textit{Active Learning Literature Survey}
- Computer Sciences Technical Report 1648. University of Wisconsin–Madison 2014
-
-%svm
-\bibitem{Vapnik}
-\textit{support vector networks" Cortes, C. & Vapnik, V. Machine Learning } 1995
-20: 273. https://doi.org/10.1023/A:1022627411411
-
-%k-means
-\bibitem{MacQueen}
-Macquenn
-\textit{Some methods for classification and analysis of multivariate observations}
-
-\bibitem{Arthur}
-Arthur,David; Vassilvitskii,Sergei
- \textit{k-means++: The advantages of careful seeding}
-
-%Neural Networks
-\bibitem{Rosenblatt}
-Rosenblatt, F.
-\textit{The Perceptron: A Probabilistic Model For Information Storage And Organization In The Brain}.%Paywalled
-
-\bibitem{Scikit}
-scikit-learn.org
-\textit{https://scikit-learn.org/stable/modules/neural_networks_supervised.html}
-
-\bibitem{Hornik}
-Hornik, Kurt;
-\textit{Approximation Capabilities of Multilayer Feedforward Networks}
-
-\bibitem{Schmindhuber}
-Schmindhuber, Jurgen
-\textit{Deep learning in neural networks: An overview} 2014
-
-\bibitem{Rumelhart}
-Rumelhart, David E., Geoffrey E. Hinton, and Ronald J. Williams.
-\textit{Learning representations by back-propataging errors} 1986
-
-\end{thebibliography}
 
 %----------------------------------------------------------------------------------------
 
