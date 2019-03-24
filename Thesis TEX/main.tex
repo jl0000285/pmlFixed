@@ -41,6 +41,7 @@ headsepline, % Uncomment to get a line under the header
 \usepackage[utf8]{inputenc} % Required for inputting international characters
 \usepackage[T1]{fontenc} % Output font encoding for international characters
 \usepackage{fontspec}
+\usepackage{lipsum,etoolbox}
 \setmainfont{Times New Roman}
 %\usepackage{mathpazo} % Use the Palatino font by default
 
@@ -49,6 +50,13 @@ headsepline, % Uncomment to get a line under the header
 \addbibresource{Thesis.bib} % The filename of the bibliography
 
 \usepackage[autostyle=true]{csquotes} % Required to generate language-dependent quotes in the bibliography
+
+%----------------------------------------------------------
+%Patched Commands
+%---------------------------------------------------------
+%Add abstract to toc
+\patchcmd{\abstract}{\titlepage}{\titlepage
+\addcontentsline{toc}{chapter}{Abstract}}{}{}
 
 %----------------------------------------------------------------------------------------
 %	MARGIN SETTINGS
@@ -235,7 +243,8 @@ $\omega$ & angular frequency & \si{\radian} \\
 % Include the chapters of the thesis as separate files from the Chapters folder
 % Uncomment the lines as you write the chapters
 
-\include{Chapters/Chapter1}
+\include{Chapters/Abstract}
+%\include{Chapters/Chapter1}
 %\include{Chapters/Chapter2}
 %\include{Chapters/Chapter3}
 %\include{Chapters/Chapter4}
