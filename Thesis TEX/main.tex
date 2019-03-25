@@ -42,12 +42,19 @@ headsepline, % Uncomment to get a line under the header
 \usepackage[T1]{fontenc} % Output font encoding for international characters
 \usepackage{fontspec}
 \usepackage{lipsum,etoolbox}
+\usepackage{makeidx}
+\usepackage{amssymb}
+
 \setmainfont{Times New Roman}
 %\usepackage{mathpazo} % Use the Palatino font by default
 
-\usepackage[backend=bibtex,style=authoryear,natbib=true]{biblatex} % Use the bibtex backend with the authoryear citation style (which resembles APA)
+%\usepackage[backend=bibtex,style=au{biblatex} % Use the bibtex backend with the authoryear citation style (which resembles APA)
 
+\usepackage[backend=biber, style=ieee]{biblatex}
 \addbibresource{Thesis.bib} % The filename of the bibliography
+
+%\bibliography{Thesis}
+%\bibliographystyle{ieeetr}
 
 \usepackage[autostyle=true]{csquotes} % Required to generate language-dependent quotes in the bibliography
 
@@ -111,7 +118,7 @@ headsepline, % Uncomment to get a line under the header
 
 \vspace*{.06\textheight}
 {\scshape\LARGE \univname\par}\vspace{1.5cm} % University name
-\textsc{\Large Doctoral Thesis}\\[0.5cm] % Thesis type
+\textsc{\Large Masters Thesis}\\[0.5cm] % Thesis type
 
 \HRule \\[0.4cm] % Horizontal line
 {\huge \bfseries \ttitle\par}\vspace{0.4cm} % Thesis title
@@ -245,11 +252,12 @@ $\omega$ & angular frequency & \si{\radian} \\
 
 \include{Chapters/Abstract}
 %\include{Chapters/Chapter1}
-%\include{Chapters/Chapter2}
+\include{Chapters/Chapter2}
 %\include{Chapters/Chapter3}
 %\include{Chapters/Chapter4}
 %\include{Chapters/Chapter5}
 
+\printbibliography
 %----------------------------------------------------------------------------------------
 %	THESIS CONTENT - APPENDICES
 %----------------------------------------------------------------------------------------

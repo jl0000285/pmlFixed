@@ -1,16 +1,6 @@
-%Chapter 3
-\usepackage{amssymb}
-\chapter{Overview of producable machines}
-\label{Chapter3}
-%----------------------------------------------------------------------------------------
-
-% Define some commands to keep the formatting separated from the content
-\newcommand{\keyword}[1]{\textbf{#1}}
-\newcommand{\tabhead}[1]{\textbf{#1}}
-\newcommand{\code}[1]{\texttt{#1}}
-\newcommand{\file}[1]{\texttt{\bfseries#1}}
-\newcommand{\option}[1]{\texttt{\itshape#1}}
-
+%Chapter 2
+\chapter{Review of the literature}
+\label{Chapter2}
 %----------------------------------------------------------------------------------------
 \section{Summary of producable machines}
 The strategies mentioned in the previous section must be able to produce learning algorithms
@@ -26,42 +16,43 @@ Linear regression is one of the most common and oldest machine learning techniqu
 literature. It asserts that the response is a linear function of the inputs. \cite{murphy}.
 This relation takes the following form:
 $$ y(\textbf{x}) = \textbf{w}^T\textbf{x} + \epsilon = \sum_{j=1}^{D}w_jx_j + \epsilon $$
-where $$w^Tx$$ represents the inner or scalar product between the input vector x and the
-model's weight vector w^T, and \epsilon is the residual error between our linear predictions
+where $w^Tx$ represents the inner or scalar product between the input vector $x$ and the
+model's weight vector $w^T$, and $\epsilon$ is the residual error between our linear predictions
 and the true response.
 To fit a linear regression model, the least squares approach is usually used. Given some
  ``overdetermined'' linear system (that is to say a system in which there are more data points
  than parameters) one can write an expression for the sum of squares of the system $$S(\beta) =
- (y_1 - \betax_1)^2 + (y_2 - \betax_2)^2 + ... (y_3 - \betax_3)$$ then take the partial deriviate
- of this sum of sqaured deviations with respect to each of the components of \beta, set them to
+ (y_1 - \beta x_1)^2 + (y_2 - \beta x_2)^2 + ... (y_3 - \beta x_3)$$ then take the partial deriviate
+ of this sum of sqaured deviations with respect to each of the components of $\beta$, set them to
  zero, then solve the resulting equations to directly determine what the values of the parameters
  are that minimizes the sum of the squared errors of the system. With linear regression in two dimensions
  (one dimension in the independant variable and one dimension in the dependant variable) we see a system
- with two parameters \beta_0 = y intercept and \beta_1 = slope. If we had for example 3 data points
- (2,1),(3,7), and (4,5) we would have the equations $$\beta_0 + 2*\beta_1 = 1$$, $$\beta_0 + 3*\beta_1 = 7$$,
- and $$\beta_0 + 4*\beta_1 = 5$$. The sum of squared errors would then be
- $$S(\beta_0,\beta_1)= [1 - (\beta_0 + 2*\beta_1)]^2 + [7 - (\beta_0 + 3*\beta_1)]^2 + [5 - (\beta_0 + 4*\beta_1)]^2$$
- ,which we could then differentiate with respect to \beta_0 and \beta_1 then directly solve the resulting set
+ with two parameters $\beta_0 = y intercept$ and $\beta_1 = slope$. If we had for example 3 data points
+ (2,1),(3,7), and (4,5) we would have the equations $\beta_0 + 2*\beta_1 = 1$, $\beta_0 + 3*\beta_1 = 7$,
+ and $\beta_0 + 4*\beta_1 = 5$. The sum of squared errors would then be
+ $S(\beta_0,\beta_1)= [1 - (\beta_0 + 2*\beta_1)]^2 + [7 - (\beta_0 + 3*\beta_1)]^2 + [5 - (\beta_0 + 4*\beta_1)]^2$
+ ,which we could then differentiate with respect to $\beta_0$ and $\beta_1$ then directly solve the resulting set
  of linear equations directly for the minimum of the summed squares.
 %--------------------------------------------------------------------------------------------
 \section{Naive Bayes}
 The Naive Bayes classifier algorithm fits a set of data to Bayes theorem with a strong assumption of
-feature independance. Given a set of discrete-valued features $$x \in {1,...,K}^D$$, we can calculate
+feature independance. Given a set of discrete-valued features $x \in {1,...,K}^D$, we can calculate
 the class conditional density for each feature, then with our assumption of independance easily generate
 a guess at what the class should be for a new input by multiplying the conditional likelihood values
 for each of the new inputs features times the prior on the desired to be known class, that is to say
-$$p(y|\textbf{x}) \propto p(y) \sum_{j}^{D}p(x_j|y)$$. The calculation of the posterior probability for a new
-example can be done so \quote{by hand} or can be done so from distributions that are infered from the
+$p(y|\textbf{x}) \propto p(y) \sum_{j}^{D}p(x_j|y)$. The calculation of the posterior probability for a new
+example can be done so ``by hand'' or can be done so from distributions that are infered from the
 provided data. Consider, for example, a collection of data listing individuals that did or did not purchase
 a house from a real estate agent, where, for some reason or another the only data remaining pertaining to
 these individuals is what their income level was, what their age was, and how far they have to or would have
 to drive to work from their new home. A set of possible example points is as follows:
 
-Say we get a new datapoint: $$25,000 30 10$$. In this case the conditional likelihood of this data given a
+Say we get a new datapoint: $25,000 30 10$. In this case the conditional likelihood of this data given a
 yes for each of the individual features is 2/9, 1/9, and 2/9 respectively. The prior on yes is 1/3. The
 marginal likelihoods of each the individual features are 2/9, 1/9 and 2/9 respectively. As such the
-posteriors for our new datapoint are $$p(y=yes|x)=\frac{(2/9)*(1/9)*(2/9)*(9/27)}{(6/27)*(3/27)*(6/27)} = \frac{0.00182}{0.00548} = 0.33$$ and $$p(y=no|x)=\frac{(4/18)(2/18)(4/18)(18/27)}{(6/27)(3/27)(6/27)} = \frac{0.0036}{0.00548} = 0.66$$. Note that 0.66 > 0.33 and as such our classifier would label this datapoint with
+posteriors for our new datapoint are $p(y=yes|x)=\frac{(2/9)*(1/9)*(2/9)*(9/27)}{(6/27)*(3/27)*(6/27)} = \frac{0.00182}{0.00548} = 0.33$ and $p(y=no|x)=\frac{(4/18)(2/18)(4/18)(18/27)}{(6/27)(3/27)(6/27)} = \frac{0.0036}{0.00548} = 0.66$. Note that $0.66 > 0.33$ and as such our classifier would label this datapoint with
 a no, this individual is not likely to purchase a house.
+
 This ``by hand'' calculation of the posterior for every new data point is fine when the number of
 examples is low but can quickly grow out of hand when the number of data points is very large. In
 this case it is better to extract the parameters of the assumed distributions of the various
@@ -70,9 +61,8 @@ the data likelihoods and marginals are all gaussians. The relative means of each
 easily be seen from the data table (35,000, 40, 15 for each of the features marginal and conditionl
 probabilities). The variances can be calculated by summing the distances from the means and dividing by
 the number of points in each given distribution, at which point all the means and variances will be known.
-Plugging this values into the definition of the gaussian $$p(x|\mu,\rho^{2})=\frac{1}{\sqrt{2\pi\rho^{2}}}e^{\frac{x-\mu^{2}}{\rho^{2}}}$$ would give us the probability for each of the values for a given new data point, at
-which point the calculation of the posterior would follow in exactly the same fashion as the ``by hand''
-example.
+Plugging this values into the definition of the gaussian $$p(x|\mu,\rho^{2})=\frac{1}{\sqrt{2\pi\rho^{2}}}e^{\frac{x-\mu^{2}}{\rho^{2}}}$$ would give us the probability for each of the values for a given new data point,
+at which point the calculation of the posterior would follow in exactly the same fashion as the ``by hand'' example.
 
 %--------------------------------------------------------------------------------------------
 \section{Support Vector Machine}
@@ -90,12 +80,13 @@ single random point, and thereafter adding each new point to the
 group whose mean the new point is nearest. After a point is added to
 a group, the mean of that group is adjusted in order to take account
 of the new point. Thus at each stage the k-means are, in fact, the
-means of the groups they represent."\cite{McQueen} Formally stated,
-given an integer \textit{k} and a set of \textit{n} data points in
-$\mathbb{R}^{d}$ the K-means algorithm seeks to minimize  \Phi, the
+means of the groups they represent." \cite{MacQueen} Formally stated,
+given an integer $k$ and a set of $n$ data points in
+$\mathbb{R}^{d}$ the K-means algorithm seeks to minimize  $\Phi$, the
 over all total summed in class distance between each point and its
-closest center such that $$\mathbb\Phi = \sum_{x \in X} min_{c \in C}\left x-c \right^{2} $$
+closest center such that $\mathbb \Phi = \sum_{x \in X} min_{c \in C}{x-c^{2}}$
 \cite{Arthur}.
+
 The k-means model is a type of gaussian mixture model that is trained with a procedure
 called expectation maximization. Given a set of distributions with missing data
 , mixture models tend to have derivitaves that are either difficult to define
@@ -111,8 +102,8 @@ parameters is made. Then the likelihood function for the parameters is maximized
 the assumption that the data discovered in the previous step is complete i.e that there
 is no longer any hidden data. These steps are then repeated until some convergance criteria
 is met. The k-means is exactly this type of algorithm but with the covariance matrix
-\Sigma_{k} = \Rho^{2}*I_{D} and the mixing weights \Pi_{k} = 1/K all being fixed such
-that the only free parameters are the cluster centers \mu_{k} \in \R^{D}
+$\Sigma_{k} = \rho^{2}*I_{D}$ and the mixing weights $\Pi_{k} = 1/K$ all being fixed such
+that the only free parameters are the cluster centers $\mu_{k} \in \mathbb{R}^{D}$
 and such that the hidden data that is the ground truth label of the data points.
 %--------------------------------------------------------------------------------------------
 \section{Neural Networks}
@@ -139,14 +130,13 @@ final layer being either another logicstic regression or linear
 regression model depending on whether or not a classification or
 regression problem is being solved.\cite{Murphy}. The leftmost
 layer of this stack is called the input layer and consists of a set of
-neurons {x_i|x_1,x_2,x_3...,x_m} representing the input's
+neurons ${x_i|x_1,x_2,x_3...,x_m}$ representing the input's
 features. Each neuron in the hidden layer transforms the values from
-the previous layer via weighted linear summation w_1X_1 + w_2x_2 +
-...w_mx_m \cite{Scikit} which is then passed into a non linear-action
-function g(), such as the logistic function or the hyperbolic tangent
-function. It is important to note that g must be non-linear, otherwise
-the entire model will collapse into a large linear regression model of
-the form y = w^T(Vx). \cite{Murphy}
+the previous layer via weighted linear summation $w_1X_1 + w_2x_2 +...w_mx_m$
+which is then passed into a non linear-action function $g()$, such as the logistic
+function or the hyperbolic tangent function. It is important to note that g must be non-linear,
+otherwise the entire model will collapse into a large linear regression model of
+the form $y = w^T(Vx)$. \cite{Murphy}
 
 In order to train the MLP it provides, sci-kit learn uses an error
 propagation/training technique called backpropagation. Backpropagation
@@ -160,16 +150,16 @@ to each of the weights within the network. Specifically, the gradient
 vector of the negative log likelihood error on the output neurons is
 computed by use of the chain rule of calculus.\cite{Murphy}.Say we
 have a one layer neural network in which the hidden layer is described
-by $$\alpha^{L} = \sigma(w^{L}\alpha^{L-1} + b^{L}) = \sigma(z^{L})$$
-where $$L$$ superscript refers to the hidden layer and $$L-1$$ refers
+by $\alpha^{L} = \sigma(w^{L}\alpha^{L-1} + b^{L}) = \sigma(z^{L})$
+where $L$ superscript refers to the hidden layer and $L-1$ refers
 to the input layer of the network. The parameters of this network can
-be said to be $$\Theta = (V,W)$$ where V = weight vector for the input
-layer and W is the weight vector for the hidden layer. The error (or
+be said to be $\Theta = (V,W)$ where $V$ is the weight vector for the input
+layer and $W$ is the weight vector for the hidden layer. The error (or
 more specifically the costs function) of a such a network is given by $$J(\Theta ) =
 - \sum_n\sum_k(\hat{y}_{nk}(\Theta)-y_{nk})^2$$ in the case of
 regression and via cross entropy $$J(\Theta ) =
 - \sum_n\sum_ky_{nk}log\hat{y}_{nk}(\Theta)$$ in the case of
-classification. The gradient of this error $$\nabla_{\Theta}J$$ is
+classification. The gradient of this error $\nabla_{\Theta}J$ is
 found via the chain rule of calculus: $$\frac{\partial C}{\partial
 w^{L}} = \frac{\partial z^{L}}{\partial
 w^{L}}\frac{\partial \alpha}{\partial z^{L}}\frac{\partial
@@ -180,23 +170,22 @@ that produced it, then the output to the element to which the
 non-linearity is applied, then finally the the non-linerity recieving
 value to the weight vector. The result of this calculation easily
 gives us the direction of the gradient, the negative of which we will
-use to modify $$w^{L}$ in a direction that will reduce the output
+use to modify $w^{L}$ in a direction that will reduce the output
 error. Reduction of the error of a multilayer perceptron with more
 than one neuron in each layer works mostly the same way. Once again,
 the chain rule of calculus is used in order to find the derivative of
 the output error with respect to the weights of the connections
 between the hidden layer before the output neurons and the output
-neurons $$\frac{\partial C}{\partial w^{L}_{n-j}}$$ where $$L$$ is the
+neurons $\frac{\partial C}{\partial w^{L}_{n-j}}$ where $L$ is the
 target neurons layer (the last layer in this case), n is the index of
-a neuron within this layer, and j is the index of the neuron in the
-previous layer $$L-1$$ from which neuron n is recieving input (note
+a neuron within this layer, and $j$ is the index of the neuron in the
+previous layer $L-1$ from which neuron n is recieving input (note
 that in this case the hyphen does not mean subtract but rather
 indicates that their is a connection between these
-neurons). For an output neuron, its error is then given by $$\frac{\partial C}{\partial
-w^{L}_{n-j}} = \frac{\partial z^{L}_{j}}{\partial
-w^{L}_{n-j}}\frac{\partial \alpha^{L}_{j}}{\partial z^{L}_{j}}\frac{\partial
-C}{\partial \alpha^{L}_{j}}$$, with the error relative to neurons
+neurons). For an output neuron, its error is then given by
+$$\frac{\partial C}{\partial w^{L}_{n-j}} = \frac{\partial z^{L}_{j}}{\partial w^{L}_{n-j}}\frac{\partial \alpha^{L}_{j}}{\partial z^{L}_{j}}\frac{\partial C}{\partial \alpha^{L}_{j}}$$
+,with the error relative to neurons
 earlier in the network being calculable by continuing usage of the
-chain rule. \begin{figure}\end{figure}. For an excellent and intuitive
+chain rule. *Place a figure here* . For an excellent and intuitive
 explanation of how neural networks work, pls consider viewing the
 animated overview of the method at 3Blue1Brown's youtube channel.
