@@ -66,7 +66,17 @@ at which point the calculation of the posterior would follow in exactly the same
 
 %--------------------------------------------------------------------------------------------
 \section{Support Vector Machine}
-
+The support vector machine is a two-group classification algorithm that attempts to find a hyper
+plane that seperates the inputs within the given input space with a maximum margin of seperation
+between the hyper plane and the ``support vectors'', those vectors on either side of the hyper plane
+that are closest too it. The support vector machine can use ``kernels'', to map input vectors into
+non-linear high-demensional feature space without actually calculating the position of
+the vectors within that feature space \cite{Vapnik}. The kernel accomplishes this by calculating the
+distance between (or similarity) of its two input vectors in this space without reference to their exact
+position within this higher space. This then allows the computation of a linear seperation between
+the points in this higher dimensional space which translates into a non-linear seperation for the
+vectors in their original lower dimensional space where a seperation might other wise not have been
+discoverable.
 
 %--------------------------------------------------------------------------------------------
 \section{K-Means clustering}
