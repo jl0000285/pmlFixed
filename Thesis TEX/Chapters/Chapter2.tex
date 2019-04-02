@@ -1,6 +1,47 @@
 %Chapter 2
 \chapter{Review of the literature}
 \label{Chapter2}
+%---------------------------------------------------------------------------------------
+\section{No Free lunch theorem}
+Introduced in Wolpert and MacReady's ``No Free Lunch Theorems for Optimization'' 1997 paper,
+the No Free Lunch theorem states that the perfomance of all algorithms when averaged out across all
+datasets should be the same, that is to say there is no one algorithm that is universally the best.
+The root cause of this observation is in that differing algorithms make different assumptions about the
+distributions from which the data the algorithms work with arises. A learning algorithm with an implicit
+assumption of a random distriubtion will have a far lower test case classification accuracy than an
+algorithm that assumes a gaussian distribution if the distribution from which the set of observed
+samples derives from is truly normal and vice versa, if the distribution is truly random the gaussian
+classifier's accuracy will suffer relative to the classifier with a random assumption.
+%-------------------------------------------------------------------------------------------
+\subsection{Brute force metabase}
+The most basic meta machine learning algorithm involves the collecting of the run statistics
+of the set of machines that a given meta learner can produce applied to a metabase with a clustering
+algorithm to produce results with new datasets. This version of metalearning will act as a sort of control
+for this study, the results of the more complicated meta learning strategies that follow only really mean
+anything with respect to how long it would've taken to train and how long it would've performed if we had
+just trained it via brute force.
+%-------------------------------------------------------------------------------------------
+\subsection{Active Meta Learning}
+The first of the metalearning strategies implemented within the study; Active
+Meta Learning is a meta learning technique  ``that reduces the cost of generating Meta examples
+by selecting relevant Meta examples'' \cite{Bhatt}. What this entails is a decision on what
+datasets to allow into a metalearners metabase, rather than analyze every candidate meta base dataset
+an active metalearner will analyze the next dataset with the highest uncertainty. The relative uncertainty
+between two datasets is defined by
+$$\delta(V_x,d_i,V_x,d_j) = \frac{|V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$
+where $V_x,d_k$ is the value of some metaparameter $V_x$ for dataset $d_k$,
+$Max_{k\neq i}(V_x,d_k)$ is the maximum value of $V_x,d_k$ when dataset i is removed and
+$Min_{k\neq i}(V_x,d_k)$ is its corrosponding minimum.
+%-----------------------------------------------------------------------------------------------
+\subsection{Predicting relative performance of classifiers from samples}
+The second of the metalearning strategies implemented within this study is one in which
+a representive subsection of the metabase is trained with each algorithm entirely, after
+which point the rest of the metabase under goes a sort of curve sampling analysis in which
+the results of future learning is predicted based off what dataset the new datasets learning
+curve most resembles. \cite{Leite} As with the other two meta learning strategies, the label
+for new datsets is the determined via clustering with the datasets within this post trained
+metabase.
+
 %----------------------------------------------------------------------------------------
 \section{Summary of producable machines}
 The strategies mentioned in the previous section must be able to produce learning algorithms
@@ -69,7 +110,28 @@ at which point the calculation of the posterior would follow in exactly the same
 The support vector machine is a two-group classification algorithm that attempts to find a hyper
 plane that seperates the inputs within the given input space with a maximum margin of seperation
 between the hyper plane and the ``support vectors'', those vectors on either side of the hyper plane
-that are closest too it. The support vector machine can use ``kernels'', to map input vectors into
+that are closest too it. To arrive at a form of the support vector machine that can be used to classify
+new inputs, one first needs a representation of the potential seperating hyper plane $$y_i(\bold{w}*\bold{x_i} + b) > 1$$ such that $y_i$ is the truth label of given training input $x_i$, $w$ is a vector normal to our
+candidate seperating hyper plane that represents how much ``weight'' is to be applied to an input, and $b$ is a bias constant representing the threshold the weight/input product needs to pass before it is considered
+classified. The distance of given hyper plane can be determined by calculating the difference between
+these previously mentioned ``support vectors'' in the direction normal to this hyper plane. This difference
+can be calculated via $$(\bold{x_{s+}}-\bold{x_{s-}})\bold{\frac{w}{||w||}}$$ where $\bold{x_{s+}$ and
+$\bold{x_{s-}$ are respectively positive and negative support vectors and $\bold{\frac{w}{||w||}}$ is
+the unit vector in the direction normal to the hyper plane towards the positive examples. The size
+of the margin is $2/||w||$. As such the discovery of a working svm can be found by solving a
+constrained optimization problem in which the thing to be minimized is $1/2||w||^2$ subject to the
+constraints $y_i(\bold{w}*\bold{x_i} + b) = 1$ for support vectors. Crafting an expression of this
+constrained optimization that can be solved by a computer can be done by taking the Lagrangian
+$$L(\bold{W},\bold{\Lambda}, \bold{Y}) = 1/2||\bold{w}||^2 \sum_{i=1}^{n}y_i(\bold{w}*\bold{x_i}+b)-1)$$
+then taking care of the fact that the vector $w_o$ that determines the optimal hyperplane can be written
+as a linear combination of the training vectors: $w_{0}=\sum_{i=1}^{n}y_{i}\alpha_{i}^{0}\bold{x_i}$ \cite{Vapnik}. Swapping this equation into the Lagrangian yields
+$$L = \sum \alpha_{i} - 1/2 \sum_{i}\sum_{j}\alpha_{i}\alpha_{j}y_{i}y_{j}(\bold{x_i}\cdot\bold{x_j})$$
+at which point one should consult their closest computer so that it can maximize this expression.
+
+This final form of the Lagrangian reveals the support vector machines most powerful attribute: the kernel.
+The optimization of the hyperplane within the inputs depends only on their dot product of pairs of inputs,
+they do not appear anywhere else in the Lagrangian other than the very end and then only so as pairs of dot products. This fact allows the writing of a decision function on new inputs $$f(\bold{u}) = \sum_{i}^{N}\alpha_{i}y_{i}(\bold{x_i}\cdot\bold{u})+b$$ where $\bold{u}$ is a vector who's label we do not know.
+The supporector machine can use ``kernels'', to map input vectors into
 non-linear high-demensional feature space without actually calculating the position of
 the vectors within that feature space \cite{Vapnik}. The kernel accomplishes this by calculating the
 distance between (or similarity) of its two input vectors in this space without reference to their exact
