@@ -209,11 +209,13 @@ class DbHandler(object):
         4. Return active base
         """
         bases = self.session.query(base_name)
+        pdb.set_trace()
         candidates  = bases[:-(math.floor(len(bases/2)))]
         active_base = []
         for i in range(math.floor(len(bases)/2)):
             active_base.append(bases[i])
         #Add the candidates with the most information to the active base
+        pdb.set_trace()
         for i in range(math.floor(len(candidates)/2)):
             max_inx = 0
             for i,candidate in enumerate(candidates):

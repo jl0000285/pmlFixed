@@ -188,8 +188,9 @@ def add_dset(dname,dpath, dset, nc, session):
     session.commit()
 
 def ext_add_dset(classname,tablename,dname,dpath,dset,nc,session):
+    pdb.set_trace()
     base = globals()[classname]
-        
+    
     dwmean,ds_dev,dpskew,dkurt = mc.extractFeatures(dset,nc)
     minfo = 0
     

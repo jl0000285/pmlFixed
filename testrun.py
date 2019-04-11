@@ -29,6 +29,11 @@ def parseAll():
     handler.parse_all()
 
 
+def test_active_base():
+    handler = dbh.DbHandler()
+    handler.get_session()
+    handler.get_active_base(handler.baseDataTables[0][0])
+    
 def ext_all_test():
     """
     Ext all test

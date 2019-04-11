@@ -40,7 +40,7 @@ class Parser():
     TP_TRUE = True
     TP_FALSE = False
 
-    def __init__(self,last_column, file_path, test_par=False, per=0, del_type=','):
+    def __init__ (self,last_column, file_path, test_par=False, per=0, del_type=','):
        """Create Parser object for given file_path
 
         Parameters

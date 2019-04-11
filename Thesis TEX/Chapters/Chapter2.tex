@@ -31,7 +31,10 @@ between two datasets is defined by
 $$\delta(V_x,d_i,V_x,d_j) = \frac{|V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$
 where $V_x,d_k$ is the value of some metaparameter $V_x$ for dataset $d_k$,
 $Max_{k\neq i}(V_x,d_k)$ is the maximum value of $V_x,d_k$ when dataset i is removed and
-$Min_{k\neq i}(V_x,d_k)$ is its corrosponding minimum.
+$Min_{k\neq i}(V_x,d_k)$ is its corrosponding minimum. Determining which dataset has the overall highest
+uncertainty can be done by summing over the relative values for each metaparameter, ranking them then
+collecting their overall uncertainty scores then choosing the one that is highest where  $$\delta(V_x,d_i) = \frac{\sum_{j\neq i} |V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$ is the equation
+representing the overall uncertainty for dataset $d_i$ in metaparameter $V_x$.
 %-----------------------------------------------------------------------------------------------
 \subsection{Predicting relative performance of classifiers from samples}
 The second of the metalearning strategies implemented within this study is one in which
@@ -104,7 +107,6 @@ probabilities). The variances can be calculated by summing the distances from th
 the number of points in each given distribution, at which point all the means and variances will be known.
 Plugging this values into the definition of the gaussian $$p(x|\mu,\rho^{2})=\frac{1}{\sqrt{2\pi\rho^{2}}}e^{\frac{x-\mu^{2}}{\rho^{2}}}$$ would give us the probability for each of the values for a given new data point,
 at which point the calculation of the posterior would follow in exactly the same fashion as the ``by hand'' example.
-
 %--------------------------------------------------------------------------------------------
 \section{Support Vector Machine}
 The support vector machine is a two-group classification algorithm that attempts to find a hyper
@@ -139,7 +141,6 @@ position within this higher space. This then allows the computation of a linear 
 the points in this higher dimensional space which translates into a non-linear seperation for the
 vectors in their original lower dimensional space where a seperation might other wise not have been
 discoverable.
-
 %--------------------------------------------------------------------------------------------
 \section{K-Means clustering}
 The objective of the k-means algorithm (which results in a k-means model) is to partition
