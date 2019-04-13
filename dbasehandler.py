@@ -43,12 +43,12 @@ class DbHandler(object):
         """
         repo.craftSystem()
         self.session = repo.get_session()        
-        print("Performing data init")
-        self.data_init()
-        print("Performing Alg Class Init")
-        self.alg_class_init()
-        print("Perfomring Algorithms init")
-        self.algorithms_init()
+        print("Populating data init table")
+        self.populate_data_from_init_folder()
+        print("Populating alg class table")
+        self.populate_alg_class()
+        print("Populating algorithms table")
+        self.populate_algorithms()
      
     def extInit(self):
         """
@@ -56,8 +56,8 @@ class DbHandler(object):
         """
         repo.craftSystem()
         self.get_session()        
-        print("Performing ext data init")
-        self.ext_data_all_init()
+        print("Populating data all table")
+        self.populate_data_all()
         print("Performing Algorithms init")
         self.alg_class_init()
         self.algorithms_init()
@@ -67,7 +67,7 @@ class DbHandler(object):
         #self.run_active()
         
         
-    def data_init(self):
+    def populate_data_from_init_folder(self):
         for dirpath,dirname,filelist in os.walk('./data/init'):
             for filename in filelist:
                 if(re.search(r".*[.]data$",filename)):
@@ -100,7 +100,7 @@ class DbHandler(object):
                           len(target_input[0]),
                           self.session)
 
-    def ext_data_all_init(self):
+    def populate_data_all(self):
         all_tup = ('DatasetAll','all_data')
         filelist = self.get_allowed_files()
         for tup in filelist:
@@ -121,7 +121,7 @@ class DbHandler(object):
                 print("Exception occured whilst trying to add dataset: {}".format(ex))
 
             
-    def ext_data_init(self):
+    def populate_metabases(self):
         filelist = self.get_allowed_files()
         for baseTup in self.baseDataTables:
             base = []
@@ -143,14 +143,14 @@ class DbHandler(object):
                                   len(full_set[0]),
                                   self.session)
 
-    def alg_class_init(self):
+    def populate_alg_class(self):
         """Initialize algorithms class table"""
         class_A = repo.AlgClass(class_name='supervised')
         self.session.add(class_A)
         self.session.commit()
 
         
-    def algorithms_init(self):
+    def populate_algorithms(self):
         algTypes= {
                   'svm':('sk.svm','supervised'),
                   'clustering':('sk.clustering','supervised'),
@@ -208,21 +208,29 @@ class DbHandler(object):
           (by comparing amount of information in datasets)
         4. Return active base
         """
-        bases = self.session.query(base_name)
-        pdb.set_trace()
-        candidates  = bases[:-(math.floor(len(bases/2)))]
-        active_base = []
-        for i in range(math.floor(len(bases)/2)):
-            active_base.append(bases[i])
-        #Add the candidates with the most information to the active base
-        pdb.set_trace()
-        for i in range(math.floor(len(candidates)/2)):
+        def distance_between_datasets(metafeature,datasetA,datasetB):
+            
+            
+        def get_most_uncertain_dataset():
             max_inx = 0
             for i,candidate in enumerate(candidates):
                 if candidate.information > candidates[max_inx].information:
                     max_inx = i
-                max = candidates.pop(max_inx)
-            active_base.append(max)
+            return max_inx
+            
+        bases = self.session.query(base_name)
+        pdb.set_trace()
+        #candidates  = bases[:-(math.floor(len(bases/2)))]
+        candidates = bases
+        active_base = []
+        # for i in range(math.floor(len(bases)/2)):
+        #     active_base.append(bases[i])
+        #Add the candidates with the most uncertainty to the active base
+        pdb.set_trace()
+        for i in range(math.floor(len(bases)/2)):
+            inx = get_most_uncertain_dataset(candidates)
+            cand = candidates.pop(inx)
+            active_base.append(cand)
         return active_base
 
     
