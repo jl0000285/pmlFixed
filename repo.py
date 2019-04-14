@@ -146,9 +146,9 @@ def get_session():
 
 def defineMeta():
     data_all = data_set_factory('DatasetAll','all_data')
-    base_a = data_set_factory('DatasetA','base_set_a')
-    base_b = data_set_factory('DatasetB','base_set_b')
-    base_c = data_set_factory('DatasetC','base_set_c')
+    base_a = data_set_factory('BasesetA','base_set_a')
+    base_b = data_set_factory('BasesetB','base_set_b')
+    base_c = data_set_factory('BasesetC','base_set_c')
 
     train_a = data_set_factory('TestsetA','test_set_a')
     train_b = data_set_factory('TestsetB','test_set_b')
@@ -188,7 +188,7 @@ def add_dset(dname,dpath, dset, nc, session):
     session.commit()
 
 def ext_add_dset(classname,tablename,dname,dpath,dset,nc,session):
-    pdb.set_trace()
+    #Extended add dataset--Method requires defineMeta to have been previously run
     base = globals()[classname]
     
     dwmean,ds_dev,dpskew,dkurt = mc.extractFeatures(dset,nc)

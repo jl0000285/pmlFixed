@@ -25,18 +25,20 @@ class DbHandler(object):
         """
         Handler object for interfacing with the metabase 
         """
-        self.baseDataTables = [('DatasetA','base_sets_a'),
-                               ('DatasetB','base_sets_b'),
-                               ('DatasetC','base_sets_c')]
+        #Reminder: First item is the name of the generated repo class, second is the table name
+        self.baseDataTables = [('BasesetA','base_sets_a'),
+                               ('BasesetB','base_sets_b'),
+                               ('BasesetC','base_sets_c')]
         self.testDataTables = [('TestsetA','test_sets_a'),
                                ('TestsetB','test_sets_b'),
                                ('TestsetC','test_sets_c')]
 
-    def get_session(self):
-        """Get repo session"""
+    def setup_session(self):
+        """Get session object then define repo metadata"""        
         self.session = repo.get_session()
+        repo.defineMeta()
         
-        
+    #@deprecated in its current form    
     def dbInit(self):
         """
         Create and populate 
@@ -55,14 +57,14 @@ class DbHandler(object):
         Create and populate extended metabase
         """
         repo.craftSystem()
-        self.get_session()        
+        self.setup_session()        
         print("Populating data all table")
         self.populate_data_all()
         print("Performing Algorithms init")
-        self.alg_class_init()
-        self.algorithms_init()
+        self.populate_alg_class()
+        self.populate_algorithms()
         print("Perfoming ext run init")
-        self.runs_all()
+        self.populate_runs_all()
         #print("Performing Runs init")
         #self.run_active()
         
@@ -125,7 +127,7 @@ class DbHandler(object):
         filelist = self.get_allowed_files()
         for baseTup in self.baseDataTables:
             base = []
-            for i in range(int(math.floor(len(filelist)/10))):
+            for i in range(int(math.floor(len(filelist)/20))):
                 inx = random.randrange(0,len(filelist)-1)
                 base.append(filelist[inx])
 
@@ -165,7 +167,7 @@ class DbHandler(object):
             repo.add_alg(key,algTypes[key][0],class_id,self.session)
 
             
-    def runs_all(self):
+    def populate_runs_all(self):
         """Populate runs_all database table with a run of every dataset with every algorithm"""
         import sk_handler as skh
         try:
@@ -208,25 +210,36 @@ class DbHandler(object):
           (by comparing amount of information in datasets)
         4. Return active base
         """
+        def make_score_list(candidates):
+            score_dict = dict()
+            for dset in candidates:
+                score_dict[candidates.data_name] = 0
+            
         def distance_between_datasets(metafeature,datasetA,datasetB):
+            eval_a = '{}.{}'.format('datasetA',metafeature)
+            eval_b = '{}.{}'.format('datasetB',metafeature)
+            distance = abs(eval(eval_a) - eval(eval_b))
+            return distance 
+
+        def rank_uncertainty_for_feature(feature, candidates):
+            pass
+
+        def get_most_uncertain_dataset(candidates):
+            metafeatures = ['weighted_mean', 'standard_deviation', 'fpskew', 'kurtosis']
+            score_dict = make_score_list(candidates)
             
-            
-        def get_most_uncertain_dataset():
-            max_inx = 0
-            for i,candidate in enumerate(candidates):
-                if candidate.information > candidates[max_inx].information:
-                    max_inx = i
+            for feature in metafeatures:
+                ranked_sets = rank_uncertainty_for_feature(feature,candidates)
+                
+                
             return max_inx
-            
-        bases = self.session.query(base_name)
-        pdb.set_trace()
-        #candidates  = bases[:-(math.floor(len(bases/2)))]
+
+        class_string = 'repo.{}'.format(base_name)
+        class_object = eval(class_string)
+        bases = self.session.query(class_object).all()        
         candidates = bases
         active_base = []
-        # for i in range(math.floor(len(bases)/2)):
-        #     active_base.append(bases[i])
-        #Add the candidates with the most uncertainty to the active base
-        pdb.set_trace()
+            
         for i in range(math.floor(len(bases)/2)):
             inx = get_most_uncertain_dataset(candidates)
             cand = candidates.pop(inx)
@@ -304,14 +317,14 @@ class DbHandler(object):
 
     def guesses_active(self):
         """Given a set of databases, make guesses as to what would be the best 
-        machine based off 2/3rds of the metabase, with the first 4/5ths of the 
-        active base choosen randomly and the last fifth choosen actively 
+        machine based off the uncertainty values of the datasets contained within 
         """
         guess_tup = ('GuessesActive','guesses_active')
+        datasets = self.session.query(repo.DatasetAll).all()
+        
         for tup in self.baseDataTables:
             active_base = self.get_active_base(tup[0])
-            base_names = [set.name for set in active_base]
-            datasets = self.session.query('datasets_all').all()
+            base_names = [set.name for set in active_base]            
             for dataset in datasets:
                 if dataset.name not in base_names:
                     guess = guess_with_clusterer(active_base,dataset)
