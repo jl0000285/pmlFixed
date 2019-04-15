@@ -211,9 +211,11 @@ class DbHandler(object):
         4. Return active base
         """
         def make_score_list(candidates):
-            score_dict = dict()
+            score_list = []
             for dset in candidates:
-                score_dict[candidates.data_name] = 0
+                score_tup = [0, dset]
+                score_dict.append(score_tup)
+            return score_list
             
         def distance_between_datasets(metafeature,datasetA,datasetB):
             eval_a = '{}.{}'.format('datasetA',metafeature)
@@ -221,16 +223,45 @@ class DbHandler(object):
             distance = abs(eval(eval_a) - eval(eval_b))
             return distance 
 
+        def spread_without_set(metafeature,dinx,candidates):
+            max_val = 0 # (Value, index)
+            min_val = float('inf')
+            candidates.pop(dinx)
+            for inx, dset in enumerate(candidates):
+                value_string = 'dset.{}'.format(metafeature)
+                value = eval(value_string)
+                if min_val > value:
+                    min_val = value
+                if max_val  < value:
+                    max_val = value
+            spread = abs(max_val - min_val
+            )
+            return spread  
+                            
         def rank_uncertainty_for_feature(feature, candidates):
-            pass
+            ranked_tuples = []
+            for inx,dset in candidates:
+                rank_tuple = [0,0,inx,dset]
+                ranked_tuples.append(rank_tuple)
+
+            
+            
+                
 
         def get_most_uncertain_dataset(candidates):
             metafeatures = ['weighted_mean', 'standard_deviation', 'fpskew', 'kurtosis']
-            score_dict = make_score_list(candidates)
+            score_list = make_score_list(candidates) # (Score, dataset)
             
             for feature in metafeatures:
-                ranked_sets = rank_uncertainty_for_feature(feature,candidates)
-                
+                ranked_tuples = rank_uncertainty_for_feature(feature,candidates) #list of (Rank,uncertainty,original Index, candidate)
+                for tup in ranked_tuples:
+                    score_list[tup[1]] += tup[0]  #Here a lower total score means higher uncertainty
+
+            max_inx = 0 #index of set with highest uncertainity i.e set with lowest rank score
+
+            for inx,tup in enumerate(score_list):
+                if tup[0] < score_list[max_inx][0] 
+                max_inx = inx
                 
             return max_inx
 
