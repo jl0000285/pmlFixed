@@ -214,14 +214,20 @@ class DbHandler(object):
             score_list = []
             for dset in candidates:
                 score_tup = [0, dset]
-                score_dict.append(score_tup)
+                score_list.append(score_tup)
             return score_list
             
         def distance_between_datasets(metafeature,datasetA,datasetB):
             eval_a = '{}.{}'.format('datasetA',metafeature)
             eval_b = '{}.{}'.format('datasetB',metafeature)
             distance = abs(eval(eval_a) - eval(eval_b))
-            return distance 
+            return distance
+
+        def sum_of_distances(metafeature,dataset,candidates):
+            dist_summ = 0
+            for dset in candidates:
+                dist_summ += distance_between_datasets(metafeature,dataset, dset)
+            return dist_summ 
 
         def spread_without_set(metafeature,dinx,candidates):
             max_val = 0 # (Value, index)
@@ -234,34 +240,38 @@ class DbHandler(object):
                     min_val = value
                 if max_val  < value:
                     max_val = value
-            spread = abs(max_val - min_val
-            )
-            return spread  
-                            
-        def rank_uncertainty_for_feature(feature, candidates):
+            spread = abs(max_val - min_val)
+            return spread
+
+        def calculate_uncertainty_for_feature(metafeature,dinx,candidates):
+            uncertainty = sum_of_distances(metafeature,candidates[dinx],candidates)\
+                          /spread_without_set(metafeature,dinx,candidates)
+            return uncertainty
+        
+        def rank_uncertainty_for_feature(metafeature, candidates):
             ranked_tuples = []
-            for inx,dset in candidates:
-                rank_tuple = [0,0,inx,dset]
+            for inx,dset in enumerate(candidates):
+                uncertainty = calculate_uncertainty_for_feature(metafeature,inx,candidates)
+                rank_tuple = [uncertainty,inx,dset]
                 ranked_tuples.append(rank_tuple)
 
-            
-            
-                
+            ranked_tuples.sort(reverse=True)            
+            return ranked_tuples
 
         def get_most_uncertain_dataset(candidates):
             metafeatures = ['weighted_mean', 'standard_deviation', 'fpskew', 'kurtosis']
             score_list = make_score_list(candidates) # (Score, dataset)
             
             for feature in metafeatures:
-                ranked_tuples = rank_uncertainty_for_feature(feature,candidates) #list of (Rank,uncertainty,original Index, candidate)
-                for tup in ranked_tuples:
-                    score_list[tup[1]] += tup[0]  #Here a lower total score means higher uncertainty
+                ranked_tuples = rank_uncertainty_for_feature(feature,candidates) #list of (uncertainty,original Index,candidate) where index is rank
+                for inx,tup in enumerate(ranked_tuples):
+                    score_list[tup[1]] += inx  #Here a lower total score means higher uncertainty
 
             max_inx = 0 #index of set with highest uncertainity i.e set with lowest rank score
 
             for inx,tup in enumerate(score_list):
-                if tup[0] < score_list[max_inx][0] 
-                max_inx = inx
+                if tup[0] < score_list[max_inx][0]: 
+                    max_inx = inx
                 
             return max_inx
 
@@ -271,7 +281,7 @@ class DbHandler(object):
         candidates = bases
         active_base = []
             
-        for i in range(math.floor(len(bases)/2)):
+        for i in range(int(math.floor(len(bases)/2))):
             inx = get_most_uncertain_dataset(candidates)
             cand = candidates.pop(inx)
             active_base.append(cand)
