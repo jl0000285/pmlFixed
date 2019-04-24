@@ -238,7 +238,7 @@ def add_algClass(class_name,session):
     session.add(n_class)
     session.commit()
 
-def add_to_guesses(className, tableName,data_id,guess,solution):
+def add_to_guesses(className,tableName,data_id,guess,solution):
     """Add guess to correct guess table"""
     base = globals()[guess_tup[0]]
     #Add logic here 

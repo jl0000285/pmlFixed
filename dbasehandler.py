@@ -267,8 +267,9 @@ class DbHandler(object):
         """
         pdb.set_trace()
         runs = self.session.query(repo.Run).filter_by(data_id=data_id).all()
-        scores = [[data_id,self.compute_objective(run)] for run in runs]
-        max_inx = values.index(max([tup[-1] for tup in scores]))        
+        scores = [[run.alg_id,self.compute_objective(run)] for run in runs]
+        values = [tup[-1] for tup in scores]
+        max_inx = values.index(max(values))        
         return scores[max_inx]
     
     def guess_with_clusterer(self,base_sets,dataset):
@@ -346,7 +347,7 @@ class DbHandler(object):
                     data_id in the base set classes to set_id. 
                     """
                     solution = self.find_best_algorithm(dataset.data_id)
-                    repo.add_to_guesses(guess_tup,dataset.data_id,guess,solution)
+                    repo.add_to_guesses(guess_tup,dataset.data_id,guess[0],solution[0])
                     
         
     def guesses_sampling(self):
