@@ -28,8 +28,9 @@ class Dataset(Base):
     standard_deviation = Column(Float)
     fpskew = Column(Float)
     kurtosis = Column(Float)
-    information = Column(Float)
-
+    entropy = Column(Float)
+    metric_time = Column(Float) #Time spent extracting statistical metrics
+    
     def __repr__(self):
         return '<data_set(name= {}, path= {}, weighted_mean= {}, standard_deviation= {}, fpskew= {}, kurtosis= {}, .\
                 information= {})>'.format(self.data_name,self.data_path,
@@ -38,20 +39,21 @@ class Dataset(Base):
 
 def data_set_factory(classname,tablename):
     def __repr__(self):
-        return '<data_set(name= {}, path= {}, weighted_mean= {}, standard_deviation= {}, fpskew= {}, kurtosis= {}, .\
-               information= {})>'.format(self.data_name,self.data_path,
-                                         self.weighted_mean,self.standard_deviation,
-                                         self.fpskew,self.kurtosis,self.information)
+        return '<data_set(name= {}, path= {}, weighted_mean= {}, coefficient_of_variation= {}, fpskew= {}, kurtosis= {}, shanon_entropy= {}.\
+         )>'.format(self.data_name,self.data_path,
+                                         self.weighted_mean,self.coefficient_variation,
+                                         self.fpskew,self.kurtosis,self.entropy)
     dataset = type(classname,(Base,),{
         "__tablename__": tablename,
         "data_name": Column(String),
         "data_path": Column(String),
         "data_id": Column(Integer, primary_key = True),
         "weighted_mean": Column(Float),
-        "standard_deviation": Column(Float),
+        "coefficient_variation": Column(Float),
         "fpskew": Column(Float),
         "kurtosis": Column(Float),
-        "information": Column(Float),
+        "entropy": Column(Float),
+        "metric_time": Column(Float),
         "__repr__": __repr__
     })
 
@@ -81,19 +83,20 @@ class Algorithm(Base):
     
 
 class Run(Base):
-    __tablename__= 'run'
+    __tablename__= 'runs_all'
 
-    data_id = Column(Integer, ForeignKey('dataset.data_id'))
+    data_id = Column(Integer, ForeignKey('all_data.data_id'))
     alg_id = Column(Integer, ForeignKey('algorithm.alg_id'))
     run_id = Column(Integer, primary_key = True)
     train_time = Column(Float)
     accuracy = Column(Float)
     alg = relationship("Algorithm",backref="run")
-    data = relationship("Dataset",backref="run")
+    data = relationship("DatasetAll",backref="run")
 
     def __repr__(self):
-        return '<run(run_id={},alg_name={},data_name={},train_time={},accuracy={})>'.format(self.run_id,
+        return '<run(run_id={},alg_name={}, alg_id={}, data_name={},train_time={},accuracy={})>'.format(self.run_id,
                                                                                                 self.alg.alg_name,
+                                                                                                self.alg_id,
                                                                                                 self.data.data_name,
                                                                                                 self.train_time,
                                                                                                 self.accuracy)
@@ -146,23 +149,24 @@ def get_session():
 
 def defineMeta():
     data_all = data_set_factory('DatasetAll','all_data')
+    
     base_a = data_set_factory('BasesetA','base_set_a')
     base_b = data_set_factory('BasesetB','base_set_b')
     base_c = data_set_factory('BasesetC','base_set_c')
 
-    train_a = data_set_factory('TestsetA','test_set_a')
-    train_b = data_set_factory('TestsetB','test_set_b')
-    train_c = data_set_factory('TestsetC','test_set_c')
-
-    run_all = run_factory('RunAll','run_all', data_all)
-    
-    run_sampling_a = run_factory('RunSamplingA','sampling_runs_a', base_a)
-    run_sampling_b = run_factory('RunSamplingB','sampling_runs_b', base_b)
-    run_sampling_c = run_factory('RunSamplingC','sampling_runs_c', base_c)
-    
     guesses_act = guess_factory('GuessesActive','guesses_active', data_all)
     guesses_ex = guess_factory('GuessesEx','guesses_ex', data_all)
     guesses_samp = guess_factory('GuessesSamp','guesses_samp', data_all)
+
+    #run_all = run_factory('RunAll','run_all', data_all)
+    
+    # train_a = data_set_factory('TestsetA','test_set_a')
+    # train_b = data_set_factory('TestsetB','test_set_b')
+    # train_c = data_set_factory('TestsetC','test_set_c')
+  
+    # run_sampling_a = run_factory('RunSamplingA','sampling_runs_a', base_a)
+    # run_sampling_b = run_factory('RunSamplingB','sampling_runs_b', base_b)
+    # run_sampling_c = run_factory('RunSamplingC','sampling_runs_c', base_c)
     
     # runExA = run_factory('RunExA','run_ex_a',base_a)
     # runExB = run_factory('RunExB','run_ex_b',base_b)
@@ -173,40 +177,20 @@ def craftSystem():
     repo.defineMeta()
     cdb.create_tables(metadata)
 
-def add_dset(dname,dpath, dset, nc, session):
-    dwmean,ds_dev,dpskew,dkurt = mc.extractFeatures(dset,nc)
-    minfo = 0
-    dw,ds,dp,dk = dwmean[0], ds_dev[0], dpskew[0],dkurt[0]
-    d_set = Dataset(data_name=dname,
-                     data_path=dpath,
-                     weighted_mean=dw,
-                     standard_deviation=ds,
-                     fpskew=dp,
-                     kurtosis=dk,
-                     information=minfo)
-    session.add(d_set)
-    session.commit()
-
-def ext_add_dset(classname,tablename,dname,dpath,dset,nc,session):
+def ext_add_dset(classname,tablename,dname,dpath,dset,session):
     #Extended add dataset--Method requires defineMeta to have been previously run
     base = globals()[classname]
-    
-    dwmean,ds_dev,dpskew,dkurt = mc.extractFeatures(dset,nc)
-    minfo = 0
-    
-    try:
-        dw,ds,dp,dk = dwmean[0], ds_dev[0], dpskew[0],dkurt[0]
-    except Exception as ex:
-        pdb.set_trace()
-        pass
+ 
+    dwmean,ds_ccv,dpskew,dkurt, dent, duration = mc.extractFeatures(dset)
     
     d_set = base(data_name=dname,
                  data_path=dpath,
-                 weighted_mean=dw,
-                 standard_deviation=ds,
-                 fpskew=dp,
-                 kurtosis=dk,
-                 information=minfo)
+                 weighted_mean=dwmean,
+                 coefficient_variation=ds_ccv,
+                 fpskew=dpskew,
+                 kurtosis=dkurt,
+                 entropy=dent,
+                 metric_time=duration)
     session.add(d_set)
     session.commit()
 

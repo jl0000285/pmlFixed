@@ -33,33 +33,23 @@ class DbHandler(object):
                                ('TestsetB','test_sets_b'),
                                ('TestsetC','test_sets_c')]
 
+    def get_session(self):
+        self.session = repo.get_session()
+        
     def setup_session(self):
         """Get session object then define repo metadata"""        
-        self.session = repo.get_session()
+        self.get_session()
         repo.defineMeta()
         
-    #@deprecated in its current form    
     def dbInit(self):
-        """
-        Create and populate 
-        """
-        repo.craftSystem()
-        self.session = repo.get_session()        
-        print("Populating data init table")
-        self.populate_data_from_init_folder()
-        print("Populating alg class table")
-        self.populate_alg_class()
-        print("Populating algorithms table")
-        self.populate_algorithms()
-     
-    def extInit(self):
         """
         Create and populate extended metabase
         """
         repo.craftSystem()
-        self.setup_session()        
+        self.get_session()        
         print("Populating data all table")
         self.populate_data_all()
+        self.populate_metabases()
         print("Performing Algorithms init")
         self.populate_alg_class()
         self.populate_algorithms()
@@ -82,42 +72,24 @@ class DbHandler(object):
                     repo.add_dset(filename,
                                   dpath,
                                   full_set,
-                                  len(full_set[0]),
                                   self.session)
 
-    def parse_all(self):
-        """
-        Test method to confirm that all the data is parasable
-        """
-        filelist = self.get_allowed_files()
-        print("Testing files to confirm parsability")
-        for tup in filelist:
-            print("Adding set {} at {}".format(tup[1],tup[0]))
-            data = fp.Parser(fp.LC_SINGLE,tup[0],False,.25,',')
-            target_input = data.convert_file()
-            target_input = data.limit_size(target_input)
-            repo.add_dset(tup[1],
-                          tup[0],
-                          target_input,
-                          len(target_input[0]),
-                          self.session)
-
     def populate_data_all(self):
-        all_tup = ('DatasetAll','all_data')
+        all_dict = {'className': 'DatasetAll',
+                    'tableName': 'all_data'}
         filelist = self.get_allowed_files()
-        for tup in filelist:
-            print("Adding set {} to all_sets at {}".format(tup[1],tup[0]))
-            data = fp.Parser(fp.LC_SINGLE,tup[0],False,.25,',')
+        for dpath,filename in filelist:
+            print("Adding set {} to all_sets at {}".format(filename,dpath))
+            data = fp.Parser(fp.LC_SINGLE,dpath,False,.25,',')
             target_input = data.convert_file()
             target_input = data.limit_size(target_input) #limiting size of datasets for sanity
 
-            try:
-                repo.ext_add_dset(all_tup[0],
-                                  all_tup[1],
-                                  tup[1],
-                                  tup[0],
-                                  target_input,
-                                  len(target_input[0]),
+            try:                
+                repo.ext_add_dset(all_dict['className'],
+                                  all_dict['tableName'],
+                                  filename,
+                                  dpath,
+                                  target_input,                                  
                                   self.session)
             except Exception as ex:
                 print("Exception occured whilst trying to add dataset: {}".format(ex))
@@ -127,7 +99,7 @@ class DbHandler(object):
         filelist = self.get_allowed_files()
         for baseTup in self.baseDataTables:
             base = []
-            for i in range(int(math.floor(len(filelist)/20))):
+            for i in range(int(math.floor(len(filelist)/5))):
                 inx = random.randrange(0,len(filelist)-1)
                 base.append(filelist[inx])
 
@@ -141,8 +113,7 @@ class DbHandler(object):
                                   baseTup[1],
                                   tup[1],
                                   tup[0],
-                                  full_set,
-                                  len(full_set[0]),
+                                  full_set,                               
                                   self.session)
 
     def populate_alg_class(self):
@@ -209,64 +180,60 @@ class DbHandler(object):
         3. Decide on another fourth of them using active learning 
           (by comparing amount of information in datasets)
         4. Return active base
-        """
-        def make_score_list(candidates):
-            score_list = []
-            for dset in candidates:
-                score_tup = [0, dset]
-                score_list.append(score_tup)
-            return score_list
-            
-        def distance_between_datasets(metafeature,datasetA,datasetB):
-            eval_a = '{}.{}'.format('datasetA',metafeature)
-            eval_b = '{}.{}'.format('datasetB',metafeature)
-            distance = abs(eval(eval_a) - eval(eval_b))
-            return distance
-
-        def sum_of_distances(metafeature,dataset,candidates):
-            dist_summ = 0
-            for dset in candidates:
-                dist_summ += distance_between_datasets(metafeature,dataset, dset)
+        """        
+        def sum_of_distances(metafeature,dinx,candidates):            
+            vector = get_feature_vector(metafeature,candidates)            
+            dist_summ = sum([abs(x-vector[dinx]) for x in vector])
             return dist_summ 
 
-        def spread_without_set(metafeature,dinx,candidates):
-            max_val = 0 # (Value, index)
-            min_val = float('inf')
-            candidates.pop(dinx)
-            for inx, dset in enumerate(candidates):
+        def get_feature_vector(metafeature, candidates):
+            vector = []
+            for dset in candidates:
                 value_string = 'dset.{}'.format(metafeature)
                 value = eval(value_string)
-                if min_val > value:
-                    min_val = value
-                if max_val  < value:
-                    max_val = value
+                vector.append(value)
+            return vector 
+        
+        def spread_without_set(metafeature,dinx,candidates):
+            vector = get_feature_vector(metafeature, candidates)
+            vector.pop(dinx)
+
+            max_val = max(vector)
+            min_val = min(vector)
+          
             spread = abs(max_val - min_val)
             return spread
 
         def calculate_uncertainty_for_feature(metafeature,dinx,candidates):
-            uncertainty = sum_of_distances(metafeature,candidates[dinx],candidates)\
-                          /spread_without_set(metafeature,dinx,candidates)
+            try:
+                uncertainty = sum_of_distances(metafeature,dinx,candidates)\
+                    /spread_without_set(metafeature,dinx,candidates)
+            except Exception as ex:
+                pdb.set_trace()
+                pass            
             return uncertainty
         
-        def rank_uncertainty_for_feature(metafeature, candidates):
+        def rank_uncertainty_for_feature(metafeature, candidates):            
             ranked_tuples = []
             for inx,dset in enumerate(candidates):
                 uncertainty = calculate_uncertainty_for_feature(metafeature,inx,candidates)
                 rank_tuple = [uncertainty,inx,dset]
                 ranked_tuples.append(rank_tuple)
-
+            
             ranked_tuples.sort(reverse=True)            
             return ranked_tuples
 
         def get_most_uncertain_dataset(candidates):
-            metafeatures = ['weighted_mean', 'standard_deviation', 'fpskew', 'kurtosis']
-            score_list = make_score_list(candidates) # (Score, dataset)
+            metafeatures = ['weighted_mean', 'coefficient_variation', 'fpskew', 'kurtosis', 'entropy']
+            score_list = [[0, dset] for dset in candidates] # (Score, dataset)
             
             for feature in metafeatures:
                 ranked_tuples = rank_uncertainty_for_feature(feature,candidates) #list of (uncertainty,original Index,candidate) where index is rank
-                for inx,tup in enumerate(ranked_tuples):
-                    score_list[tup[1]] += inx  #Here a lower total score means higher uncertainty
-
+                
+                for inx,(uncertainty, original_index, candidate) in enumerate(ranked_tuples):
+                    score_list[original_index][0] += inx + 1  #Here a lower total score means higher uncertainty
+                    
+            
             max_inx = 0 #index of set with highest uncertainity i.e set with lowest rank score
 
             for inx,tup in enumerate(score_list):
@@ -278,13 +245,13 @@ class DbHandler(object):
         class_string = 'repo.{}'.format(base_name)
         class_object = eval(class_string)
         bases = self.session.query(class_object).all()        
-        candidates = bases
+        candidates = list(bases)
         active_base = []
             
         for i in range(int(math.floor(len(bases)/2))):
             inx = get_most_uncertain_dataset(candidates)
             cand = candidates.pop(inx)
-            active_base.append(cand)
+            active_base.append(cand)            
         return active_base
 
     
@@ -298,31 +265,33 @@ class DbHandler(object):
         Fetch the best performing algorithm from the runs_all 
         table for some given dataset 
         """
-        runs = self.session.query('run_all').filter_by(data_id=data_id)
-        scores = [[data_id,self.compute_objective(run)] for run in runs]
-        max_inx = values.index(max([tup[-1] for tup in scores]))
         pdb.set_trace()
+        runs = self.session.query(repo.Run).filter_by(data_id=data_id).all()
+        scores = [[data_id,self.compute_objective(run)] for run in runs]
+        max_inx = values.index(max([tup[-1] for tup in scores]))        
         return scores[max_inx]
     
     def guess_with_clusterer(self,base_sets,dataset):
         """
-        Use clustering algorithm with give base_sets to guess
+        Use clustering algorithm with given base_sets to guess
         datasets best performing algorithm 
         """
-        from sklearn.cluster import Kmeans
+        from sklearn.cluster import KMeans
         import numpy as np
-        points = [[set.weighted_mean,set.standard_deviation,set.fpskew,set.kurtosis,set.information]
+        points = [[set.weighted_mean,set.coefficient_variation,set.fpskew,set.kurtosis,set.entropy]
                    for set in base_sets]
         X = np.array(points)
-        num_clust = len(np.unique(points))
-        Kmeans = Kmeans(n_clusters=num_clust, random_state=0).fit(X)
+        #num_clust = len(np.unique(points))
+        num_clust = len(points)
+        Kmeans = KMeans(n_clusters=num_clust, random_state=0).fit(X)
         test = [dataset.weighted_mean,
-                dataset.standard_deviation,
+                dataset.coefficient_variation,
                 dataset.fpskew,
                 dataset.kurtosis,
-                dataset.information]
-        guess_set = Kmeans.predict(test)  #Returns dataset from base_sets dataset is closest too
-        guess = self.find_best_algorithm(base_sets[guess].data_id) #Returns best algorithm for
+                dataset.entropy]        
+        guess_label = Kmeans.predict(np.array(test).reshape(1,-1)) #Returns dataset from base_sets dataset is closest too
+        guess_inx = np.where(Kmeans.labels_ == guess_label)[0][0]
+        guess = self.find_best_algorithm(base_sets[guess_inx].data_id) #Returns best algorithm for
                                                                    #guess_set, with the assumption that
                                                                    #that would then be the best algorithm for
                                                                    #dataset
@@ -341,7 +310,7 @@ class DbHandler(object):
             datasets = self.session.query('datasets_all').all()
             for dataset in datasets:
                 if dataset.name not in base_names:
-                    guess = guess_with_clusterer(curr_base,dataset)
+                    guess = self.guess_with_clusterer(curr_base,dataset)
                     """
                     #need to modify various declartive bases such that data_id is a key
                     #that exists only within datasets_all and so that the various base
@@ -363,12 +332,13 @@ class DbHandler(object):
         guess_tup = ('GuessesActive','guesses_active')
         datasets = self.session.query(repo.DatasetAll).all()
         
-        for tup in self.baseDataTables:
-            active_base = self.get_active_base(tup[0])
-            base_names = [set.name for set in active_base]            
+        for className, tableName in self.baseDataTables:            
+            active_base = self.get_active_base(className)
+            pdb.set_trace()
+            base_names = [set.data_name for set in active_base]            
             for dataset in datasets:
-                if dataset.name not in base_names:
-                    guess = guess_with_clusterer(active_base,dataset)
+                if dataset.data_name not in base_names:                    
+                    guess = self.guess_with_clusterer(active_base,dataset)
                     """
                     #need to modify various declartive bases such that data_id is a key
                     #that exists only within datasets_all and so that the various base
