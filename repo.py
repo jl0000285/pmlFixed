@@ -109,13 +109,18 @@ def guess_factory(classname,tablename,dataset):
         "__tablename__": tablename,
         "data_id": Column(Integer, ForeignKey('{}.data_id'.format(dataset.__tablename__))),
         "data_name": Column(String),
+        "metabase_table": Column(String),
         "guess_id": Column(Integer, primary_key = True),
         "guess_algorithm": Column(String),
         "guess_algorithm_id": Column(Integer, ForeignKey('algorithm.alg_id')),
         "actual_algorithm": Column(String),
         "actual_algorithm_id": Column(Integer, ForeignKey('algorithm.alg_id')),
-        "correct": Boolean()
+        "correct": Column(Boolean),
+        "__repr__": __repr__
     })
+
+    globals()[classname] = guess_set
+    return guess_set 
     
 def run_factory(classname,tablename,dataset):
     def __repr__(self):
@@ -238,18 +243,36 @@ def add_algClass(class_name,session):
     session.add(n_class)
     session.commit()
 
-def add_to_guesses(className,tableName,data_id,guess,solution):
+def add_to_guesses(tableName,className,data_id,data_name,guess_algorithm_id,actual_algorithm_id,session):
     """Add guess to correct guess table"""
-    base = globals()[guess_tup[0]]
-    #Add logic here 
     
-    guess = base(data_id,
-                 data_name,
-                 guess_algorithm,
-                 guess_algorithm_id,
-                 actual_algorithm,
-                 actual_algorithm_id,
-                 correct)
+    base = globals()[className]
+    #Add logic here
+    if guess_algorithm_id == actual_algorithm_id:
+        correct = 0
+    else:
+        correct = 1
+
+    algs = session.query(repo.Algorithm)
+    try:
+        guess_algorithm = algs.filter_by(alg_id=guess_algorithm_id).all()[0].alg_name
+    except IndexError:
+        guess_algorithm = 'NO ALG FOUND' 
+
+    try:
+        actual_algorithm = algs.filter_by(alg_id=actual_algorithm_id).all()[0].alg_name
+    except IndexError:
+        actual_algorithm = 'NO ALG FOUND'
+        
+    guess = base(data_id=data_id,
+                 data_name=data_name,
+                 metabase_table=tableName,
+                 guess_algorithm=guess_algorithm,
+                 guess_algorithm_id=guess_algorithm_id,
+                 actual_algorithm=actual_algorithm,
+                 actual_algorithm_id=actual_algorithm_id,
+                 correct=correct)
+    
     session.add(guess)
     session.commit()
     

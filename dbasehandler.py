@@ -32,6 +32,7 @@ class DbHandler(object):
         self.testDataTables = [('TestsetA','test_sets_a'),
                                ('TestsetB','test_sets_b'),
                                ('TestsetC','test_sets_c')]
+        self.RUN_NOT_FOUND = False 
 
     def get_session(self):
         self.session = repo.get_session()
@@ -265,12 +266,16 @@ class DbHandler(object):
         Fetch the best performing algorithm from the runs_all 
         table for some given dataset 
         """
-        pdb.set_trace()
         runs = self.session.query(repo.Run).filter_by(data_id=data_id).all()
         scores = [[run.alg_id,self.compute_objective(run)] for run in runs]
         values = [tup[-1] for tup in scores]
-        max_inx = values.index(max(values))        
-        return scores[max_inx]
+        try:
+            max_inx = values.index(max(values))
+            retVal = scores[max_inx][0]
+        except ValueError as ex:            
+            retVal = self.RUN_NOT_FOUND
+            
+        return retVal
     
     def guess_with_clusterer(self,base_sets,dataset):
         """
@@ -303,14 +308,16 @@ class DbHandler(object):
         """Given a set of databases, make guesses as to what would be the best 
         machine based off entirety of current metabase 
         """
-        className  = 'GuessesEx'
-        tableName = 'guesses_ex'
-        for tup in self.baseDataTables:
-            curr_base = self.session.query(tup[0])
-            base_names = [set.name for set in curr_base]
-            datasets = self.session.query('datasets_all').all()
+        guess_class, guess_table  = ('GuessesEx', 'guesses_ex')
+        datasets = self.session.query(repo.DatasetAll).all()
+        
+        for className, tableName in self.baseDataTables:
+            class_string = 'repo.{}'.format(className)
+            class_object = eval(class_string)
+            curr_base = self.session.query(class_object).all()
+            base_names = [set.data_name for set in curr_base]   
             for dataset in datasets:
-                if dataset.name not in base_names:
+                if dataset.data_name not in base_names:
                     guess = self.guess_with_clusterer(curr_base,dataset)
                     """
                     #need to modify various declartive bases such that data_id is a key
@@ -319,26 +326,28 @@ class DbHandler(object):
                     data_id in the base set classes to set_id. 
                     """
                     solution = self.find_best_algorithm(dataset.data_id)
-                    repo.add_to_guesses(className,
-                                        tableName,
+                    repo.add_to_guesses(tableName,
+                                        guess_class,
                                         dataset.data_id,
                                         dataset.data_name,
-                                        guess,solution)
+                                        guess,
+                                        solution,
+                                        self.session)
+                    
         
 
     def guesses_active(self):
         """Given a set of databases, make guesses as to what would be the best 
         machine based off the uncertainty values of the datasets contained within 
         """
-        guess_tup = ('GuessesActive','guesses_active')
+        guess_class, guess_table = ('GuessesActive','guesses_active')
         datasets = self.session.query(repo.DatasetAll).all()
         
         for className, tableName in self.baseDataTables:            
-            active_base = self.get_active_base(className)
-            pdb.set_trace()
+            active_base = self.get_active_base(className)            
             base_names = [set.data_name for set in active_base]            
             for dataset in datasets:
-                if dataset.data_name not in base_names:                    
+                if dataset.data_name not in base_names:
                     guess = self.guess_with_clusterer(active_base,dataset)
                     """
                     #need to modify various declartive bases such that data_id is a key
@@ -347,7 +356,13 @@ class DbHandler(object):
                     data_id in the base set classes to set_id. 
                     """
                     solution = self.find_best_algorithm(dataset.data_id)
-                    repo.add_to_guesses(guess_tup,dataset.data_id,guess[0],solution[0])
+                    repo.add_to_guesses(tableName,
+                                        guess_class,
+                                        dataset.data_id,
+                                        dataset.data_name,
+                                        guess,
+                                        solution,
+                                        self.session)
                     
         
     def guesses_sampling(self):
