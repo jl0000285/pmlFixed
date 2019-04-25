@@ -167,7 +167,59 @@ class DbHandler(object):
                 print(evstring)
                 try:                    
                     durr,acc = eval(evstring)
-                    repo.add_run(data_id,alg_id,durr,acc,self.session)
+                except Exception as ex:                    
+                    print("Could not train dataset {} with method {}: {}".format(d_set.data_path,
+                                                                                          alg.alg_path,
+                                                                                          ex))
+                    durr,acc = [float('inf'),0]
+                    
+                repo.add_run(data_id,alg_id,durr,acc,self.session)
+
+    def populate_learning_curves(self):
+        """Populate runs_all database table with a run of every dataset with every algorithm"""
+        import sk_handler as skh
+        try:
+            d_sets = self.session.query(repo.DatasetAll).all()
+        except AttributeError:
+            print('Repo metabases likely not defined, defining now')
+            repo.defineMeta()
+            d_sets = self.session.query(repo.DatasetAll).all()
+            
+        algs = self.session.query(repo.Algorithm).all()
+        for d_set in d_sets:
+            print("Crafting Learning Curve for  dataset: {}".format(d_set.data_name))            
+            data_id = d_set.data_id
+            data = fp.Parser(fp.COMMA_DL,d_set.data_path,
+                             fp.TP_TRUE,per=.25)
+            target_input = data.convert_file()
+            target_input = data.limit_size(target_input) #limiting size of datasets for sanity
+
+            percents = [0.1,0.2,0.3]
+            train_data,test_data = data.partition(target_input)
+          
+            for alg  in algs:
+                results = []
+                train_time = 0
+                alg_id = alg.alg_id
+                evstring = '{}()'.format(alg.alg_path)
+                for percent in percents:
+                       X_train,y_train = data.split_last_column(train_data)
+                       X_test,y_test = data.split_last_column(test_data)	
+                       sk = skh.SkHandler(X_train,y_train,X_test,y_test)           
+                       print('{} evaluated at {} percent').format(evestring,str(percent))
+                       try:                    
+                           durr,acc = eval(evstring)
+                           train_time += durr
+                           results.append(acc)
+                       except Exception as ex:
+                           print("Could not train dataset {} with method {}: {}".format(d_set.data_path,
+                                                                                          alg.alg_path,
+                                                                                          ex))
+                           durr, acc = [float('inf'),0]
+                           
+                results.append(train_time)
+                repo.add_curve(data_id,alg_id,results,self.session)
+                
                 except Exception as ex:                    
                     print("Could not train dataset {} with method {}: {}".format(d_set.data_path,
                                                                                           alg.alg_path,

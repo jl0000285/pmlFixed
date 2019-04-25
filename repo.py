@@ -80,7 +80,19 @@ class Algorithm(Base):
     def __repr__(self):
         return '<algorithm(alg_id={}, name={}, path={}, class_id={})>'.format(self.alg_id,self.alg_name,self.alg_path,self.class_id)
 
+class LearningCurve(Base):
+    __tablename__ = 'learning_curves'
     
+    data_id = Column(Integer, ForeignKey('all_data.data_id'))
+    ald_id = Column(Integer, ForeignKey('algorithm.alg_id'))
+    run_id = Column(Integer, primary_key = True)
+    train_time = Column(Float)
+    accuracy_10 = Column(Float)
+    accuracy_20 = Column(Float)
+    accuracy_30 = Column(Float)
+    alg = relationship("Algorithm", backref="run")
+    data = relationship("DatasetAll", backref="run")
+    __repr__: __repr__
 
 class Run(Base):
     __tablename__= 'runs_all'
@@ -223,6 +235,11 @@ def add_run(data_id,alg_id,train_time,accuracy,session):
      session.add(n_run)
      session.commit()
 
+def add_curve():
+    n_curve = LearningCurve()
+    session.add(n_curve)
+    session.commit()
+     
 def add_factory_run(className, data_id,alg_id,train_time,accuracy,session):
     """
     Add to item to factory produced run table 
