@@ -176,7 +176,7 @@ class DbHandler(object):
                 repo.add_run(data_id,alg_id,durr,acc,self.session)
 
     def populate_learning_curves(self):
-        """Populate runs_all database table with a run of every dataset with every algorithm"""
+        """Populate learning_curves database table with a curve for every dataset with every algorithm"""
         import sk_handler as skh
         try:
             d_sets = self.session.query(repo.DatasetAll).all()
@@ -201,12 +201,12 @@ class DbHandler(object):
                 results = []
                 train_time = 0
                 alg_id = alg.alg_id
-                evestring = '{}()'.format(alg.alg_path)
+                evstring = '{}()'.format(alg.alg_path)
                 for percent in percents:
                        X_train,y_train = data.split_last_column(train_data)
                        X_test,y_test = data.split_last_column(test_data)	
                        sk = skh.SkHandler(X_train,y_train,X_test,y_test)           
-                       print('{} evaluated at {} percent'.format(evestring,str(percent)))
+                       print('{} evaluated at {} percent'.format(evstring,str(percent)))
                        try:                    
                            durr,acc = eval(evstring)
                            train_time += durr
@@ -351,7 +351,35 @@ class DbHandler(object):
                                                                    #that would then be the best algorithm for
                                                                    #dataset
         return (guess)
+
+    def guess_with_sampler(self,base_sets,dataset):
+        """
+        Use learning curve distance comparisons to determine best algorithm 
+        """
+        def get_curves_from_metabase(base_sets):
+            curves = []
+            all_curves = self.session.query(repo.LearningCurves)
+
+            for set in base_sets:
+                set_curves = all_curves.filter_by(data_id=set.data_id)
+                curves = curves + set_curves
+
+            return curves
+
+        def get_distance_between_sets(datasetA, datasetB, curves):
+            
         
+        def get_all_set_distances(base_sets,dataset,curves):
+            """
+            distance items look like [distance, base_set_id]
+            """
+            dset_curves = get_curves
+        
+        curves = get_curves_from_metabase(base_sets)
+        set_distances = get_all_set_distances(base_sets,dataset,curves)
+        set_distances.sort(reverse=True)
+        guess = self.find_best_algorithm(set_distances[0][1])
+        return guess
            
     def guesses_exhaustive(self):
         """Given a set of databases, make guesses as to what would be the best 
@@ -415,10 +443,28 @@ class DbHandler(object):
                     
         
     def guesses_sampling(self):
-        """Take half a given metabase, then determine the label of best performer
-        via sampling and matching the learning curves of the later datasets 
+        """Given a set of databases, make guesses as to what would be the best
+        machine based off the sampling cuves of the datasets contained within
         """
-        pass
+        guess_class, guess_table = ('GuessesSamp', 'guesses_samp')
+        datasets = self.session.query(reop.DatasetAll).all()
+
+        for className, tableName in self.baseDataTables:
+            class_string = 'repo.{}'.format()
+            class_object = eval(class_string)
+            curr_base = self.session.query(class_object).all()
+            base_names = [set.data_name for set in curr_base]
+            for dataset in datasets:
+                if dataset.data_name not in base_names:
+                    guess = self.guess_with_sampler(curr_base,dataset)
+                    solution = self.find_best_algorithm(dataset.data_id)
+                    repo.add_to_guesses(tableName,
+                                        guess_class,
+                                        dataset.data_id,
+                                        dataset.data_name,
+                                        guess,
+                                        solution,
+                                        self.session)
         
     def print_databases(self):
         cnx = mysql.connector.connect(user='root', password='Welcome07', host='127.0.0.1')
