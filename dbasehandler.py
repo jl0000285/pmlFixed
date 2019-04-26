@@ -201,12 +201,12 @@ class DbHandler(object):
                 results = []
                 train_time = 0
                 alg_id = alg.alg_id
-                evstring = '{}()'.format(alg.alg_path)
+                evestring = '{}()'.format(alg.alg_path)
                 for percent in percents:
                        X_train,y_train = data.split_last_column(train_data)
                        X_test,y_test = data.split_last_column(test_data)	
                        sk = skh.SkHandler(X_train,y_train,X_test,y_test)           
-                       print('{} evaluated at {} percent').format(evestring,str(percent))
+                       print('{} evaluated at {} percent'.format(evestring,str(percent)))
                        try:                    
                            durr,acc = eval(evstring)
                            train_time += durr
@@ -216,15 +216,12 @@ class DbHandler(object):
                                                                                           alg.alg_path,
                                                                                           ex))
                            durr, acc = [float('inf'),0]
+                           results.append(acc)
                            
                 results.append(train_time)
                 repo.add_curve(data_id,alg_id,results,self.session)
                 
-                except Exception as ex:                    
-                    print("Could not train dataset {} with method {}: {}".format(d_set.data_path,
-                                                                                          alg.alg_path,
-                                                                                          ex))
-
+              
     def get_active_base(self, base_name):
         """
         Steps: 

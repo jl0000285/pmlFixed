@@ -84,15 +84,27 @@ class LearningCurve(Base):
     __tablename__ = 'learning_curves'
     
     data_id = Column(Integer, ForeignKey('all_data.data_id'))
-    ald_id = Column(Integer, ForeignKey('algorithm.alg_id'))
-    run_id = Column(Integer, primary_key = True)
+    alg_id = Column(Integer, ForeignKey('algorithm.alg_id'))
+    curve_id = Column(Integer, primary_key = True)
     train_time = Column(Float)
     accuracy_10 = Column(Float)
     accuracy_20 = Column(Float)
     accuracy_30 = Column(Float)
-    alg = relationship("Algorithm", backref="run")
-    data = relationship("DatasetAll", backref="run")
-    __repr__: __repr__
+    alg = relationship("Algorithm", backref="learning_curves")
+    data = relationship("DatasetAll", backref="learning_curves")
+
+    def __repr__(self):
+        return ('<LearningCurve(run_id={},'
+                '             alg_name={},' 
+                '               alg_id={},' 
+                '            data_name={},'
+                '           train_time={},'
+                '           accuracy={})>').format(self.run_id,
+                                                   self.alg.alg_name,
+                                                   self.alg_id,
+                                                   self.data.data_name,
+                                                   self.train_time,
+                                                   self.accuracy)
 
 class Run(Base):
     __tablename__= 'runs_all'
@@ -107,11 +119,11 @@ class Run(Base):
 
     def __repr__(self):
         return '<run(run_id={},alg_name={}, alg_id={}, data_name={},train_time={},accuracy={})>'.format(self.run_id,
-                                                                                                self.alg.alg_name,
-                                                                                                self.alg_id,
-                                                                                                self.data.data_name,
-                                                                                                self.train_time,
-                                                                                                self.accuracy)
+                                                                                                        self.alg.alg_name,
+                                                                                                        self.alg_id,
+                                                                                                        self.data.data_name,
+                                                                                                        self.train_time,
+                                                                                                        self.accuracy)
 
 def guess_factory(classname,tablename,dataset):
     def __repr__(self):
@@ -174,7 +186,7 @@ def defineMeta():
     guesses_act = guess_factory('GuessesActive','guesses_active', data_all)
     guesses_ex = guess_factory('GuessesEx','guesses_ex', data_all)
     guesses_samp = guess_factory('GuessesSamp','guesses_samp', data_all)
-
+    
     #run_all = run_factory('RunAll','run_all', data_all)
     
     # train_a = data_set_factory('TestsetA','test_set_a')
@@ -213,7 +225,7 @@ def ext_add_dset(classname,tablename,dname,dpath,dset,session):
 
 def ext_add_run(classname,tablename,data_id,alg_id,train_time,accuracy,session):
     base = globals()[classname]
-            
+    
     n_run = base(data_id=data_id,
                  alg_id=alg_id,
                  train_time=train_time,
@@ -235,8 +247,14 @@ def add_run(data_id,alg_id,train_time,accuracy,session):
      session.add(n_run)
      session.commit()
 
-def add_curve():
-    n_curve = LearningCurve()
+def add_curve(data_id,alg_id,results,session):
+    accuracy_10, accuracy_20, accuracy_30, training_time = results
+    n_curve = LearningCurve(data_id=data_id,
+                            alg_id=alg_id,
+                            accuracy_10=accuracy_10,
+                            accuracy_20=accuracy_20,
+                            accuracy_30=accuracy_30,
+                            train_time=training_time)
     session.add(n_curve)
     session.commit()
      
