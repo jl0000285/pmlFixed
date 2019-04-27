@@ -69,6 +69,14 @@ class AlgClass(Base):
     def __repr__(self):
         return '<alg_class(id={}, name={})>'.format(self.class_id,self.class_name)
 
+class Results(Base):
+    __tablename__ = 'results'
+
+    meta_alg_name = Column(String)
+    meta_base_name = Column(String)
+    accuracy = Column(Float)
+    training_time = Column(Float)
+    
 class Algorithm(Base):
     __tablename__= 'algorithm'
 
@@ -94,17 +102,21 @@ class LearningCurve(Base):
     data = relationship("DatasetAll", backref="learning_curves")
 
     def __repr__(self):
-        return ('<LearningCurve(run_id={},'
-                '             alg_name={},' 
+        return ('<LearningCurve(alg_name={},' 
                 '               alg_id={},' 
                 '            data_name={},'
+                '              data_id={},'
                 '           train_time={},'
-                '           accuracy={})>').format(self.run_id,
-                                                   self.alg.alg_name,
-                                                   self.alg_id,
-                                                   self.data.data_name,
-                                                   self.train_time,
-                                                   self.accuracy)
+                '           accuracy_10={},'
+                '           accuracy_20={},'
+                '           accuracy_30={})>').format(self.alg.alg_name,
+                                                      self.alg_id,
+                                                      self.data.data_name,
+                                                      self.data.data_id,
+                                                      self.train_time,
+                                                      self.accuracy_10,
+                                                      self.accuracy_20,
+                                                      self.accuracy_30)
 
 class Run(Base):
     __tablename__= 'runs_all'

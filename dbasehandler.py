@@ -220,7 +220,9 @@ class DbHandler(object):
                            
                 results.append(train_time)
                 repo.add_curve(data_id,alg_id,results,self.session)
-                
+
+    def populate_results(self):
+        pass
               
     def get_active_base(self, base_name):
         """
@@ -356,27 +358,40 @@ class DbHandler(object):
         """
         Use learning curve distance comparisons to determine best algorithm 
         """
-        def get_curves_from_metabase(base_sets):
-            curves = []
-            all_curves = self.session.query(repo.LearningCurves)
-
-            for set in base_sets:
-                set_curves = all_curves.filter_by(data_id=set.data_id)
-                curves = curves + set_curves
-
-            return curves
-
-        def get_distance_between_sets(datasetA, datasetB, curves):
-            
+        def calculate_distance_between_sets(curvesA,curvesB):
+            distance = 0.0
+            percents = ['10','20','30']
+            for i in range(len(curvesA)):
+                for percent in percents:
+                    a_string = 'curvesA[{}].accuracy_{}'.format(str(i),percent)
+                    b_string = 'curvesB[{}].accuracy_{}'.format(str(i),percent)
+                    acc_a = eval(a_string)
+                    acc_b = eval(b_string)
+                    distance += (acc_a - acc_b)**2
+                    
+            return distance 
+                    
+        def get_distance_between_sets(curvesA, curvesB):
+            distance = 0.0
+            algs = self.session.query(repo.Algorithm).all()
+            for alg in algs:
+                curveA = curvesA.filter_by(alg_id=alg.alg_id).all()
+                curveB = curvesA.filter_by(alg_id=alg.alg_id).all()
+                distance += calculate_distance_between_sets(curveA,curveB)                
+                return distance  
         
-        def get_all_set_distances(base_sets,dataset,curves):
+        def get_all_set_distances(base_sets,dataset):
             """
             distance items look like [distance, base_set_id]
             """
-            dset_curves = get_curves
-        
-        curves = get_curves_from_metabase(base_sets)
-        set_distances = get_all_set_distances(base_sets,dataset,curves)
+            distances = []
+            dset_curves = self.session.query(repo.LearningCurve).filter_by(data_id=dataset.data_id)
+            for set in base_sets:
+                set_curves = self.session.query(repo.LearningCurve).filter_by(data_id=set.data_id)
+                distances.append([get_distance_between_sets(dset_curves,set_curves), set.data_id])
+            return distances
+                
+        set_distances = get_all_set_distances(base_sets,dataset)
         set_distances.sort(reverse=True)
         guess = self.find_best_algorithm(set_distances[0][1])
         return guess
@@ -447,10 +462,10 @@ class DbHandler(object):
         machine based off the sampling cuves of the datasets contained within
         """
         guess_class, guess_table = ('GuessesSamp', 'guesses_samp')
-        datasets = self.session.query(reop.DatasetAll).all()
+        datasets = self.session.query(repo.DatasetAll).all()
 
         for className, tableName in self.baseDataTables:
-            class_string = 'repo.{}'.format()
+            class_string = 'repo.{}'.format(className)
             class_object = eval(class_string)
             curr_base = self.session.query(class_object).all()
             base_names = [set.data_name for set in curr_base]
