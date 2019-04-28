@@ -5,7 +5,7 @@ Created on Tue Oct 18 22:44:00 2016
 @author: o-4
 """
 
-from __future__ import print_function
+from __future__ import print_function, division
 import dbasehandler as dbh
 import mysql.connector
 import os
@@ -222,8 +222,55 @@ class DbHandler(object):
                 repo.add_curve(data_id,alg_id,results,self.session)
 
     def populate_results(self):
-        pass
-              
+        def calculate_accuracy(guesses):
+            pdb.set_trace()
+            num_correct = guesses.filter_by(correct=0).count()
+            num_overall = guesses.count()
+            acc = num_correct/num_overall
+            return acc
+
+        def calculate_training_time(guesses,alg):
+            time = 0
+            if alg == 'GuessesSamp':
+               curves = self.session.query(repo.LearningCurves)
+               for guess in guesses:
+                   g_curves = curves.filter_by(data_id=guess.data_id)
+                   for each c in g_curves:
+                       time += c.train_time
+            else:
+                sets = self.session.query(repo.DatasetAll)
+                for guess in guesses:
+                    g_sets = sets.filter_by(data_id=guess.data_id)
+                    for each s in g_sets:
+                        time += s.metric_time
+                runs = self.session.query(repo.Run)
+                for guess in guesses:
+                    g_runs = sets.filter_by(data_id=guess.data_id)
+                    for r in g_runs:
+                        time += g.train_time                
+            return time 
+            
+        def calculate_rate_correct_score(acc,train_time):
+            if not train_time > 0:
+                rcs = 0
+            else: 
+                rcs = acc/train_time
+                
+            return rcs 
+            
+        meta_algs = ['GuessesEx', 'GuessesActive', 'GuessesSamp']
+        base_sets = [tup[1] for tup in self.baseDataTables]
+
+        for alg in meta_algs:
+            class_string = 'repo.{}'.format(alg)
+            class_object = eval(class_string)
+            for set in base_sets:
+                guesses = self.session.query(class_object).filter_by(metabase_table=set)                
+                acc = calculate_accuracy(guesses)
+                train_time = calculate_training_time(guesses,alg)
+                rcs = calculate_rate_correct_score(acc,train_time)
+                repo.add_to_results(alg,set,acc,train_time,rcs,self.session)
+            
     def get_active_base(self, base_name):
         """
         Steps: 

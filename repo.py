@@ -69,13 +69,15 @@ class AlgClass(Base):
     def __repr__(self):
         return '<alg_class(id={}, name={})>'.format(self.class_id,self.class_name)
 
-class Results(Base):
+class Result(Base):
     __tablename__ = 'results'
 
+    result_id = Column(Integer, primary_key = True)
     meta_alg_name = Column(String)
     meta_base_name = Column(String)
     accuracy = Column(Float)
     training_time = Column(Float)
+    rate_correct_score = Column(Float)
     
 class Algorithm(Base):
     __tablename__= 'algorithm'
@@ -288,6 +290,16 @@ def add_alg(alg_name,alg_path,class_id,session):
 def add_algClass(class_name,session):
     n_class = AlgClass(class_name=class_name)
     session.add(n_class)
+    session.commit()
+
+def add_to_results(meta_alg,metabase,accuracy,train_time,rcs,session):
+    """Add result to results table"""
+    n_result = Result(meta_alg_name=meta_alg,
+                      meta_base_name=metabase,
+                      accuracy=accuracy,
+                      training_time=train_time,
+                      rate_correct_score=rcs)
+    session.add(n_result)
     session.commit()
 
 def add_to_guesses(tableName,className,data_id,data_name,guess_algorithm_id,actual_algorithm_id,session):
