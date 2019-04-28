@@ -196,7 +196,16 @@ def defineMeta():
     base_a = data_set_factory('BasesetA','base_set_a')
     base_b = data_set_factory('BasesetB','base_set_b')
     base_c = data_set_factory('BasesetC','base_set_c')
-
+    base_d = data_set_factory('BasesetD','base_set_d')
+    base_e = data_set_factory('BasesetE','base_set_e')
+    base_f = data_set_factory('BasesetF','base_set_f')
+    base_g = data_set_factory('BasesetG','base_set_g')
+    base_h = data_set_factory('BasesetH','base_set_h')
+    base_i = data_set_factory('BasesetI','base_set_i')
+    base_j = data_set_factory('BasesetJ','base_set_j')
+  
+  
+    
     guesses_act = guess_factory('GuessesActive','guesses_active', data_all)
     guesses_ex = guess_factory('GuessesEx','guesses_ex', data_all)
     guesses_samp = guess_factory('GuessesSamp','guesses_samp', data_all)

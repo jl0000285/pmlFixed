@@ -28,7 +28,15 @@ class DbHandler(object):
         #Reminder: First item is the name of the generated repo class, second is the table name
         self.baseDataTables = [('BasesetA','base_sets_a'),
                                ('BasesetB','base_sets_b'),
-                               ('BasesetC','base_sets_c')]
+                               ('BasesetC','base_sets_c'),
+                               ('BasesetD','base_sets_d'),
+                               ('BasesetE','base_sets_e'),
+                               ('BasesetF','base_sets_f'),
+                               ('BasesetG','base_sets_g'),
+                               ('BasesetH','base_sets_h'),
+                               ('BasesetI','base_sets_i'),
+                               ('BasesetJ','base_sets_j')]
+        
         self.testDataTables = [('TestsetA','test_sets_a'),
                                ('TestsetB','test_sets_b'),
                                ('TestsetC','test_sets_c')]
@@ -48,16 +56,24 @@ class DbHandler(object):
         """
         repo.craftSystem()
         self.get_session()        
-        print("Populating data all table")
+        print("Populating Data Tables")
         self.populate_data_all()
         self.populate_metabases()
-        print("Performing Algorithms init")
+        print("Populating Algorithm Tables")
         self.populate_alg_class()
         self.populate_algorithms()
-        print("Perfoming ext run init")
+        print("Perfoming Runs")
         self.populate_runs_all()
-        #print("Performing Runs init")
-        #self.run_active()
+        print("Crafting Learning Curves")
+        self.populate_learning_curves()
+        print("Making Exhaustive Guesses")
+        self.guesses_exhaustive()
+        print("Making Active Guesses ")
+        self.guesses_active()
+        print("Making Sampling Guesses")
+        self.guesses_sampling()
+        print("Compiling Results")
+        self.populate_results()
         
         
     def populate_data_from_init_folder(self):
@@ -222,32 +238,34 @@ class DbHandler(object):
                 repo.add_curve(data_id,alg_id,results,self.session)
 
     def populate_results(self):
-        def calculate_accuracy(guesses):
-            pdb.set_trace()
+        def calculate_accuracy(guesses):            
             num_correct = guesses.filter_by(correct=0).count()
             num_overall = guesses.count()
-            acc = num_correct/num_overall
+            if num_overall > 0:
+                acc = num_correct/num_overall
+            else:
+                acc = 0
             return acc
 
         def calculate_training_time(guesses,alg):
             time = 0
             if alg == 'GuessesSamp':
-               curves = self.session.query(repo.LearningCurves)
+               curves = self.session.query(repo.LearningCurve)
                for guess in guesses:
                    g_curves = curves.filter_by(data_id=guess.data_id)
-                   for each c in g_curves:
+                   for c in g_curves:
                        time += c.train_time
             else:
                 sets = self.session.query(repo.DatasetAll)
                 for guess in guesses:
                     g_sets = sets.filter_by(data_id=guess.data_id)
-                    for each s in g_sets:
+                    for s in g_sets:
                         time += s.metric_time
                 runs = self.session.query(repo.Run)
                 for guess in guesses:
-                    g_runs = sets.filter_by(data_id=guess.data_id)
+                    g_runs = runs.filter_by(data_id=guess.data_id)
                     for r in g_runs:
-                        time += g.train_time                
+                        time += r.train_time                
             return time 
             
         def calculate_rate_correct_score(acc,train_time):
@@ -506,7 +524,7 @@ class DbHandler(object):
         
     def guesses_sampling(self):
         """Given a set of databases, make guesses as to what would be the best
-        machine based off the sampling cuves of the datasets contained within
+        machine based off the sampling curves of the datasets contained within
         """
         guess_class, guess_table = ('GuessesSamp', 'guesses_samp')
         datasets = self.session.query(repo.DatasetAll).all()
