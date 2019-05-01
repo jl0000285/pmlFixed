@@ -28,7 +28,6 @@ def extractFeatures(dset):
     
     return sawm, sacv, saskew, sakurt, saent, duration
 
-# Probagbility Density Moments 
 def setAveragedWeightedMean(dset):
     """Finds weighted mean for each column in given dataset 
     then returns the average of these weighted means"""
