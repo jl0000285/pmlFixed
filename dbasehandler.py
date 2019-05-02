@@ -188,6 +188,7 @@ class DbHandler(object):
                                                                                           alg.alg_path,
                                                                                           ex))
                     durr,acc = [float('inf'),0]
+                    pdb.set_trace()
                     
                 repo.add_run(data_id,alg_id,durr,acc,self.session)
 

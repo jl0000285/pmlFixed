@@ -1,1 +1,27 @@
-{\rtf1}
+%Chapter 1
+\chapter{Introduction}
+\label{Introduction}
+  Determining what algorithm to use when analyzing a dataset is a problem as old as
+  machine learning itself. In ``No free lunch theorems for optimization'' Wolpert and Macready
+  demonstrate that the performance of all machine learning algorithms even out across all datasets,
+  that is to say that no one machine learning algorithm is best in every situation, performance is
+  contengent on the problem space in which the algorithm is operating. As such, the decision of algorithm
+  is non arbitrary and some strategy must be employed in order to decide on an algorithm.
+  In some cases, the individuals wishing to perform an analysis
+  have access to an expert, possibly themselves, that can simply tell them which algorithm
+  is best in the given situation. In other situations, the individuals wishing to perform
+  analysis may not have the budget neccessary to acquire access to such an expert, in which
+  case the usage of a metalearner becomes appropriate. With a metalearner one feeds the
+  metalearner a dataset and it returns to the user what it thinks is the most appropriate
+  machine with which to perform analysis. To get to the point wherein a decision can be made
+  on new datasets the metalearner itself must first be trained, and this training itself
+  requires some sort of learning strategy. This fact suggests thath the decision of what
+  metelearning strategy to use for some given body of datasets should be succeptable to
+  the previously mentioned no free lunch theorem, that is to say that some metalearning strategies will
+  work better on some given set of databases than others. The confirmation or denial of this
+  theorem in this context is the goal of this thesis. Including the current one, this thesis is comprised
+  of five chapters. In chapter 2 a review of the base machine and meta learning strategies used within
+  the experiment is done. Chapter 3 describes the structure of the experiments code at a high level.
+  Chapter 4 analyzes the results table in order to determine whether or not one metalearning strategy
+  strictly dominates. Chapter 5 concludes with an acceptance or rejection of the stated hypothesis and
+  proposes possible followups this experiment.

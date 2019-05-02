@@ -17,17 +17,18 @@ class SkHandler(object):
 
     
     def catcher(meth):
-       # pdb.set_trace()
         def mcall(self):
             try:
-                meth(self)
+                duration, acc = meth(self)
+                return duration,acc
             except Exception as ex:
                 pdb.set_trace()
+                meth(self)
                 pass
         mcall.__name__ = meth.__name__
         return mcall
 
-    #@catcher    
+    @catcher    
     def svm(self):
         """
         X = Data
@@ -46,11 +47,37 @@ class SkHandler(object):
         #TODO: measure the accuracy of trained clf with test data here
         return duration, acc
 
-   #@catcher
+    @catcher
     def clustering(self):
         from sklearn.cluster import KMeans
+        import math
+        
+        def determine_if_floats(column):
+            are_floats = False
+            for item in column:
+                decimal, number = math.modf(item)
+                if decimal != 0:
+                    are_floats = True
+            return are_floats 
+
+        def relabel_with_bins(train, test):
+            all = train + test
+            bin_size = abs(min(all)-max(all))/10
+            for inx, item in enumerate(train):
+                train[inx] = math.floor(item/bin_size)
+            for inx, item in enumerate(test):
+                test[inx] = math.floor(item/bin_size)
+
+            return train, test
+            
         X = np.array(self.X_train)
-        num_clust = len(np.unique(self.y_train))
+        
+        if not determine_if_floats(self.y_train):
+            num_clust = len(np.unique(self.y_train))
+        else:
+            num_clust = 10
+            self.y_train, self.y_test = relabel_with_bins(self.y_train,self.y_test)
+            
         duration = 0
         t0 = time.time()
         Kmeans = KMeans(n_clusters=num_clust, random_state=0).fit(X)
@@ -58,37 +85,38 @@ class SkHandler(object):
         labs = list(Kmeans.labels_)
         orig_labs = labs
         duration = t1-t0
-        acc = 0
-        nums = dict()
-        nlabs = dict()
-        for i in range(len(np.unique(self.y_train))):
-            nums[i]=dict()
-        for key in nums:
-            for i in range(len(np.unique(self.y_train))):
-                nums[key][i] = 0
+        acc = 0        
+        clust_labs = dict()
+        trans_map = dict() #translation map between cluster labels and original labels 
+        for item in np.unique(labs):
+            clust_labs[item]=dict()
+        for key in clust_labs:
+            for item in np.unique(self.y_train):
+                clust_labs[key][item] = 0
         for inx, item in enumerate(self.y_train):
             lab = labs[inx]
-            nums[item][lab] += 1
-        for key in nums:
+            clust_labs[lab][item] += 1
+        for key in clust_labs:
             max_count = 0
-            max_inx = 0
-            for key2 in nums[key]:
-                count = nums[key][key2]
+            max_key = 0
+            for key2 in clust_labs[key]:
+                count = clust_labs[key][key2]
                 if(count > max_count):
                     max_count = count
-                    max_inx = key
-            nlabs[key]=max_inx
+                    max_key = key2
+            trans_map[key]=max_key
         #Not actually needed here, keeping this loop incase I
         #want to compute inner class accuracy later
         for inx,item in enumerate(labs):
-            labs[inx] = nlabs[item]
+            labs[inx] = trans_map[item]
+        #inner_acc = accuracy_score(labs,self.y_train)
         test_labs = Kmeans.predict(self.X_test)
         for inx,item in enumerate(test_labs):
-            test_labs[inx] = nlabs[item]
-        acc = accuracy_score(test_labs,self.y_test)
+            test_labs[inx] = trans_map[item] 
+        acc = accuracy_score(test_labs,self.y_test)        
         return duration, acc
 
-    #@catcher
+    @catcher
     def neural_network(self):
         from sklearn.neural_network import MLPClassifier
         X = np.array(self.X_train)
@@ -103,7 +131,7 @@ class SkHandler(object):
         acc = accuracy_score(result,self.y_test)
         return duration, acc
 
-    #@catcher
+    @catcher
     def bayes(self):
         from sklearn.naive_bayes import GaussianNB
         X = np.array(self.X_train)
@@ -117,7 +145,7 @@ class SkHandler(object):
         duration = t1-t0
         return duration, acc
 
-    #@catcher
+    @catcher
     def regression(self):
         from sklearn import linear_model
         regr = linear_model.LinearRegression()
