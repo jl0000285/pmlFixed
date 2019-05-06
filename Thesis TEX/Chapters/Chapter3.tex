@@ -1,22 +1,20 @@
 %Chapter 3
-\chapter{Research Methods}
+\chapter{Research Design}
 \label{Chapter3}
 %-------------------------------------------------
-\section{Research Design}
-
-\subsection{General Plan}
-The overall goal of this experiment is to determine whether or not one metalearning strategy can strictly
-dominate another. The core elements required in order to determine this are a set of metalearning strategies to be compared, sets of metabase datasets on which to apply the different strategies, and
-a means to evaluate the results so as to determine the relative performance of the metalearners. The general flow of the program that constitutes this experiment begins with a set of unprocessed datasets
+\section{General Plan}
+The overall goal of this experiment is to determine whether or not one metalearning strategy within a given
+set can strictly dominate the others. The core elements required in order to determine this are a set of metalearning strategies to be compared, sets of metabase datasets on which to apply the different strategies,
+and a means to evaluate the results so as to determine the relative performance of the metalearners. The
+general flow of the program that constitutes this experiment begins with a set of unprocessed datasets
 then extracts the metafeatures that are required to perform dataset clustering and to run the active
 metalearning strategy. The program then constructs 10 metalearning bases with the elements in these sets
-choosen at random. A run with every machine algorithm and every dataset is then performed, with the results
-being stored in the runs all table. Learning curves for each dataset/algorithm combination are then crafted.
-Finally, enough information now exists within the the database to run the metalearning strategies and
-extract results, at which point statistical analysis techniques can reveal the truth of our core
+choosen at random. A run with every machine algorithm and dataset combination is then performed, with the
+results being stored in the runs all table. Learning curves for each dataset/algorithm combination are then crafted. Finally, enough information now exists within the the database to run the metalearning strategies
+and extract results, at which point statistical analysis techniques can reveal the truth of our core
 hyptothesis. A detailed explanation of each of these steps follows.
 
-\subsection{Data Parsing}
+\section{Data Parsing}
 All machine learning algorithms boil down to a set of mathematical equations at the end of the day, with
 some vector representing a dataset fed in at one end and a number representing either a catagory or quantity
 being expelled at the other. As such any metalearning system must have with it a means to parse the
@@ -31,21 +29,20 @@ unique number being assigned to each unique string. Rather than storing the nume
 each dataset within the database, the parsed form of a given dataset is crafted when it is needed, saving
 disk space and making the project far easier to understand.
 
-\subsection{Metafeature extraction}
+\section{Metafeature extraction}
 The existance of a parser allows us to craft the first table needed for this experiment which is one
 containing the meta features of those datasets that are parsable. Being as how the datasets used within
-this project have vastly differing structures along lines such as the number of features and the maximum and minimum values of these features, the project requires a set of normalized meta features that are applicable
-to any possible individual distribution or set of probability distribution(s). A set of  features that meet
-this criteria are weighted mean, coefficient of variation, skew, kurtosis, and entropy. The vector that
-represents a given dataset is crafted by taking the value of each of these attributes for each of said
-datasets features then normalizing them by dividing by the total number of features within that dataset,
-that is to say $$F_{ad} = \frac{\sum_{c=i}^{N}f_{ai}}{N}$$ is the metafeature value a for dataset d, $c$ is an
-iterator across columns for dataset d, $f$ is the value of metafeature f applied to individual column i,
-and N is the number of columns within dataset d. The vector that represents a given dataset is then
-determined to be $V_d = (F_{1d}, F_{2d},...F_{ad})$.
+this project have vastly differing structures along lines such as the number of features and the maximum and minimum values of these features, the project requires a set of normalized meta features that are
+applicable to any possible individual distribution or set of probability distribution(s). A set of
+features that meet this criteria are weighted mean, coefficient of variation, skew, kurtosis, and entropy.
+The vector that represents a given dataset is crafted by taking the value of each of these attributes for
+each of said datasets features then normalizing them by dividing by the total number of features within
+that dataset, that is to say $$F_{ad} = \frac{\sum_{c=i}^{N}f_{ai}}{N}$$ is the metafeature value $a$ for
+dataset $d$, $c$ is an iterator across columns for dataset $d$, $f$ is the value of metafeature $F$ applied to individual column $i$, and $N$ is the number of columns within dataset $d$. The vector that represents
+a given dataset is then determined to be $V_d = (F_{1d}, F_{2d},...F_{ad})$.
 
-\subsection{Metabases Construction and perfomance testing}
-The work of a metalearning algorithm is essentially applying the things known from a specific set of
+\section{Metabases Construction and perfomance testing}
+The work of a metalearning algorithm is essentially the applying the things known from a specific set of
 datasets towards a new, unlabeled dataset. That initial set of datasets is known as a meta database, which
 I shorten to metabase for convience. The core premise of this experiment is the determination as to whether
 or not one metalearning strategy may or may not dominate other metalearning strategies across a set of
@@ -57,7 +54,7 @@ with some given metabase and applying it to every other dataset within the set o
 given metalearning strategy makes with some given metabase are then stored within a database table for later
 analysis.
 
-\subsection{Compiling Results}
+\section{Compiling Results}
 Once the guess tables are populated, it is finally possible to compile a table of results. Each entry in the
 table notes the metalearning strategy being evaluated, the metabase set the strategy used in order to
 analyze its test datasets, and the accuracy, training time, and rate correct score as its performance

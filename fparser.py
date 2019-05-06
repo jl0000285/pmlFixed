@@ -290,11 +290,13 @@ class Parser():
         y = []
         row_length = len(target_input[0])
         try: 
-            for item in target_input:
+            for inx,item in enumerate(target_input):
                 X.append(item[:row_length-2])
                 y.append(item[row_length-1])
         except Exception as ex:
-            print "There was an exception while spliting last column, returning null arrays"
+            print ("There was an exception while spliting row {}'s last column,"
+                   "returning null arrays").format(inx)
+            pdb.set_trace()
         return X,y
 
     def partition(self,target_input, per=0.25):

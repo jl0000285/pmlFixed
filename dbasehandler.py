@@ -158,6 +158,7 @@ class DbHandler(object):
     def populate_runs_all(self):
         """Populate runs_all database table with a run of every dataset with every algorithm"""
         import sk_handler as skh
+        from random import shuffle
         try:
             d_sets = self.session.query(repo.DatasetAll).all()
         except AttributeError:
@@ -172,6 +173,7 @@ class DbHandler(object):
             data = fp.Parser(fp.COMMA_DL,d_set.data_path,
                              fp.TP_TRUE,per=.25)
             target_input = data.convert_file()
+            shuffle(target_input) #keep commented while debugging
             target_input = data.limit_size(target_input) #limiting size of datasets for sanity 
             train_data,test_data = data.partition(target_input)
             X_train,y_train = data.split_last_column(train_data)
@@ -195,6 +197,7 @@ class DbHandler(object):
     def populate_learning_curves(self):
         """Populate learning_curves database table with a curve for every dataset with every algorithm"""
         import sk_handler as skh
+        from random import shuffle
         try:
             d_sets = self.session.query(repo.DatasetAll).all()
         except AttributeError:
@@ -209,17 +212,18 @@ class DbHandler(object):
             data = fp.Parser(fp.COMMA_DL,d_set.data_path,
                              fp.TP_TRUE,per=.25)
             target_input = data.convert_file()
+            shuffle(target_input)
             target_input = data.limit_size(target_input) #limiting size of datasets for sanity
-
             percents = [0.1,0.2,0.3]
-            train_data,test_data = data.partition(target_input)
-          
+            
             for alg  in algs:
                 results = []
                 train_time = 0
                 alg_id = alg.alg_id
                 evstring = '{}()'.format(alg.alg_path)
                 for percent in percents:
+                       shuffle(target_input)
+                       train_data,test_data = data.partition(target_input, per=percent)
                        X_train,y_train = data.split_last_column(train_data)
                        X_test,y_test = data.split_last_column(test_data)	
                        sk = skh.SkHandler(X_train,y_train,X_test,y_test)           
