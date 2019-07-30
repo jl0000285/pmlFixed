@@ -78,6 +78,15 @@ class Result(Base):
     accuracy = Column(Float)
     training_time = Column(Float)
     rate_correct_score = Column(Float)
+
+    def __repr__(self):
+        return ('<result(id={}, meta_alg_name={}, meta_base_name={},'
+                'accuracy={}, training_time={}, rate_correct_score={})>').format(self.result_id,
+                                                                                 self.meta_alg_name,
+                                                                                 self.meta_base_name,
+                                                                                 self.accuracy,
+                                                                                 self.training_time,
+                                                                                 self.rate_correct_score)
     
 class Algorithm(Base):
     __tablename__= 'algorithm'

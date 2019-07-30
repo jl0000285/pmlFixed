@@ -578,4 +578,47 @@ class DbHandler(object):
                         f.append(tup)
         return f 
                     
-                    
+    def analyze_results(self):
+        """
+        Analyze results table and produce a likelihood of rejection of the null hypothesis 
+        where the null hypthesis that n1=n2=n3 for all algorithms where n1 is the number of first place
+        results, n2 the number of second place results, and n3 is the number of third place results 
+        """
+        #TODO: Place session logic stuff here
+        def calculate_standard_deviations(results_dict,N):
+            stds = {}            
+            for i in range(N):
+                tot = 0
+                for key in results_dict:
+                    tot += results_dict[key][str(i)][0]
+                mean = tot/N
+                sum_distance = 0
+                for key in results_dict:
+                    sum_distance += (results_dict[key][str(i)][0])**2
+                stds[str(i)] = (sum_distance/N)**(0.5)
+            return stds 
+            
+        meta_bases = self.session.query(repo.Result.meta_base_name).distinct()
+        meta_algs = self.session.query(repo.Result.meta_alg_name).distinct()
+        results_dict = {}
+        for alg in meta_algs:
+            res_dict = {}
+            for i in range(len(meta_algs.all())):
+                res_dict[str(i)] = [0,0]
+            results_dict[str(alg[0])] = res_dict.copy()        
+        for base in meta_bases:
+            accuracies = []
+            for alg in meta_algs:
+                res = self.session.query(repo.Result).filter_by(meta_alg_name=str(alg[0]),meta_base_name=str(base[0])).first()                
+                tup = (res.accuracy,str(alg[0]))
+                accuracies.append(tup)
+            accuracies.sort(reverse=True)
+            for inx,acc in enumerate(accuracies):
+                    results_dict[acc[1]][str(inx)][0] += 1
+        pdb.set_trace()
+        E = len(meta_bases.all())/len(meta_algs.all()) #Expected value given all metalearners are equal
+        N = len(meta_algs.all())
+        stds = calculate_standard_deviations(results_dict,N) 
+        
+        pass
+    
