@@ -1,0 +1,31 @@
+%Chapter 4
+\chapter{Research Findings}
+\label{Chapter4}
+\section{Run results and Analysis tools}
+These results are clearly not what we expect if the null hypothesis is true. Testing of this hypothesis can be done with the machinary of classical statistics, specifically by calculating
+the exact probability of the results by working out the exact sampling distribution and by obtaining how likely these results are to come from the various appropriate distributions where
+the performances are equal by running the results thru the machinary of the t-test. A description of each of these statistical methods follows.
+\subsection{Exact Sampling Distribution}
+The following discription closely follows what is outlines the procedure described in \cite{Cohen}. In it, the author asks you to imagine testing a coin to see whether or not it
+is fair, flipping the coin 1,2,..N times. He then asks you to consider whether some proportion of heads is actually fair from 0/N, 1/N.., N/N heads. The propability that some proportion of heads
+p = i/N is fair can be calculated exactly with the binomial distribution $$\frac{N!}{i!(N-i)!}r^{i}(1-r)^{N-i}$$. This situation is analogous to the number of first, second, or third place finishes
+some meta-algorithm obtained in this thesis experiment. The probabilty of proportion for each of the meta-learning algorithms can be seen in table
+
+\begin{table}[]
+\begin{tabular}{lll}
+Meta Algorithm & Proportion of Positions & Probability \\
+GuessesSamp    & 8/10 first place        &             \\
+GuessesSamp    & 2/10 second place       &             \\
+GuessesSamp    & 0/10 third place        &             \\
+GuessesActive  & 2/10 first place        &             \\
+GuessesActive  & 5/10 second place       &             \\
+GuessesActive  & 3/10 third place        &             \\
+GuessesEx      & 0/10 first place        &             \\
+GuessesEx      & 3/10 second place       &             \\
+GuessesEx      & 7/10 third place        &
+\end{tabular}
+\end{table}
+
+T test equation where s is the sample standard deviation and N is the number of samples, overscore x is an individual samples mean/calculated value, mu is the
+population mean/expected value
+$$t =\frac{\overline{x}-\mu}{\hat{\sigma}_{\overline{x}}} = \frac{\overline{x}-\mu}{\frac{s}{\sqrt{N}}}$$

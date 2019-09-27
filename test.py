@@ -1,7 +1,8 @@
 import dbasehandler as dbh
 handler = dbh.DbHandler()
 handler.setup_session()
-handler.analyze_results()
+handler.populate_metabase_collections()
+#handler.analyze_results()
 #handler.dbInit()
 #handler.populate_runs_all()
 #handler.guesses_exhaustive()
