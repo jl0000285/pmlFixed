@@ -113,12 +113,12 @@ The support vector machine is a two-group classification algorithm that attempts
 plane that seperates the inputs within the given input space with a maximum margin of seperation
 between the hyper plane and the ``support vectors'', those vectors on either side of the hyper plane
 that are closest too it. To arrive at a form of the support vector machine that can be used to classify
-new inputs, one first needs a representation of the potential seperating hyper plane $$y_i(\bold{w}*\bold{x_i} + b) > 1$$ such that $y_i$ is the truth label of given training input $x_i$, $w$ is a vector normal to our
+new inputs, one first needs a representation of the potential seperating hyper plane $$y_i(\mathbf{w}*\mathbf{x_i} + b) > 1$$ such that $y_i$ is the truth label of given training input $x_i$, $w$ is a vector normal to our
 candidate seperating hyper plane that represents how much ``weight'' is to be applied to an input, and $b$ is a bias constant representing the threshold the weight/input product needs to pass before it is considered
 classified. The distance of given hyper plane can be determined by calculating the difference between
 these previously mentioned ``support vectors'' in the direction normal to this hyper plane. This difference
-can be calculated via $$(\bold{x_{s+}}-\bold{x_{s-}})\bold{\frac{w}{||w||}}$$ where $\bold{x_{s+}$ and
-$\bold{x_{s-}$ are respectively positive and negative support vectors and $\bold{\frac{w}{||w||}}$ is
+can be calculated via $$(\bold{x_{s+}}-\bold{x_{s-}})\bold{\frac{w}{||w||}}$$ where $\bold{x_{s+}}$ and
+$\bold{x_{s-}}$ are respectively positive and negative support vectors and $\bold{\frac{w}{||w||}}$ is
 the unit vector in the direction normal to the hyper plane towards the positive examples. The size
 of the margin is $2/||w||$. As such the discovery of a working svm can be found by solving a
 constrained optimization problem in which the thing to be minimized is $1/2||w||^2$ subject to the

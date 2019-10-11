@@ -76,7 +76,8 @@ def base_set_collection_factory(classname, tablename):
         "data_name": Column(String),
         "data_path": Column(String),
         "base_name": Column(String),
-        "data_id": Column(Integer, primary_key=True),
+        "entry_id": Column(Integer, primary_key=True),
+        "data_id": Column(Integer, ForeignKey('all_data.data_id')),
         "weighted_mean": Column(Float),
         "coefficient_variation": Column(Float),
         "fpskew": Column(Float),
@@ -104,6 +105,7 @@ class Result(Base):
     __tablename__ = 'results'
 
     result_id = Column(Integer, primary_key=True)
+    collection_table = Column(String)
     meta_alg_name = Column(String)
     meta_base_name = Column(String)
     accuracy = Column(Float)
@@ -111,9 +113,10 @@ class Result(Base):
     rate_correct_score = Column(Float)
 
     def __repr__(self):
-        return ('<result(id={}, meta_alg_name={}, meta_base_name={},'
+        return ('<result(id={}, meta_alg_name={}, collection_table={}, meta_base_name={},'
                 'accuracy={}, training_time={}, rate_correct_score={})>').format(self.result_id,
                                                                                  self.meta_alg_name,
+                                                                                 self.collection_table,
                                                                                  self.meta_base_name,
                                                                                  self.accuracy,
                                                                                  self.training_time,
@@ -198,8 +201,8 @@ def guess_factory(classname, tablename, dataset):
         "__tablename__": tablename,
         "data_id": Column(Integer, ForeignKey('{}.data_id'.format(dataset.__tablename__))),
         "data_name": Column(String),
-        "metabase_set": Column(String),
-        "metabase_table": Column(String),
+        "collection_table": Column(String),
+        "metabase_name": Column(String),
         "guess_id": Column(Integer, primary_key=True),
         "guess_algorithm": Column(String),
         "guess_algorithm_id": Column(Integer, ForeignKey('algorithm.alg_id')),
@@ -300,15 +303,16 @@ def add_dset(session, args):
 
 
 def add_set_to_collection(session, args):
-    expected_args = ['meta_base_collection', 'meta_base_label',
+    expected_args = ['meta_base_collection', 'data_id', 'meta_base_label',
                      'data_file_name', 'data_path']
-    meta_base_collection, meta_base_label, data_name, data_path = itemgetter(*expected_args)(args)
+    meta_base_collection, data_id, meta_base_label, data_name, data_path = itemgetter(*expected_args)(args)
     all_data = globals()['DatasetAll']
     base = globals()[meta_base_collection]
     data_set = session.query(all_data).filter_by(data_path=data_path).first()
 
     new_set = base(data_name=data_set.data_name,
                    data_path=data_set.data_path,
+                   data_id=data_id,
                    base_name=meta_base_label,
                    weighted_mean=data_set.weighted_mean,
                    coefficient_variation=data_set.coefficient_variation,
@@ -318,6 +322,16 @@ def add_set_to_collection(session, args):
                    metric_time=data_set.metric_time)
 
     session.add(new_set)
+    session.commit()
+
+
+def clear_out_collections(session):
+    base_set_collection_limit = 30
+    base_set_collections = [('BaseSetCollection{}'.format(i), 'base_set_collection_{}'.format(i)) for i in
+                            range(base_set_collection_limit)]
+    for basename, tablename in base_set_collections:
+        base = globals()[basename]
+        session.query(base).delete()
     session.commit()
 
 
@@ -367,18 +381,27 @@ def add_alg_class(class_name, session):
     session.commit()
 
 
-def add_to_results(meta_alg, metabase, accuracy, train_time, rcs, session):
+def add_to_results(session, args):
+    expected_args = ['meta_alg', 'collection_table', 'metabase_name', 'accuracy', 'training_time', 'rate_correct_score']
+    meta_alg, collection_table, metabase_name, accuracy, training_time, rate_correct_score = itemgetter(*expected_args)(args)
     n_result = Result(meta_alg_name=meta_alg,
-                      meta_base_name=metabase,
+                      collection_table=collection_table,
+                      meta_base_name=metabase_name,
                       accuracy=accuracy,
-                      training_time=train_time,
-                      rate_correct_score=rcs)
+                      training_time=training_time,
+                      rate_correct_score=rate_correct_score)
     session.add(n_result)
     session.commit()
 
 
-def add_to_guesses(tableName, className, data_id, data_name, guess_algorithm_id, actual_algorithm_id, session):
-    base = globals()[className]
+def add_to_guesses(session, args):
+    expected_args = ['guess_class', 'collection_table', 'metabase_name',
+                     'data_id', 'data_name', 'guess_algorithm_id', 'actual_algorithm_id']
+
+    guess_class, collection_table, metabase_name, data_id, data_name, \
+    guess_algorithm_id, actual_algorithm_id = itemgetter(*expected_args)(args)
+
+    base = globals()[guess_class]
 
     if guess_algorithm_id == actual_algorithm_id:
         correct = 0
@@ -390,6 +413,7 @@ def add_to_guesses(tableName, className, data_id, data_name, guess_algorithm_id,
         guess_algorithm = algs.filter_by(alg_id=guess_algorithm_id).all()[0].alg_name
     except IndexError:
         guess_algorithm = 'NO ALG FOUND'
+        pdb.set_trace()
 
     try:
         actual_algorithm = algs.filter_by(alg_id=actual_algorithm_id).all()[0].alg_name
@@ -398,7 +422,8 @@ def add_to_guesses(tableName, className, data_id, data_name, guess_algorithm_id,
 
     guess = base(data_id=data_id,
                  data_name=data_name,
-                 metabase_table=tableName,
+                 collection_table=collection_table,
+                 metabase_name=metabase_name,
                  guess_algorithm=guess_algorithm,
                  guess_algorithm_id=guess_algorithm_id,
                  actual_algorithm=actual_algorithm,

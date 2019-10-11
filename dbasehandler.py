@@ -116,6 +116,7 @@ class DbHandler(object):
 
     def populate_metabase_collections(self):
         filelist = self.get_allowed_files()
+        datasets = self.session.query(repo.DatasetAll).all()
 
         for meta_base_collection, collection_table in self.base_set_collections:
             for meta_base_label in self.set_labels:
@@ -127,8 +128,10 @@ class DbHandler(object):
                     base.append(filelist[inx])
 
                 for data_path, data_file_name in base:
+                    dataset = self.session.query(repo.DatasetAll).filter_by(data_path=data_path).first()
                     print("Adding set {} at {}:{}".format(data_file_name, meta_base_label, meta_base_collection))
                     repo.add_set_to_collection(self.session, dict(meta_base_collection=meta_base_collection,
+                                                                  data_id=dataset.data_id,
                                                                   meta_base_label=meta_base_label,
                                                                   data_file_name=data_file_name,
                                                                   data_path=data_path))
@@ -280,19 +283,27 @@ class DbHandler(object):
             return rcs
 
         meta_algs = ['GuessesEx', 'GuessesActive', 'GuessesSamp']
-        base_sets = [tup[1] for tup in self.baseDataTables]
 
         for alg in meta_algs:
-            class_string = 'repo.{}'.format(alg)
-            class_object = eval(class_string)
-            for set in base_sets:
-                guesses = self.session.query(class_object).filter_by(metabase_table=set)
-                acc = calculate_accuracy(guesses)
-                train_time = calculate_training_time(guesses, alg)
-                rcs = calculate_rate_correct_score(acc, train_time)
-                repo.add_to_results(alg, set, acc, train_time, rcs, self.session)
+            meta_alg_class = getattr(repo, alg)
+            for collection_class_name, collection_table_name in self.base_set_collections:
+                for set_label in self.set_labels:
+                    print('Compiling results: alg:{} collection:{} base: {}'.format(alg,
+                                                                                    collection_table_name,
+                                                                                    set_label))
+                    guesses = self.session.query(meta_alg_class).filter_by(collection_table=collection_table_name).\
+                                                                 filter_by(metabase_name=set_label)
+                    acc = calculate_accuracy(guesses)
+                    train_time = calculate_training_time(guesses, alg)
+                    rcs = calculate_rate_correct_score(acc, train_time)
+                    repo.add_to_results(self.session, dict(meta_alg=alg,
+                                                           collection_table=collection_table_name,
+                                                           metabase_name=set_label,
+                                                           accuracy=acc,
+                                                           training_time=train_time,
+                                                           rate_correct_score=rcs))
 
-    def get_active_base(self, base_name):
+    def get_active_base(self, collection_name, base_name):
         """
         Steps: 
         1. Obtain metabase candidate datasets
@@ -363,9 +374,8 @@ class DbHandler(object):
 
             return max_inx
 
-        class_string = 'repo.{}'.format(base_name)
-        class_object = eval(class_string)
-        bases = self.session.query(class_object).all()
+        class_object = getattr(repo, collection_name)
+        bases = self.session.query(class_object).filter_by(base_name=base_name).all()
         candidates = list(bases)
         active_base = []
 
@@ -415,11 +425,18 @@ class DbHandler(object):
                 dataset.entropy]
         guess_label = Kmeans.predict(
             np.array(test).reshape(1, -1))  # Returns dataset from base_sets dataset is closest too
-        guess_inx = np.where(Kmeans.labels_ == guess_label)[0][0]
-        guess = self.find_best_algorithm(base_sets[guess_inx].data_id)  # Returns best algorithm for
-        # guess_set, with the assumption that
-        # that would then be the best algorithm for
-        # dataset
+
+        try:
+            guess_inx = np.where(Kmeans.labels_ == guess_label)[0][0]
+        except IndexError as ex:
+            guess_label = np.random.choice(Kmeans.labels_.tolist())
+            guess_inx = np.where(Kmeans.labels_ == guess_label)[0][0]
+
+        guess = self.find_best_algorithm(base_sets[guess_inx].data_id)
+
+        if guess is False:
+            pdb.set_trace()
+
         return (guess)
 
     def guess_with_sampler(self, base_sets, dataset):
@@ -473,9 +490,9 @@ class DbHandler(object):
         datasets = self.session.query(repo.DatasetAll).all()
 
         for class_name, table_name in self.base_set_collections:
-            class_string = 'repo.{}'.format(class_name)
-            class_object = getattr(repo, class_string)
+            class_object = getattr(repo, class_name)
             for set_label in self.set_labels:
+                print('Guessing exhaustively: {}: {}'.format(table_name, set_label))
                 curr_base = self.session.query(class_object).filter_by(base_name=set_label).all()
                 base_names = [set.data_name for set in curr_base]
                 for dataset in datasets:
@@ -488,13 +505,13 @@ class DbHandler(object):
                         data_id in the base set classes to set_id. 
                         """
                         solution = self.find_best_algorithm(dataset.data_id)
-                        repo.add_to_guesses(table_name,
-                                            guess_class,
-                                            dataset.data_id,
-                                            dataset.data_name,
-                                            guess,
-                                            solution,
-                                            self.session)
+                        repo.add_to_guesses(self.session, dict(guess_class=guess_class,
+                                                               collection_table=table_name,
+                                                               metabase_name=set_label,
+                                                               data_id=dataset.data_id,
+                                                               data_name=dataset.data_name,
+                                                               guess_algorithm_id=guess,
+                                                               actual_algorithm_id=solution))
 
     def guesses_active(self):
         """Given a set of databases, make guesses as to what would be the best 
@@ -503,26 +520,28 @@ class DbHandler(object):
         guess_class, guess_table = ('GuessesActive', 'guesses_active')
         datasets = self.session.query(repo.DatasetAll).all()
 
-        for className, tableName in self.baseDataTables:
-            active_base = self.get_active_base(className)
-            base_names = [set.data_name for set in active_base]
-            for dataset in datasets:
-                if dataset.data_name not in base_names:
-                    guess = self.guess_with_clusterer(active_base, dataset)
-                    """
-                    #need to modify various declartive bases such that data_id is a key
-                    #that exists only within datasets_all and so that the various base
-                    #set classes store that key on them selves, changing the column called
-                    data_id in the base set classes to set_id. 
-                    """
-                    solution = self.find_best_algorithm(dataset.data_id)
-                    repo.add_to_guesses(tableName,
-                                        guess_class,
-                                        dataset.data_id,
-                                        dataset.data_name,
-                                        guess,
-                                        solution,
-                                        self.session)
+        for class_name, table_name in self.base_set_collections:
+            for set_label in self.set_labels:
+                print('Guessing Active: {}: {}'.format(table_name, set_label))
+                active_base = self.get_active_base(class_name, set_label)
+                base_names = [set.data_name for set in active_base]
+                for dataset in datasets:
+                    if dataset.data_name not in base_names:
+                        guess = self.guess_with_clusterer(active_base, dataset)
+                        """
+                        #need to modify various declartive bases such that data_id is a key
+                        #that exists only within datasets_all and so that the various base
+                        #set classes store that key on them selves, changing the column called
+                        data_id in the base set classes to set_id. 
+                        """
+                        solution = self.find_best_algorithm(dataset.data_id)
+                        repo.add_to_guesses(self.session, dict(guess_class=guess_class,
+                                                               collection_table=table_name,
+                                                               metabase_name=set_label,
+                                                               data_id=dataset.data_id,
+                                                               data_name=dataset.data_name,
+                                                               guess_algorithm_id=guess,
+                                                               actual_algorithm_id=solution))
 
     def guesses_sampling(self):
         """Given a set of databases, make guesses as to what would be the best
@@ -531,22 +550,23 @@ class DbHandler(object):
         guess_class, guess_table = ('GuessesSamp', 'guesses_samp')
         datasets = self.session.query(repo.DatasetAll).all()
 
-        for className, tableName in self.baseDataTables:
-            class_string = 'repo.{}'.format(className)
-            class_object = eval(class_string)
-            curr_base = self.session.query(class_object).all()
-            base_names = [set.data_name for set in curr_base]
-            for dataset in datasets:
-                if dataset.data_name not in base_names:
-                    guess = self.guess_with_sampler(curr_base, dataset)
-                    solution = self.find_best_algorithm(dataset.data_id)
-                    repo.add_to_guesses(tableName,
-                                        guess_class,
-                                        dataset.data_id,
-                                        dataset.data_name,
-                                        guess,
-                                        solution,
-                                        self.session)
+        for class_name, table_name in self.base_set_collections:
+            for set_label in self.set_labels:
+                print('Guessing Sampling: {}: {}'.format(table_name, set_label))
+                class_object = getattr(repo, class_name)
+                curr_base = self.session.query(class_object).filter_by(base_name=set_label).all()
+                base_names = [set.data_name for set in curr_base]
+                for dataset in datasets:
+                    if dataset.data_name not in base_names:
+                        guess = self.guess_with_sampler(curr_base, dataset)
+                        solution = self.find_best_algorithm(dataset.data_id)
+                        repo.add_to_guesses(self.session, dict(guess_class=guess_class,
+                                                               collection_table=table_name,
+                                                               metabase_name=set_label,
+                                                               data_id=dataset.data_id,
+                                                               data_name=dataset.data_name,
+                                                               guess_algorithm_id=guess,
+                                                               actual_algorithm_id=solution))
 
     def print_databases(self):
         cnx = mysql.connector.connect(user='root', password='Welcome07', host='127.0.0.1')
@@ -555,6 +575,7 @@ class DbHandler(object):
         for i in cursor:
             print(i)
         cnx.close()
+
 
     def get_allowed_files(self):
         """Return list of allowed file tuples where elem one is path and 
@@ -582,6 +603,39 @@ class DbHandler(object):
         """
         # TODO: Place session logic stuff here
         from scipy.stats import binom
+
+        def get_means_over_collections(results_dict):
+            means_dict = {}
+            N = len(results_dict)
+
+            for sample in results_dict:
+                samp_dict = results_dict[sample]
+                for alg in samp_dict:
+                    finish_dict = samp_dict[alg]
+                    for pos in finish_dict:
+                        pos_list = finish_dict[pos]
+                        if alg in means_dict and pos in means_dict[alg]:
+                            orig_list = means_dict[alg][pos]
+                            means_dict[alg][pos] = [i+j for (i,j) in zip(orig_list, pos_list)]
+                        else:
+                            if alg not in means_dict:
+                                means_dict[alg] = dict()
+                            if pos not in means_dict[alg]:
+                                means_dict[alg][pos] = pos_list
+            pdb.set_trace()
+            for alg in means_dict:
+                for pos in means_dict[alg]:
+                    means_dict[alg][pos][0] = means_dict[alg][pos][0]/N
+            pdb.set_trace()
+            return means_dict
+
+        def extract_meta_algs(algs):
+            meta_algs_ = []
+            m_algs = algs.all()
+            for tup in m_algs:
+                meta_algs.append(tup[0])
+            return meta_algs_
+
         def calculate_standard_deviations(results_dict, N):
             stds = {}
             for i in range(N):
@@ -621,26 +675,31 @@ class DbHandler(object):
             P = NchooseK * probCalc
             return P
 
-        meta_bases = self.session.query(repo.Result.meta_base_name).distinct()
         meta_algs = self.session.query(repo.Result.meta_alg_name).distinct()
         results_dict = {}
-        for alg in meta_algs:
-            res_dict = {}
-            for i in range(len(meta_algs.all())):
-                res_dict[str(i)] = [0, 0, 0]  # Count, Proportion prob, t-score
-            results_dict[str(alg[0])] = res_dict.copy()
-        for base in meta_bases:
-            accuracies = []
+        for i in range(self.base_set_collection_limit):
+            results_dict['sample_{}'.format(i)] = dict()
             for alg in meta_algs:
-                res = self.session.query(repo.Result).filter_by(meta_alg_name=str(alg[0]),
-                                                                meta_base_name=str(base[0])).first()
-                tup = (res.accuracy, str(alg[0]))
-                accuracies.append(tup)
-            accuracies.sort(reverse=True)
-            for inx, acc in enumerate(accuracies):
-                results_dict[acc[1]][str(inx)][0] += 1
+                res_dict = {}
+                for j in range(len(meta_algs.all())):
+                    res_dict[str(j)] = [0, 0, 0]  # Count, Proportion prob, t-score
+                results_dict['sample_{}'.format(i)][str(alg[0])] = res_dict.copy()
+
+        for inx, (collection_name, collection_table) in enumerate(self.base_set_collections):
+            for label in self.set_labels:
+                accuracies = []
+                for alg in meta_algs:
+                    res = self.session.query(repo.Result).filter_by(meta_alg_name=str(alg[0]),
+                                                                    collection_table=collection_table,
+                                                                    meta_base_name=label).first()
+                    tup = (res.accuracy, str(alg[0]))
+                    accuracies.append(tup)
+                accuracies.sort(reverse=True)
+                for inx2, acc in enumerate(accuracies):
+                    results_dict['sample_{}'.format(inx)][acc[1]][str(inx2)][0] += 1
         pdb.set_trace()
-        E = len(meta_bases.all()) / len(meta_algs.all())  # Expected value given all metalearners are equal
+        means_dict = get_means_over_collections(results_dict)
+        E = self.base_set_limit / len(meta_algs.all())  # Expected value given all metalearners are equal
         N = len(meta_algs.all())
         for alg in results_dict:
             for key in results_dict[alg]:
