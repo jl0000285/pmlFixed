@@ -607,73 +607,134 @@ class DbHandler(object):
         def get_means_over_collections(results_dict):
             means_dict = {}
             N = len(results_dict)
-
             for sample in results_dict:
                 samp_dict = results_dict[sample]
                 for alg in samp_dict:
                     finish_dict = samp_dict[alg]
                     for pos in finish_dict:
-                        pos_list = finish_dict[pos]
+                        count = finish_dict[pos]
                         if alg in means_dict and pos in means_dict[alg]:
-                            orig_list = means_dict[alg][pos]
-                            means_dict[alg][pos] = [i+j for (i,j) in zip(orig_list, pos_list)]
+                            orig_count = means_dict[alg][pos]
+                            means_dict[alg][pos] = orig_count + count
                         else:
                             if alg not in means_dict:
                                 means_dict[alg] = dict()
                             if pos not in means_dict[alg]:
-                                means_dict[alg][pos] = pos_list
-            pdb.set_trace()
+                                means_dict[alg][pos] = count
             for alg in means_dict:
                 for pos in means_dict[alg]:
-                    means_dict[alg][pos][0] = means_dict[alg][pos][0]/N
-            pdb.set_trace()
+                    means_dict[alg][pos] = means_dict[alg][pos]/N
             return means_dict
 
-        def extract_meta_algs(algs):
-            meta_algs_ = []
-            m_algs = algs.all()
-            for tup in m_algs:
-                meta_algs.append(tup[0])
-            return meta_algs_
+        def get_stds_from_collections(results_dict, means_dict):
+            # rho = sqrt(1/N * ( summation(i=1-to-N)(x_i - mean)^2 ))
+            N = len(results_dict)
+            stds_dict = {}
 
-        def calculate_standard_deviations(results_dict, N):
-            stds = {}
-            for i in range(N):
-                tot = 0
-                for key in results_dict:
-                    tot += results_dict[key][str(i)][0]
-                mean = tot / N
-                sum_distance = 0
-                for key in results_dict:
-                    sum_distance += (results_dict[key][str(i)][0]) ** 2
-                stds[str(i)] = (sum_distance / N) ** (0.5)
-            return stds
+            #initialize stds_dict
+            for alg in means_dict:
+                stds_dict[alg] = dict()
+                for pos in means_dict[alg]:
+                    stds_dict[alg][pos] = 0
 
-        def calculate_t_scores(results_dict, stds, E, N):
-            # t = sample_mean-pop_mean/(samp_std/root(number_samps))
-            t_scores = dict()
-            pdb.set_trace()
-            for i in range(N):
-                tot = 0
-                for key in results_dict:
-                    tot += results_dict[key][str(i)][0]
-                mean = tot / N
-                t = (mean - E) / (stds[str(i)] / (N) ** (0.5))
-                t_scores[str(i)] = t
-            return t_scores
+            #sum squared diffrences
+            for sample in results_dict:
+                for alg in results_dict[sample]:
+                    for pos in results_dict[sample][alg]:
+                        squared_difference = (results_dict[sample][alg][pos] - means_dict[alg][pos])**2
+                        stds_dict[alg][pos] += squared_difference
+
+            #Normalize and root squared_differences
+            for alg in stds_dict:
+                for pos in stds_dict[alg]:
+                    stds_dict[alg][pos] = (stds_dict[alg][pos]/N) ** (1/2)
+
+            return stds_dict
+
+        def get_proportion_probabilities_from_collections(results_dict, E):
+            proportions_dict = {}
+            N = 0
+            for pos in results_dict['sample_0']['GuessesEx']:
+                N += results_dict['sample_0']['GuessesEx'][pos]
+
+            for sample in results_dict:
+                proportions_dict[sample] = dict()
+                for alg in results_dict[sample]:
+                    proportions_dict[sample][alg] = dict()
+                    for pos in results_dict[sample][alg]:
+                        proportions_dict[sample][alg][pos] = calculate_sample_proportion_probability(
+                            results_dict[sample][alg][pos],
+                            E,
+                            N
+                        )
+
+            return proportions_dict
+
+        def get_t_scores_from_collections(results_dict, stds_dict, E):
+            t_scores_dict = {}
+            N = len(results_dict)
+            for pos in results_dict['sample_0']['GuessesEx']:
+                N += results_dict['sample_0']['GuessesEx'][pos]
+
+            for sample in results_dict:
+                t_scores_dict[sample] = dict()
+                for alg in results_dict[sample]:
+                    t_scores_dict[sample][alg] = dict()
+                    for pos in results_dict[sample][alg]:
+                        t_scores_dict[sample][alg][pos] = calculate_t_score(
+                            results_dict[sample][alg][pos],
+                            stds_dict[alg][pos],
+                            E,
+                            N
+                        )
+
+            return t_scores_dict
+
+        def calculate_t_score(value, std, E, N):
+            # t = sample_mean-pop_mean / ( samp_std / root(number_samps) )
+            mean_diff = value - E
+            denom = std / (N) ** (1/2)
+            t_score = mean_diff / denom
+            return t_score
 
         def calculate_sample_proportion_probability(i, E, N):
             """
-            Calculate probability of sample proportion from i = number of yesses,
-            E = expected number of yesses, and N the over all number of trials. 
+            Calculate probability of sample proportion from:
+            i = number of yesses,
+            E = expected number of yesses
+            N = the over all number of trials
+            M = max number of yeses
             Logic based from Emperical methods for artificial intelligence by paul cohen, 
             page 112 
             """
-            p = E / 10
+            r = E / N
             NchooseK = (math.factorial(N) / (math.factorial(i) * math.factorial(N - i)))
-            probCalc = p ** (i) * (1 - p) ** (N - i)
+            probCalc = r ** (i) * (1 - r) ** (N - i)
             P = NchooseK * probCalc
             return P
+
+        def get_average_of_samples(samples):
+            averaged_grid = {}
+            N = len(samples)
+
+            #initialize averaged_grid:
+            for alg in samples['sample_0']:
+                averaged_grid[alg] = dict()
+                for pos in samples['sample_0'][alg]:
+                    averaged_grid[alg][pos] = 0
+
+            #Sum values across samples
+            for sample in samples:
+                for alg in samples[sample]:
+                    for pos in samples[sample][alg]:
+                        averaged_grid[alg][pos] += samples[sample][alg][pos]
+
+            #divide grid values by N to obtain means
+            for alg in averaged_grid:
+                for pos in averaged_grid[alg]:
+                    averaged_grid[alg][pos] = averaged_grid[alg][pos] / N
+
+            return averaged_grid
 
         meta_algs = self.session.query(repo.Result.meta_alg_name).distinct()
         results_dict = {}
@@ -682,7 +743,7 @@ class DbHandler(object):
             for alg in meta_algs:
                 res_dict = {}
                 for j in range(len(meta_algs.all())):
-                    res_dict[str(j)] = [0, 0, 0]  # Count, Proportion prob, t-score
+                    res_dict[str(j)] = 0
                 results_dict['sample_{}'.format(i)][str(alg[0])] = res_dict.copy()
 
         for inx, (collection_name, collection_table) in enumerate(self.base_set_collections):
@@ -696,15 +757,14 @@ class DbHandler(object):
                     accuracies.append(tup)
                 accuracies.sort(reverse=True)
                 for inx2, acc in enumerate(accuracies):
-                    results_dict['sample_{}'.format(inx)][acc[1]][str(inx2)][0] += 1
-        pdb.set_trace()
-        means_dict = get_means_over_collections(results_dict)
+                    results_dict['sample_{}'.format(inx)][acc[1]][str(inx2)] += 1
+
         E = self.base_set_limit / len(meta_algs.all())  # Expected value given all metalearners are equal
         N = len(meta_algs.all())
-        for alg in results_dict:
-            for key in results_dict[alg]:
-                results_dict[alg][key][1] = calculate_sample_proportion_probability(results_dict[alg][key][0], E,
-                                                                                    len(meta_bases.all()))
+        means_dict = get_means_over_collections(results_dict)
+        stds_dict = get_stds_from_collections(results_dict, means_dict)
+        proportion_probs_dict = get_proportion_probabilities_from_collections(results_dict, E)
+        t_scores_dict = get_t_scores_from_collections(results_dict, stds_dict, E)
+        averaged_probs = get_average_of_samples(proportion_probs_dict)
+        averaged_t_scores = get_average_of_samples(t_scores_dict)
         pdb.set_trace()
-        stds = calculate_standard_deviations(results_dict, N)
-        t_scores = calculate_t_scores(results_dict, stds, E, N)
