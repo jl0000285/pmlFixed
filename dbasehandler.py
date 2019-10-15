@@ -18,6 +18,8 @@ import repo
 import pdb
 import random
 import math
+import pandas as pd
+from tabulate import tabulate
 
 
 class DbHandler(object):
@@ -736,6 +738,49 @@ class DbHandler(object):
 
             return averaged_grid
 
+        def get_nested_dict_frame(nested):
+            frame = pd.DataFrame.from_dict({(i,j): nested[i][j]
+                           for i in nested.keys()
+                           for j in nested[i].keys()},
+                       orient='index')
+            return frame
+
+        def print_data_in_table(self, dicts):
+            frame = pd.DataFrame(dicts)
+            headers = dicts.keys().sort()
+            table = tabulate(frame, headers)
+
+        def get_lists_of_lists_from_nested_dicts(nested):
+            #Get lists of lists from nesteds that look like
+            #results dict
+            arrays = [[[p for d, p in v.items()] for k, v in i.items()] for j, i in nested.items()]
+            return arrays
+
+        def get_multi_index_from_sample(sample):
+            alg_names = sample.keys()
+            pos_names = sample[alg_names[0]].keys()
+            tuples = []
+            for alg in alg_names:
+                for pos in pos_names:
+                    tuples.append((alg, pos))
+            index = pd.MultiIndex.from_tuples(tuples, names=['algorithms', 'positions'])
+            pdb.set_trace()
+            return index
+
+        def human_sort(array):
+            def try_int_else_text(text):
+                return int(text) if text.isdigit() else text
+
+            def natural_keys(text):
+                '''
+                alist.sort(key=natural_keys) sorts in human order
+                http://nedbatchelder.com/blog/200712/human_sorting.html
+                (See Toothy's implementation in the comments)
+                '''
+                return [try_int_else_text(c) for c in re.split(r'(\d+)', text)]
+            array.sort(key=natural_keys)
+            return array
+
         meta_algs = self.session.query(repo.Result.meta_alg_name).distinct()
         results_dict = {}
         for i in range(self.base_set_collection_limit):
@@ -767,4 +812,11 @@ class DbHandler(object):
         t_scores_dict = get_t_scores_from_collections(results_dict, stds_dict, E)
         averaged_probs = get_average_of_samples(proportion_probs_dict)
         averaged_t_scores = get_average_of_samples(t_scores_dict)
+        row_labels = results_dict.keys()
+        headers = results_dict['sample_0'].keys().sort()
+        human_sort(row_labels)
+        index = get_multi_index_from_sample(results_dict['sample_0'])
+        results_list = get_lists_of_lists_from_nested_dicts(results_dict)
         pdb.set_trace()
+
+
