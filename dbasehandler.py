@@ -597,108 +597,101 @@ class DbHandler(object):
                         f.append(tup)
         return f
 
-    def analyze_results(self):
-        """
-        Analyze results table and produce a likelihood of rejection of the null hypothesis 
-        where the null hypthesis is that n1=n2=n3 for all algorithms where n1 is the number of first place
-        results, n2 the number of second place results, and n3 is the number of third place results 
-        """
-        # TODO: Place session logic stuff here
-        from scipy.stats import binom
 
-        def get_means_over_collections(results_dict):
-            means_dict = {}
-            N = len(results_dict)
-            for sample in results_dict:
-                samp_dict = results_dict[sample]
-                for alg in samp_dict:
-                    finish_dict = samp_dict[alg]
-                    for pos in finish_dict:
-                        count = finish_dict[pos]
-                        if alg in means_dict and pos in means_dict[alg]:
-                            orig_count = means_dict[alg][pos]
-                            means_dict[alg][pos] = orig_count + count
-                        else:
-                            if alg not in means_dict:
-                                means_dict[alg] = dict()
-                            if pos not in means_dict[alg]:
-                                means_dict[alg][pos] = count
-            for alg in means_dict:
-                for pos in means_dict[alg]:
-                    means_dict[alg][pos] = means_dict[alg][pos]/N
-            return means_dict
+class ResultsAnalyzer:
+    """
+    Analyze results table and produce a likelihood of rejection of the null hypothesis
+    where the null hypthesis is that n1=n2=n3 for all algorithms where n1 is the number of first place
+    results, n2 the number of second place results, and n3 is the number of third place results
+    """
+    def __init__(self, dbh_):
+        # WARNING: TONS of temporal copling in this class. Have to use main method for it to work at all
+        # Moreover main method is expected to be run once and only once
+        self.dbh = dbh_  # Associated database handler
+        self.meta_algs = self.dbh.session.query(repo.Result.meta_alg_name).distinct()
+        self.results_dict = {}
+        self.means_dict = {}
+        self.stds_dict = {}
+        self.proportions_dict = {}
+        self.t_scores_dict = {}
 
-        def get_stds_from_collections(results_dict, means_dict):
-            # rho = sqrt(1/N * ( summation(i=1-to-N)(x_i - mean)^2 ))
-            N = len(results_dict)
-            stds_dict = {}
+        self.initialize()
 
-            #initialize stds_dict
-            for alg in means_dict:
-                stds_dict[alg] = dict()
-                for pos in means_dict[alg]:
-                    stds_dict[alg][pos] = 0
+    def initialize(self):
+        E = self.dbh.base_set_limit / len(self.meta_algs.all())  # Expected value given all metalearners are equal
+        self.craft_initial_results_dict()
+        self.add_data_to_results_dict()
+        self.get_means_over_collections()
+        self.get_stds_from_collections()
+        self.get_proportion_probabilities_from_collections(E)
+        self.get_t_scores_from_collections(E)
 
-            #sum squared diffrences
-            for sample in results_dict:
-                for alg in results_dict[sample]:
-                    for pos in results_dict[sample][alg]:
-                        squared_difference = (results_dict[sample][alg][pos] - means_dict[alg][pos])**2
-                        stds_dict[alg][pos] += squared_difference
+    def craft_initial_results_dict(self):
+        for i in range(self.dbh.base_set_collection_limit):
+            self.results_dict['sample_{}'.format(i)] = dict()
+            for alg in self.meta_algs:
+                res_dict = {}
+                for j in range(len(self.meta_algs.all())):
+                    res_dict[str(j)] = 0
+                self.results_dict['sample_{}'.format(i)][str(alg[0])] = res_dict.copy()
 
-            #Normalize and root squared_differences
-            for alg in stds_dict:
-                for pos in stds_dict[alg]:
-                    stds_dict[alg][pos] = (stds_dict[alg][pos]/N) ** (1/2)
+    def add_data_to_results_dict(self):
+        for inx, (collection_name, collection_table) in enumerate(self.dbh.base_set_collections):
+            for label in self.dbh.set_labels:
+                accuracies = []
+                for alg in self.meta_algs:
+                    res = self.dbh.session.query(repo.Result).filter_by(meta_alg_name=str(alg[0]),
+                                                                    collection_table=collection_table,
+                                                                    meta_base_name=label).first()
+                    tup = (res.accuracy, str(alg[0]))
+                    accuracies.append(tup)
+                accuracies.sort(reverse=True)
+                for inx2, acc in enumerate(accuracies):
+                    self.results_dict['sample_{}'.format(inx)][acc[1]][str(inx2)] += 1
 
-            return stds_dict
+    def get_means_over_collections(self):
+        N = len(self.results_dict)
+        for sample in self.results_dict:
+            samp_dict = self.results_dict[sample]
+            for alg in samp_dict:
+                finish_dict = samp_dict[alg]
+                for pos in finish_dict:
+                    count = finish_dict[pos]
+                    if alg in self.means_dict and pos in self.means_dict[alg]:
+                        orig_count = self.means_dict[alg][pos]
+                        self.means_dict[alg][pos] = orig_count + count
+                    else:
+                        if alg not in self.means_dict:
+                            self.means_dict[alg] = dict()
+                        if pos not in self.means_dict[alg]:
+                            self.means_dict[alg][pos] = count
+        for alg in self.means_dict:
+            for pos in self.means_dict[alg]:
+                self.means_dict[alg][pos] = self.means_dict[alg][pos] / N
 
-        def get_proportion_probabilities_from_collections(results_dict, E):
-            proportions_dict = {}
-            N = 0
-            for pos in results_dict['sample_0']['GuessesEx']:
-                N += results_dict['sample_0']['GuessesEx'][pos]
+    def get_stds_from_collections(self):
+        # rho = sqrt(1/N * ( summation(i=1-to-N)(x_i - mean)^2 ))
+        N = len(self.results_dict)
 
-            for sample in results_dict:
-                proportions_dict[sample] = dict()
-                for alg in results_dict[sample]:
-                    proportions_dict[sample][alg] = dict()
-                    for pos in results_dict[sample][alg]:
-                        proportions_dict[sample][alg][pos] = calculate_sample_proportion_probability(
-                            results_dict[sample][alg][pos],
-                            E,
-                            N
-                        )
+        # initialize stds_dict
+        for alg in self.means_dict:
+            self.stds_dict[alg] = dict()
+            for pos in self.means_dict[alg]:
+                self.stds_dict[alg][pos] = 0
 
-            return proportions_dict
+        # sum squared diffrences
+        for sample in self.results_dict:
+            for alg in self.results_dict[sample]:
+                for pos in self.results_dict[sample][alg]:
+                    squared_difference = (self.results_dict[sample][alg][pos] - self.means_dict[alg][pos]) ** 2
+                    self.stds_dict[alg][pos] += squared_difference
 
-        def get_t_scores_from_collections(results_dict, stds_dict, E):
-            t_scores_dict = {}
-            N = len(results_dict)
-            for pos in results_dict['sample_0']['GuessesEx']:
-                N += results_dict['sample_0']['GuessesEx'][pos]
+        # Normalize and root squared_differences
+        for alg in self.stds_dict:
+            for pos in self.stds_dict[alg]:
+                self.stds_dict[alg][pos] = (self.stds_dict[alg][pos] / N) ** (1 / 2)
 
-            for sample in results_dict:
-                t_scores_dict[sample] = dict()
-                for alg in results_dict[sample]:
-                    t_scores_dict[sample][alg] = dict()
-                    for pos in results_dict[sample][alg]:
-                        t_scores_dict[sample][alg][pos] = calculate_t_score(
-                            results_dict[sample][alg][pos],
-                            stds_dict[alg][pos],
-                            E,
-                            N
-                        )
-
-            return t_scores_dict
-
-        def calculate_t_score(value, std, E, N):
-            # t = sample_mean-pop_mean / ( samp_std / root(number_samps) )
-            mean_diff = value - E
-            denom = std / (N) ** (1/2)
-            t_score = mean_diff / denom
-            return t_score
-
+    def get_proportion_probabilities_from_collections(self, E):
         def calculate_sample_proportion_probability(i, E, N):
             """
             Calculate probability of sample proportion from:
@@ -706,8 +699,8 @@ class DbHandler(object):
             E = expected number of yesses
             N = the over all number of trials
             M = max number of yeses
-            Logic based from Emperical methods for artificial intelligence by paul cohen, 
-            page 112 
+            Logic based from Emperical methods for artificial intelligence by paul cohen,
+            page 112
             """
             r = E / N
             NchooseK = (math.factorial(N) / (math.factorial(i) * math.factorial(N - i)))
@@ -715,108 +708,152 @@ class DbHandler(object):
             P = NchooseK * probCalc
             return P
 
-        def get_average_of_samples(samples):
-            averaged_grid = {}
-            N = len(samples)
+        N = 0
+        for pos in self.results_dict['sample_0']['GuessesEx']:
+            N += self.results_dict['sample_0']['GuessesEx'][pos]
 
-            #initialize averaged_grid:
-            for alg in samples['sample_0']:
-                averaged_grid[alg] = dict()
-                for pos in samples['sample_0'][alg]:
-                    averaged_grid[alg][pos] = 0
+        for sample in self.results_dict:
+            self.proportions_dict[sample] = dict()
+            for alg in self.results_dict[sample]:
+                self.proportions_dict[sample][alg] = dict()
+                for pos in self.results_dict[sample][alg]:
+                    self.proportions_dict[sample][alg][pos] = calculate_sample_proportion_probability(
+                        self.results_dict[sample][alg][pos],
+                        E,
+                        N
+                    )
 
-            #Sum values across samples
-            for sample in samples:
-                for alg in samples[sample]:
-                    for pos in samples[sample][alg]:
-                        averaged_grid[alg][pos] += samples[sample][alg][pos]
+    def get_t_scores_from_collections(self, E):
+        def calculate_t_score(value, std, E, N):
+            # t = sample_mean-pop_mean / ( samp_std / root(number_samps) )
+            mean_diff = value - E
+            denom = std / (N) ** (1 / 2)
+            t_score = mean_diff / denom
+            return t_score
 
-            #divide grid values by N to obtain means
-            for alg in averaged_grid:
-                for pos in averaged_grid[alg]:
-                    averaged_grid[alg][pos] = averaged_grid[alg][pos] / N
+        N = len(self.results_dict)
+        for pos in self.results_dict['sample_0']['GuessesEx']:
+            N += self.results_dict['sample_0']['GuessesEx'][pos]
 
-            return averaged_grid
+        for sample in self.results_dict:
+            self.t_scores_dict[sample] = dict()
+            for alg in self.results_dict[sample]:
+                self.t_scores_dict[sample][alg] = dict()
+                for pos in self.results_dict[sample][alg]:
+                    self.t_scores_dict[sample][alg][pos] = calculate_t_score(
+                        self.results_dict[sample][alg][pos],
+                        self.stds_dict[alg][pos],
+                        E,
+                        N
+                    )
 
-        def get_nested_dict_frame(nested):
-            frame = pd.DataFrame.from_dict({(i,j): nested[i][j]
-                           for i in nested.keys()
-                           for j in nested[i].keys()},
-                       orient='index')
-            return frame
+    @staticmethod
+    def get_average_of_samples(samples):
+        averaged_grid = {}
+        N = len(samples)
 
-        def print_data_in_table(self, dicts):
-            frame = pd.DataFrame(dicts)
-            headers = dicts.keys().sort()
-            table = tabulate(frame, headers)
+        # initialize averaged_grid:
+        for alg in samples['sample_1']:
+            averaged_grid[alg] = dict()
+            for pos in samples['sample_0'][alg]:
+                averaged_grid[alg][pos] = 0
 
-        def get_lists_of_lists_from_nested_dicts(nested):
-            #Get lists of lists from nesteds that look like
-            #results dict
-            arrays = [[[p for d, p in v.items()] for k, v in i.items()] for j, i in nested.items()]
-            return arrays
+        # Sum values across samples
+        for sample in samples:
+            for alg in samples[sample]:
+                for pos in samples[sample][alg]:
+                    averaged_grid[alg][pos] += samples[sample][alg][pos]
 
-        def get_multi_index_from_sample(sample):
-            alg_names = sample.keys()
-            pos_names = sample[alg_names[0]].keys()
-            tuples = []
-            for alg in alg_names:
-                for pos in pos_names:
-                    tuples.append((alg, pos))
-            index = pd.MultiIndex.from_tuples(tuples, names=['algorithms', 'positions'])
-            pdb.set_trace()
-            return index
+        # divide grid values by N to obtain means
+        for alg in averaged_grid:
+            for pos in averaged_grid[alg]:
+                averaged_grid[alg][pos] = averaged_grid[alg][pos] / N
 
-        def human_sort(array):
-            def try_int_else_text(text):
-                return int(text) if text.isdigit() else text
+        return averaged_grid
 
-            def natural_keys(text):
-                '''
-                alist.sort(key=natural_keys) sorts in human order
-                http://nedbatchelder.com/blog/200712/human_sorting.html
-                (See Toothy's implementation in the comments)
-                '''
-                return [try_int_else_text(c) for c in re.split(r'(\d+)', text)]
-            array.sort(key=natural_keys)
-            return array
+    @staticmethod
+    def get_nested_dict_frame(nested):
+        frame = pd.DataFrame.from_dict({(i, j): nested[i][j]
+                                        for i in nested.keys()
+                                        for j in nested[i].keys()},
+                                       orient='index')
+        return frame
 
-        meta_algs = self.session.query(repo.Result.meta_alg_name).distinct()
-        results_dict = {}
-        for i in range(self.base_set_collection_limit):
-            results_dict['sample_{}'.format(i)] = dict()
-            for alg in meta_algs:
-                res_dict = {}
-                for j in range(len(meta_algs.all())):
-                    res_dict[str(j)] = 0
-                results_dict['sample_{}'.format(i)][str(alg[0])] = res_dict.copy()
+    @staticmethod
+    def print_data_in_table(self, dicts):
+        frame = pd.DataFrame(dicts)
+        headers = dicts.keys().sort()
+        table = tabulate(frame, headers)
 
-        for inx, (collection_name, collection_table) in enumerate(self.base_set_collections):
-            for label in self.set_labels:
-                accuracies = []
-                for alg in meta_algs:
-                    res = self.session.query(repo.Result).filter_by(meta_alg_name=str(alg[0]),
-                                                                    collection_table=collection_table,
-                                                                    meta_base_name=label).first()
-                    tup = (res.accuracy, str(alg[0]))
-                    accuracies.append(tup)
-                accuracies.sort(reverse=True)
-                for inx2, acc in enumerate(accuracies):
-                    results_dict['sample_{}'.format(inx)][acc[1]][str(inx2)] += 1
-
-        E = self.base_set_limit / len(meta_algs.all())  # Expected value given all metalearners are equal
-        N = len(meta_algs.all())
-        means_dict = get_means_over_collections(results_dict)
-        stds_dict = get_stds_from_collections(results_dict, means_dict)
-        proportion_probs_dict = get_proportion_probabilities_from_collections(results_dict, E)
-        t_scores_dict = get_t_scores_from_collections(results_dict, stds_dict, E)
-        averaged_probs = get_average_of_samples(proportion_probs_dict)
-        averaged_t_scores = get_average_of_samples(t_scores_dict)
-        row_labels = results_dict.keys()
-        headers = results_dict['sample_0'].keys().sort()
-        human_sort(row_labels)
-        index = get_multi_index_from_sample(results_dict['sample_0'])
-        results_list = get_lists_of_lists_from_nested_dicts(results_dict)
+    @staticmethod
+    def get_lists_of_lists_from_nested_dicts(nested):
+        # Get lists of lists from nesteds that look like
+        # results dict
+        set_array = []
+        for sample in nested:
+            sample_ar = []
+            for alg in nested[sample]:
+                alg_ar = []
+                for pos in nested[sample][alg]:
+                    alg_ar.append(nested[sample][alg][pos])
+                sample_ar.append(alg_ar)
+            set_array.append(sample_ar)
+        # arrays = [[[p for d, p in v.items()] for k, v in i.items()] for j, i in nested.items()]
         pdb.set_trace()
+        return set_array
+
+    @staticmethod
+    def get_lists_of_long_samples_from_lists_of_lists(lists_lists):
+        long_samples = []
+
+        for outer_list in lists_lists:
+            arr = []
+            for inner_list in outer_list:
+                for item in inner_list:
+                    arr.append(item)
+            long_samples.append(arr)
+        return long_samples
+
+    @staticmethod
+    def get_multi_index_from_sample(sample):
+        alg_names = sample.keys()
+        pos_names = sample[alg_names[0]].keys()
+        tuples = []
+        for alg in alg_names:
+            for pos in pos_names:
+                tuples.append((alg, pos))
+        index = pd.MultiIndex.from_tuples(tuples, names=['algorithms', 'positions'])
+        return index
+
+    @staticmethod
+    def human_sort(array):
+        def try_int_else_text(text):
+            return int(text) if text.isdigit() else text
+
+        def natural_keys(text):
+            '''
+            alist.sort(key=natural_keys) sorts in human order
+            http://nedbatchelder.com/blog/200712/human_sorting.html
+            (See Toothy's implementation in the comments)
+            '''
+            return [try_int_else_text(c) for c in re.split(r'(\d+)', text)]
+
+        array.sort(key=natural_keys)
+        return array
+
+    def main(self):
+        N = len(self.meta_algs.all())
+        averaged_probs = self.get_average_of_samples(self.proportions_dict)
+        averaged_t_scores = self.get_average_of_samples(self.t_scores_dict)
+        row_labels = self.results_dict.keys()
+        headers = self.results_dict['sample_1'].keys().sort()
+        self.human_sort(row_labels)
+        index = self.get_multi_index_from_sample(self.results_dict['sample_1'])
+        results_list = self.get_lists_of_lists_from_nested_dicts(self.results_dict)
+        long_samples = self.get_lists_of_long_samples_from_lists_of_lists(results_list)
+        frame = pd.DataFrame(long_samples, columns=index)
+        pdb.set_trace()
+
+
 
 
