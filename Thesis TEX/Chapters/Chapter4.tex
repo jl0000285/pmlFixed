@@ -61,12 +61,13 @@ Third &       2.733333 &        2.9 &     4.366667 \\
 \caption{Placement results means}
 \end{table}
 
-If each of the algorithms were truly equal, we would expect the averaged numbers for each
-of the positions to be near 3.3. Instead, it appears that the sampler performed the best. Whether or not
-these results fall far enough outside expectation in order to reject the null hypothesis requires
-the machinary of classical statistics. Two fairly reliable measures of how unlikely these results are
-are the sampling distribution probabilities and t scores of each of the results. A brief description of each of these
-statistical methods follows.
+If each of the algorithms were truly equal, we would expect the averaged numbers
+for each of the positions to be near 3.3. Instead, it appears that the sampler
+performed the best. Whether or not these results fall far enough outside
+expectation in order to reject the null hypothesis requires the machinary of
+classical statistics. Two fairly reliable measures of how unlikely these results
+are are the sampling distribution probabilities and t scores of each of the
+results. A brief description of each of these statistical methods follows.
 
 \subsection{Exact Sampling Distribution}
 The following description losely follows the procedure described in \cite{Cohen}.
@@ -140,6 +141,7 @@ are 0.26 and 0.22 respectively. The average of all values within this table is
 0.15, significantly lower than either expected value. Still, this is not enough
 to reject the null hypothesis.
 
+\subsection{t score}
 In order to confidantly reject the null hypothesis, we will make use of the
 T test.  The t test equation is as follows:
 $$t =\frac{\overline{x}-\mu}{\hat{\sigma}_{\overline{x}}} = \frac{\overline{x}-\mu}{\frac{s}{\sqrt{N}}}$$
