@@ -605,15 +605,20 @@ class ResultsAnalyzer:
     results, n2 the number of second place results, and n3 is the number of third place results
     """
     def __init__(self, dbh_):
-        # WARNING: TONS of temporal copling in this class. Have to use main method for it to work at all
+        # WARNING: TONS of temporal coupling in this class. Have to use main method for it to work at all
         # Moreover main method is expected to be run once and only once
         self.dbh = dbh_  # Associated database handler
         self.meta_algs = self.dbh.session.query(repo.Result.meta_alg_name).distinct()
         self.results_dict = {}
-        self.means_dict = {}
-        self.stds_dict = {}
         self.proportions_dict = {}
         self.t_scores_dict = {}
+
+        self.means_dict = {}
+        self.stds_dict = {}
+
+        self.results_keys = []
+        self.alg_keys = []
+        self.pos_keys = []
 
         self.initialize()
 
@@ -625,6 +630,7 @@ class ResultsAnalyzer:
         self.get_stds_from_collections()
         self.get_proportion_probabilities_from_collections(E)
         self.get_t_scores_from_collections(E)
+        self.get_and_sort_keys()
 
     def craft_initial_results_dict(self):
         for i in range(self.dbh.base_set_collection_limit):
@@ -707,7 +713,6 @@ class ResultsAnalyzer:
             probCalc = r ** (i) * (1 - r) ** (N - i)
             P = NchooseK * probCalc
             return P
-
         N = 0
         for pos in self.results_dict['sample_0']['GuessesEx']:
             N += self.results_dict['sample_0']['GuessesEx'][pos]
@@ -747,26 +752,56 @@ class ResultsAnalyzer:
                         N
                     )
 
-    @staticmethod
-    def get_average_of_samples(samples):
+    def get_and_sort_keys(self):
+        self.results_keys = ResultsAnalyzer.human_sort(self.results_dict.keys())
+        self.alg_keys = ResultsAnalyzer.human_sort(self.results_dict[self.results_keys[0]].keys())
+        self.pos_keys = ResultsAnalyzer.human_sort(self.results_dict[self.results_keys[0]][self.alg_keys[0]].keys())
+
+    def get_lists_of_lists_from_nested_dicts(self, nested):
+        # Get lists of lists from nesteds that look like
+        # results dict
+        set_array = []
+        for sample in self.results_keys:
+            sample_ar = []
+            for alg in self.alg_keys:
+                alg_ar = []
+                for pos in self.pos_keys:
+                    alg_ar.append(nested[sample][alg][pos])
+                sample_ar.append(alg_ar)
+            set_array.append(sample_ar)
+        # arrays = [[[p for d, p in v.items()] for k, v in i.items()] for j, i in nested.items()]
+        return set_array
+
+    def get_lists_of_lists_for_small_nested(self, nested):
+        # Get lists of lists from nesteds that look like
+        # means_dict
+        set_array = []
+        for alg in self.alg_keys:
+            alg_ar = []
+            for pos in self.pos_keys:
+                alg_ar.append(nested[alg][pos])
+            set_array.append(alg_ar)
+        return set_array
+
+    def get_average_of_samples(self, samples):
         averaged_grid = {}
         N = len(samples)
 
         # initialize averaged_grid:
-        for alg in samples['sample_1']:
+        for alg in self.alg_keys:
             averaged_grid[alg] = dict()
             for pos in samples['sample_0'][alg]:
                 averaged_grid[alg][pos] = 0
 
         # Sum values across samples
-        for sample in samples:
-            for alg in samples[sample]:
-                for pos in samples[sample][alg]:
+        for sample in self.results_keys:
+            for alg in self.alg_keys:
+                for pos in self.pos_keys:
                     averaged_grid[alg][pos] += samples[sample][alg][pos]
 
         # divide grid values by N to obtain means
-        for alg in averaged_grid:
-            for pos in averaged_grid[alg]:
+        for alg in self.alg_keys:
+            for pos in self.pos_keys:
                 averaged_grid[alg][pos] = averaged_grid[alg][pos] / N
 
         return averaged_grid
@@ -780,27 +815,12 @@ class ResultsAnalyzer:
         return frame
 
     @staticmethod
-    def print_data_in_table(self, dicts):
-        frame = pd.DataFrame(dicts)
-        headers = dicts.keys().sort()
-        table = tabulate(frame, headers)
-
-    @staticmethod
-    def get_lists_of_lists_from_nested_dicts(nested):
-        # Get lists of lists from nesteds that look like
-        # results dict
-        set_array = []
-        for sample in nested:
-            sample_ar = []
-            for alg in nested[sample]:
-                alg_ar = []
-                for pos in nested[sample][alg]:
-                    alg_ar.append(nested[sample][alg][pos])
-                sample_ar.append(alg_ar)
-            set_array.append(sample_ar)
-        # arrays = [[[p for d, p in v.items()] for k, v in i.items()] for j, i in nested.items()]
-        pdb.set_trace()
-        return set_array
+    def get_data_in_tabulate_table(frame, format_='grid'):
+        # Relavent formats: latex, latex_raw, latex_booktabs
+        frame.index.names = ['sample']
+        h = [frame.index.names[0] + '/' + frame.columns.names[0]] + list(map('\n'.join, frame.columns.tolist()))
+        table = tabulate(frame, headers=h, tablefmt=format_)
+        return table
 
     @staticmethod
     def get_lists_of_long_samples_from_lists_of_lists(lists_lists):
@@ -814,15 +834,9 @@ class ResultsAnalyzer:
             long_samples.append(arr)
         return long_samples
 
-    @staticmethod
-    def get_multi_index_from_sample(sample):
-        alg_names = sample.keys()
-        pos_names = sample[alg_names[0]].keys()
-        tuples = []
-        for alg in alg_names:
-            for pos in pos_names:
-                tuples.append((alg, pos))
-        index = pd.MultiIndex.from_tuples(tuples, names=['algorithms', 'positions'])
+    def get_multi_index_from_keys(self):
+        iterables = [self.alg_keys, self.pos_keys]
+        index = pd.MultiIndex.from_product(iterables, names=['algorithms', 'positions'])
         return index
 
     @staticmethod
@@ -845,13 +859,67 @@ class ResultsAnalyzer:
         N = len(self.meta_algs.all())
         averaged_probs = self.get_average_of_samples(self.proportions_dict)
         averaged_t_scores = self.get_average_of_samples(self.t_scores_dict)
-        row_labels = self.results_dict.keys()
-        headers = self.results_dict['sample_1'].keys().sort()
-        self.human_sort(row_labels)
-        index = self.get_multi_index_from_sample(self.results_dict['sample_1'])
+
+        index = self.get_multi_index_from_keys()
+
         results_list = self.get_lists_of_lists_from_nested_dicts(self.results_dict)
-        long_samples = self.get_lists_of_long_samples_from_lists_of_lists(results_list)
-        frame = pd.DataFrame(long_samples, columns=index)
+        proportions_list = self.get_lists_of_lists_from_nested_dicts(self.proportions_dict)
+        t_scores_list = self.get_lists_of_lists_from_nested_dicts(self.t_scores_dict)
+
+        stds_list = self.get_lists_of_lists_for_small_nested(self.stds_dict)
+        means_list = self.get_lists_of_lists_for_small_nested(self.means_dict)
+        averaged_probs_list = self.get_lists_of_lists_for_small_nested(averaged_probs)
+        averaged_t_scores_list = self.get_lists_of_lists_for_small_nested(averaged_t_scores)
+
+        long_results = self.get_lists_of_long_samples_from_lists_of_lists(results_list)
+        long_proportions = self.get_lists_of_long_samples_from_lists_of_lists(proportions_list)
+        long_t_scores = self.get_lists_of_long_samples_from_lists_of_lists(t_scores_list)
+
+        results_frame = pd.DataFrame(long_results, columns=index)
+        props_frame = pd.DataFrame(long_proportions, columns=index)
+        t_scores_frame = pd.DataFrame(long_t_scores, columns=index)
+
+        stds_frame = pd.DataFrame(stds_list, columns=self.alg_keys)
+        means_frame = pd.DataFrame(means_list, columns=self.alg_keys)
+        averaged_props_frame = pd.DataFrame(averaged_probs_list, columns=self.alg_keys)
+        averaged_t_scores_frame = pd.DataFrame(averaged_t_scores_list, columns=self.alg_keys)
+
+        results_latex = results_frame.to_latex()
+        props_latex = props_frame.to_latex()
+        t_scores_latex = t_scores_frame.to_latex()
+        stds_latex = stds_frame.to_latex()
+        means_latex = means_frame.to_latex()
+        averaged_props_latex = averaged_props_frame.to_latex()
+        averaged_t_scores_latex = averaged_t_scores_frame.to_latex()
+
+        print('Placement results')
+        print(results_latex)
+        print('----------------------------------')
+
+        print('Placment results proportion probabilities')
+        print(props_latex)
+        print('-----------------------------------')
+
+        print('t scores of results')
+        print(t_scores_latex)
+        print('------------------------------------')
+
+        print('Standard deviation within each alg/position combination')
+        print(stds_latex)
+        print('-------------------------------------')
+
+        print('means of results')
+        print(means_latex)
+        print('---------------------------------------')
+
+        print('Average of proportion probabilities')
+        print(averaged_props_latex)
+        print('------------------------------------')
+
+        print('Average of t scores')
+        print(averaged_t_scores_latex)
+        print('--------------------------------------')
+
         pdb.set_trace()
 
 

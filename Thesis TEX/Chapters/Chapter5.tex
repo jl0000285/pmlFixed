@@ -1,0 +1,29 @@
+%Chapter 5
+\chapter{Conclusion}
+\label{Chapter5}
+In this thesis I proposed that the no free lunch hypotheis might not apply to
+meta learning algorithms. In order to test this hypothesis I first built a
+system to determine the accuracy of three meta learning strategies:
+Exhaustive, Active, and Sampling. To use these strategies, a base of
+datasets would first be randomly choosen from our available pool of datasets.
+Each strategy would then act on the metabase in its own fashion and make an
+estimate as to what algorithm would result in the highest classification accuracy.
+Each algorithm would make this guess for each dataset in the pool excluding the
+ones in the current base. A new base would then be choosen and the process
+repeated 9 more times, giving a number between 0 and 10 for how many times
+each algorithm got the most/second most/least correct guesses. This process
+was repeated 30 times, giving us 30 samples. Statistical analysis was then
+performed, giving an an average among the absolute values of each of the t scores
+of 5.11, allowing us to reject the null hypothesis at a 5 percent margin of error.
+
+Two flaws exist within this experiment that I would correct I had more time: I
+was only able to obtain three meta-learning algorithms, and I was only able to
+obtain one set of datasets with 88 instances in it. Originally I had desired 5
+meta learning algorithms and at least 10 sets of datasets. What I am forced to
+do here is essentially a form of cross validation, I take basically every
+possible combination of floor(88 * 0.2) = 17 datasets and segregate them into
+groups of 10 and label each of those a sample.  The ideal would have been for
+each individual sample to have its own set of 100 or so datasets within it so
+as to eliminate any chance of bias within the data. Unfortunately for this to be
+a reality I would have had to get my hands on 30 * 100 = 3000 datasets, a task
+that I have no idea as to how to begin accomplishing.
