@@ -1,0 +1,352 @@
+;; This buffer is for text that is not saved, and for Lisp evaluation.
+;; To create a file, visit it with C-x C-f and enter text in its buffer.
+
+Test implies that we speak at about 200 words a minute 
+
+Goal/Objectives (2 min ~ 400 words - Currently 304 words)
+--------------------------
+Determining what algorithm to use when analyzing a dataset is a problem as old as
+machine learning itself. In ``No free lunch theorems for optimization'' Wolpert and
+Macready demonstrate that the performance of all machine learning algorithms even
+out across all datasets, that is to say that no one machine learning algorithm is
+best in every situation\; performance is contengent on the problem space in
+which the algorithm is operating. As such, the decision of algorithm is non arbitrary and some strategy must be employed in order to decide on an algorithm. In some
+cases, the individuals wishing to perform an analysis have access to an expert,
+possibly themselves, that can simply tell them which algorithm is best in the
+given situation. In other situations, the individuals wishing to perform analysis
+may not have the budget necessary to acquire access to such an expert, in which
+case the usage of a metalearner becomes appropriate. With a metalearner one feeds to
+the metalearner a dataset and it returns to the user what it thinks is the most
+appropriate machine with which to perform analysis. To get to the point wherein a
+decision can be made on new datasets the metalearner itself must first be trained,
+and this training itself requires some sort of learning strategy. This fact suggests
+that the decision of what metalearning strategy to use for some given body of
+datasets should be susceptible to the previously mentioned no free lunch theorem,
+that is to say that some metalearning strategies will work better on some given
+set of databases than others. As such the goal of this experiment was  to ascetain
+whether or not the no free lunch hypothesis applies to meta learning algorithms,
+that is to say to ascertain whether or not some meta learning algorithms strictly
+dominate other meta learning algorithms.
+
+
+literature review/theoretical framework (5 min ~ 1000 words - curr 1245 words)
+---------------------------
+
+- No free lunch Description (currently 141 words)-
+
+Introduced in Wolpert and MacReady's ``No Free Lunch Theorems for Optimization''
+1997 paper, the No Free Lunch theorem states that the perfomance of all
+algorithms when averaged out across all datasets should be the same, that is to
+say there is no one algorithm that is universally the best. The root cause of
+this observation is in that differing algorithms make different assumptions
+about the distributions from which the data the algorithms work with arises. A
+learning algorithm with an implicit assumption of a random distriubtion will
+have a far lower test case classification accuracy than an algorithm that
+assumes a gaussian distribution if the distribution from which the set of
+observed samples derives from is truly normal and vice versa, if the
+distribution is truly random the gaussian classifier's accuracy will suffer
+relative to the classifier with a random assumption.
+
+- Meta learners intro (curr 23 words) -
+The three metalearning algorithms chosen for comparison are the brute force
+approach, the Active Meta learning strategy and the Strategy of Curve Comparison.
+
+- Brute Force Metalearner (curr 94 words)- 
+The most basic meta machine learning algorithm involves the collecting of the
+run statistics of the set of machines that a given meta learner can produce
+applied to a metabase with a clustering algorithm to produce results with new
+datasets. This version of metalearning will act as a sort of control for this
+study, the results of the more complicated meta learning strategies that follow
+only really mean anything with respect to how long it would've taken to train
+and how long it would've performed if we had just trained it via brute force.
+
+- Active Meta Laerning (currently 187 words)-
+The second of the metalearning strategies implemented within the study; Active
+Meta Learning is a meta learning technique  ``that reduces the cost of
+generating Meta examples by selecting relevant Meta examples'' \cite{Bhatt}.
+What this entails is a decision on what datasets to allow into a metalearners
+metabase, rather than analyze every candidate meta base dataset an active
+metalearner will analyze the next dataset with the highest uncertainty. The
+relative uncertainty between two datasets is defined by
+$$\delta(V_x,d_i,V_x,d_j) = \frac{|V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$
+where $V_x,d_k$ is the value of some metaparameter $V_x$ for dataset $d_k$,
+$Max_{k\neq i}(V_x,d_k)$ is the maximum value of $V_x,d_k$ when dataset i is
+removed and $Min_{k\neq i}(V_x,d_k)$ is its corrosponding minimum. Determining
+which dataset has the overall highest uncertainty can be done by summing over
+the relative values for each metaparameter, ranking them then collecting their
+overall uncertainty scores then choosing the one that is highest where
+$$\delta(V_x,d_i) = \frac{\sum_{j\neq i} |V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$
+is the equation representing the overall uncertainty for dataset
+$d_i$ in metaparameter $V_x$.
+
+- Learning Curves (currently 89 words)-
+The third of the metalearning strategies implemented within this study is one in
+which a representive subsection of the metabase is trained with each algorithm
+entirely, after which point the rest of the metabase under goes a sort of curve
+sampling analysis in which the results of future learning is predicted based off what dataset the new datasets learning curve most resembles. As with the other two meta
+learning strategies, the label for new datsets is the determined via clustering with the datasets within this post trained metabase.
+
+ - Quick description of present regular algorithms (currently 65 words)-
+The strategies mentioned in the previous section must be able to produce learning
+algorithms to be considered metalearing machines. The machines that these strategies
+can produce are the K-means clusterer, a neural network, a naive bayes classifier,
+the support vector machine, and regression; with the results coming from the
+regression machine being cast into classificatory bins from the real valued result
+that it would produce. 
+
+- Linear Regression (currently 209 words) -
+Linear regression is one of the most common and oldest machine learning techniques
+within literature. It asserts that the response is a linear function of the inputs.
+This relation takes the following form:
+
+$$ y(\textbf{x}) = \textbf{w}^T\textbf{x} + \epsilon = \sum_{j=1}^{D}w_jx_j + \epsilon $$
+
+where $w^Tx$ represents the inner or scalar product between the input vector $x$
+and the model's weight vector $w^T$, and $\epsilon$ is the residual error between
+our linear predictions and the true response.
+To fit a linear regression model, the least squares approach is usually used. Given
+some ``overdetermined'' linear system (that is to say a system in which there are
+more data points than parameters) one can write an expression for the sum of squares of the system $$S(\beta) =(y_1 - \beta x_1)^2 + (y_2 - \beta x_2)^2 + ...
+(y_3 - \beta x_3)$$ then take the partial deriviate of this sum of sqaured
+deviations with respect to each of the components of $\beta$, set them to zero,
+then solve the resulting equations to directly determine what the values of the
+parameters are that minimizes the sum of the squared errors of the system. With
+linear regression in two dimensions (one dimension in the independant variable and
+one dimension in the dependant variable) we see a system with two parameters
+$\beta_0 = y intercept$ and $\beta_1 = slope$.
+
+-Naive Bayes (currently 121 words) -
+The Naive Bayes classifier algorithm fits a set of data to Bayes theorem with a
+strong assumption of feature independance. Given a set of discrete-valued features
+$x \in {1,...,K}^D$, we can calculate the class conditional density for each
+feature, then with our assumption of independance easily generate a guess at what
+the class should be for a new input by multiplying the conditional likelihood values
+for each of the new inputs features times the prior on the desired to be known
+class, that is to say $p(y|\textbf{x}) \propto p(y) \sum_{j}^{D}p(x_j|y)$. The
+calculation of the posterior probability for a new example can be done so
+``by hand'' or can be done so from distributions that are infered from the
+provided data.
+
+-Support Vector Machines (currently 53 words)-
+The support vector machine is a two-group classification algorithm that attempts to
+find a hyper plane that seperates the inputs within the given input space with a
+maximum margin of seperation between the hyper plane and the ``support vectors'',
+those vectors on either side of the hyper plane that are closest too it.
+
+-K Means Clustering (currently 180 words)-
+The objective of the k-means algorithm is to partition a dataset into k groups
+such that the points within some group are all closest to
+the mean of that group than they are to any other group. A clear
+informal explanation of the work that the k-means algorith performs
+was given by James McQueen in 1967: "...the k-means procedure
+consists of simply starting with k groups each of which consists of a
+single random point, and thereafter adding each new point to the
+group whose mean the new point is nearest. After a point is added to
+a group, the mean of that group is adjusted in order to take account
+of the new point. Thus at each stage the k-means are, in fact, the
+means of the groups they represent." \cite{MacQueen} Formally stated,
+given an integer $k$ and a set of $n$ data points in
+$\mathbb{R}^{d}$ the K-means algorithm seeks to minimize  $\Phi$, the
+over all total summed in class distance between each point and its
+closest center such that $\mathbb \Phi = \sum_{x \in X} min_{c \in C}{x-c^{2}}$
+\cite{Arthur}.
+
+-Neural Networks (currently 148 words )
+A neural network is a type of machine learning algorithm that mimics
+the interconnectivity of animal brains in order to automatically
+discover rules to classify given inputs. Being that it is one of the most
+flexible learning algorithms within literature (actually able to
+approximate any continuous function)\cite{Hornik}, its inclusion within a
+metalearning system is almost mandatory.  Genrally, such a system
+works by first being presented with a set of classified or
+unclassified inputs. Said neural network system will then attempt to
+make a decision on these inputs on which an error value will then be
+assigned. The system will then see some kind of correction function
+applied to it. This process will continue until the system has
+exhausted its supply of training data, at which point it will
+hopefully have discovered a strong set of rules for peforming whatever
+work it is that it was designed to perform.
+
+
+methodology (5 min ~ 1000 words)
+-----------
+- Describe general idea (currently 217 words) -
+
+The overall goal of this experiment was to determine whether or not one
+metalearning strategy within a given set can strictly dominate the others. The
+elements required in order to determine this were a set of metalearning
+strategies to be compared, sets of metabase datasets on which to apply the
+different strategies, and a means to evaluate the results so as to determine the
+relative performance of the metalearners. The general flow of the program that
+constitutes this experiment begins with a set of unprocessed datasets then
+extracts the metafeatures that are required to perform dataset clustering and to
+run the active metalearning strategy. The program then constructs 10
+metalearning bases with the elements in these sets choosen at random. A run with
+every machine algorithm and dataset combination is then performed, with the
+results being stored in the runs all table. Learning curves for each
+dataset/algorithm combination are then crafted. Finally, enough information now
+exists within the the database to start collecting result samples. An individual
+result sample is composed of a set of metabases and the results on that set of
+metabases. During the experiment, 30 of these samples was gathered. This results
+in enough information so that t-test analysis can be performed on the null hypothesis
+at a 5 percent margin of error. 
+
+- Describe general parsing plan (currently 230 words) -
+
+All machine learning algorithms boil down to a set of mathematical equations at
+the end of the day, with some vector representing a dataset fed in at one end
+and a number representing either a catagory or quantity being expelled at the
+other. As such any metalearning system must have with it a means to parse the
+datasets it means to process. The strategy I employed in order to ensure usable
+data was two fold: I first went thru the set of candidate datasets and ensured
+non of them was in a format so exotic that they could not be parsed
+programatically. Manual examination of the files revealed that those of either
+the .data, .svm, or .dat format were agreeable to formating and so it is these
+that are processed and used by the parser. These files are then inspected by the
+parser, with each datasets column vectors being inspected one by one. Those
+column vectors containing only numerical data are left as is, those with any
+non-numerical data are assumed to be categorical, with the categories of said
+vector being translated to numbers with a unique number being assigned to each
+unique string. Rather than storing the numerical representation of each dataset
+within the database, the parsed form of a given dataset is crafted when it is
+needed, saving disk space and making the project far easier to understand.
+
+- Describe metafeature extraction (currently 198 words) -
+
+The existance of a parser allows us to craft the first table needed for this
+experiment which is one containing the meta features of those datasets that are
+parsable. Being as how the datasets used within this project have vastly
+differing structures along lines such as the number of features and the maximum
+and minimum values of these features, the project requires a set of normalized
+meta features that are applicable to any possible individual distribution or set
+of probability distribution(s). A set of features that meet this criteria are
+weighted mean, coefficient of variation, skew, kurtosis, and entropy. The vector
+that represents a given dataset is crafted by taking the value of each of these
+attributes for each of said datasets features then normalizing them by dividing
+by the total number of features within that dataset, that is to say
+$$F_{ad} = \frac{\sum_{c=i}^{N}f_{ai}}{N}$$
+is the metafeature value $a$ for dataset $d$, $c$ is an iterator across columns
+for dataset $d$, $f$ is the value of metafeature $F$ applied to individual
+column $i$, and $N$ is the number of columns within dataset $d$. The vector that
+represents a given dataset is then determined to be
+$V_d = (F_{1d}, F_{2d},...F_{ad})$.
+
+- Describe Metabase Construction (currently 185 words) -
+
+The work of a metalearning algorithm is essentially the applying the things
+known from a specific set of datasets towards a new, unlabeled dataset. That
+initial set of datasets is known as a meta database, which I shorten to metabase
+for convience. The core premise of this experiment is the determination as to
+whether or not one metalearning strategy may or may not dominate other
+metalearning strategies across a set of of different metabases. As such, this
+experiment requires multiple sets of metabases in order to produce samples
+that can be used to test our hypothesis. The datasets in a given metabase are
+randomly choosen from the set of all datasets then stored in the database. There
+are 10 of these per sample, each being a fifth the size of the entire set of
+datasets. Testing the performance of a metalearner is done by using the
+metalearning strategy with some given metabase and applying it to every other
+dataset within the set of datasets. The guesses a given metalearning strategy
+makes with some given metabase are then stored within a database table for later
+analysis.
+
+- Describe results compilation (currently 90 words) -
+
+Once the guess tables are populated, it is finally possible to compile a table
+of results. Each entry in the table notes the metalearning strategy being
+evaluated, the metabase collection i.e the sample, the metabase within that
+sample that the strategy used in order to analyze its test datasets, and the
+accuracy, training time, and rate correct score as its performance metrics,
+where the rate correct time measures how often the metalearner makes the correct
+guess given the time spent to train it in units of correct guesses per second.
+
+
+findings(Doc suggests 10, going to do 5 mins ~ 1000 - 2000 words, currently 595 words)
+-----------------------
+In order to test the null hypothesis, 30 such samples of the kind previously
+described were created. The samples and their means can be seen in the following
+tables. 
+
+If each of the algorithms were truly equal, we would expect the averaged numbers
+for each of the positions to be near 3.3. Instead, it appears that the sampler
+performed the best, with an average number of first place finishes of 4.5 and the
+active strategy performed the worst, with an average number of first place finishes
+of 1.7. Whether or not these results fall far enough outside expectation in order to reject
+the null hypothesis requires the machinary of classical statistics. Two fairly reliable
+measures of how unlikely these results are are the sampling distribution probabilities
+and t scores of each of the results.
+
+The following description losely follows the procedure described in \cite{Cohen}.
+In it, the author asks you to imagine testing a coin to see whether or not it
+is fair by flipping the coin some number of times N. He then asks you to consider whether
+some proportion of heads i/N is actually fair. The propability that some proportion of
+heads p = i/N is fair can be calculated exactly with the binomial distribution
+$$\frac{N!}{i!(N-i)!}r^{i}(1-r)^{N-i}$$.
+
+This situation is analogous to the number of first, second, or third place
+finishes some meta-algorithm obtained in this thesis experiment. The probabilty
+of proportions for each of the meta-learning algorithms can be seen in table 4.3.
+
+When averaged across samples, we get the following table
+
+The probability of drawing either of the values closest to expectation, 3 or 4,
+are 0.26 and 0.22 respectively. The average of all values within this table is
+0.15, significantly lower than either expected value. Still, this is not enough
+to reject the null hypothesis.
+
+In order to confidantly reject the null hypothesis, we will make use of the
+T test.  The t test equation is as follows:
+$$t =\frac{\overline{x}-\mu}{\hat{\sigma}_{\overline{x}}} = \frac{\overline{x}-\mu}{\frac{s}{\sqrt{N}}}$$
+where s is the sample standard deviation, N is the
+number of samples, overscore x is an individual samples mean/calculated value,
+and mu is the population mean/expected value.
+
+The idea is simple, take the diffrence between the observed mean of the sample
+and the expected mean and normalize this value by the standard deviation of the
+samples distribution. This results in some number of sample standard deviations
+by which the observed sample distributions mean differs from expectation. The
+fewer the number of sample the higher the margin of error in the t scores
+estimate, with a margin of error of 0.05 given for estimates made with 30
+samples. The critical thresholds for a two tailed t test are -1.96 and 1.96.
+If the averaged values of the t scores falls outside these bounds then we can
+reject the null hypothesis with a 5 percent margin of error. The standard
+deviations and t scores for each of the samples can be seen in the following table. 
+
+The following table contains these t scores averaged across samples:
+
+In order to determine whether or not the results as a whole fall significantly
+outside of expectation we can take the average of all the averaged t scores
+absolute value. This will give as a measure of how much the values observed her
+deviate from expectation as a whole. The value we get after under taking this
+procedure is 5.11, more than twice the t score value needed in order to
+reject the null hypothesis at 5 percent margin of error. We can thus comfortably
+reject the null hypothesis.
+
+recommendations (5 min ~ 1000 words, currently 345 words)
+-----------------------
+In this thesis I proposed that the no free lunch hypotheis might not apply to
+meta learning algorithms. In order to test this hypothesis I first built a
+system to determine the accuracy of three meta learning strategies:
+Exhaustive, Active, and Sampling. To use these strategies, a base of
+datasets would first be randomly choosen from our available pool of datasets.
+Each strategy would then act on the metabase in its own fashion and make an
+estimate as to what algorithm would result in the highest classification accuracy.
+Each algorithm would make this guess for each dataset in the pool excluding the
+ones in the current base. A new base would then be choosen and the process
+repeated 9 more times, giving a number between 0 and 10 for how many times
+each algorithm got the most/second most/least number of correct guesses. This process
+was repeated 30 times, giving us 30 samples. Statistical analysis was then
+performed, giving an average among the absolute values of each of the t scores
+of 5.11, allowing us to reject the null hypothesis at a 5 percent margin of error.
+
+Two flaws exist within this experiment that I would correct had I more time: I
+was only able to obtain three meta-learning algorithms, and I was only able to
+obtain one set of datasets with 88 instances in it. Originally I had desired 5
+meta learning algorithms and at least 10 unique sets of datasets. What I am forced to
+do here is essentially a form of cross validation, I take a large number of the 
+possible combination of floor(88 * 0.2) = 17 datasets and segregate them into
+groups of 10 and label each of those a sample.  The ideal would have been for
+each individual sample to have its own set of 100 or so datasets within it so
+as to eliminate any chance of bias within the data. Unfortunately for this to be
+a reality I would have had to get my hands on 30 * 100 = 3000 datasets, a task
+that I have no idea as to how to begin accomplishing.
+

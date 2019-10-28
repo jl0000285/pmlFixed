@@ -876,13 +876,13 @@ class ResultsAnalyzer:
         long_t_scores = self.get_lists_of_long_samples_from_lists_of_lists(t_scores_list)
 
         results_frame = pd.DataFrame(long_results, columns=index)
-        props_frame = pd.DataFrame(long_proportions, columns=index)
-        t_scores_frame = pd.DataFrame(long_t_scores, columns=index)
+        props_frame = pd.DataFrame(long_proportions, columns=index).round(2)
+        t_scores_frame = pd.DataFrame(long_t_scores, columns=index).round(2)
 
-        stds_frame = pd.DataFrame(stds_list, columns=self.alg_keys)
-        means_frame = pd.DataFrame(means_list, columns=self.alg_keys)
-        averaged_props_frame = pd.DataFrame(averaged_probs_list, columns=self.alg_keys)
-        averaged_t_scores_frame = pd.DataFrame(averaged_t_scores_list, columns=self.alg_keys)
+        stds_frame = pd.DataFrame(stds_list, columns=self.alg_keys).round(2)
+        means_frame = pd.DataFrame(means_list, columns=self.alg_keys).round(2)
+        averaged_props_frame = pd.DataFrame(averaged_probs_list, columns=self.alg_keys).round(2)
+        averaged_t_scores_frame = pd.DataFrame(averaged_t_scores_list, columns=self.alg_keys).round(2)
 
         results_latex = results_frame.to_latex()
         props_latex = props_frame.to_latex()
@@ -896,7 +896,7 @@ class ResultsAnalyzer:
         print(results_latex)
         print('----------------------------------')
 
-        print('Placment results proportion probabilities')
+        print('Placement results proportion probabilities')
         print(props_latex)
         print('-----------------------------------')
 

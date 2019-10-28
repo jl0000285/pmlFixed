@@ -1,50 +1,68 @@
 %Chapter 4
 \chapter{Research Findings}
 \label{Chapter4}
-\section{Run results and Analysis tools}
+\section{Run Results and Analysis Tools}
+If the no free lunch theorem applies to  meta-learning strategies, we
+should see near equal performance across a variety of meta-set collections.
+We will call this assertion the null hypothesis, that is to say our null
+hypothesis is that the meta-learning strategies used in this experiment
+are equal.
+
 In order to test the null hypothesis, 30 such samples of the kind described
-in chapter 3 were collected. The samples and their means can be seen in tables
-4.1 and 4.2 below.
+in chapter 3 were collected. The metrics of interest on these samples are
+contained in the tables within this chapter. How often the algorithms placed
+first, second, or third can be seen in table 4.1. The average of these
+placements across all samples, i.e the algorithms average placements, can be
+seen in table 4.2. Table 4.3 contains the proportion of probability for the
+results contained in table 4.1. Table 4.4 contains the average of the
+proportion of probabilities contained in table 4.3 across all samples.
+Table 4.5 contains the standard deviations of the placement values for the
+meta-algorithms. Table 4.6 contains the t scores of each of the values present
+in table 4.1. Table 4.7 contains the average of the t scores contained in
+table 4.6 across all samples and it is this table that I use later to draw the
+conclusion that the null hypothesis may be safely rejected.
 
 \begin{table}
 \begin{tabular}{lrrrrrrrrr}
 \toprule
-algorithms & \multicolumn{3}{l}{GuessesActive} & \multicolumn{3}{l}{GuessesEx} & \multicolumn{3}{l}{GuessesSamp} \\
-positions &             First &  Second &  Third &         First &  Second  &  Third &           First &  Second &  Third \\
+
+     & \multicolumn{3}{c} {GuessesActive}  & \multicolumn{3}{c}{GuessesEx}  & \multicolumn{3}{c}{GuessesSamp}  \\
+     &   First &  Second &  Third &         First &  Second  &  Third &           First &  Second &  Third \\
 \midrule
-0  &             1 &  4 &  5 &         6 &  2 &  2 &           3 &  4 &  3 \\
-1  &             1 &  4 &  5 &         5 &  2 &  3 &           4 &  4 &  2 \\
-2  &             1 &  3 &  6 &         7 &  3 &  0 &           2 &  4 &  4 \\
-3  &             1 &  5 &  4 &         6 &  3 &  1 &           3 &  2 &  5 \\
-4  &             0 &  6 &  4 &         8 &  2 &  0 &           2 &  2 &  6 \\
-5  &             3 &  3 &  4 &         5 &  4 &  1 &           2 &  3 &  5 \\
-6  &             4 &  3 &  3 &         4 &  4 &  2 &           2 &  3 &  5 \\
-7  &             2 &  3 &  5 &         7 &  2 &  1 &           1 &  5 &  4 \\
-8  &             1 &  3 &  6 &         3 &  5 &  2 &           6 &  2 &  2 \\
-9  &             0 &  4 &  6 &         7 &  3 &  0 &           3 &  3 &  4 \\
-10 &             0 &  6 &  4 &         7 &  3 &  0 &           3 &  1 &  6 \\
-11 &             1 &  5 &  4 &         7 &  2 &  1 &           2 &  3 &  5 \\
-12 &             3 &  3 &  4 &         5 &  4 &  1 &           2 &  3 &  5 \\
-13 &             2 &  5 &  3 &         6 &  3 &  1 &           2 &  2 &  6 \\
-14 &             2 &  1 &  7 &         4 &  6 &  0 &           4 &  3 &  3 \\
-15 &             1 &  5 &  4 &         6 &  0 &  4 &           3 &  5 &  2 \\
-16 &             1 &  4 &  5 &         6 &  4 &  0 &           3 &  2 &  5 \\
-17 &             1 &  3 &  6 &         8 &  1 &  1 &           1 &  6 &  3 \\
-18 &             1 &  4 &  5 &         7 &  3 &  0 &           2 &  3 &  5 \\
-19 &             2 &  4 &  4 &         6 &  2 &  2 &           2 &  4 &  4 \\
-20 &             1 &  2 &  7 &         4 &  6 &  0 &           5 &  2 &  3 \\
-21 &             3 &  3 &  4 &         2 &  7 &  1 &           5 &  0 &  5 \\
-22 &             3 &  4 &  3 &         6 &  4 &  0 &           1 &  2 &  7 \\
-23 &             3 &  3 &  4 &         4 &  4 &  2 &           3 &  3 &  4 \\
-24 &             2 &  6 &  2 &         7 &  3 &  0 &           1 &  1 &  8 \\
-25 &             1 &  3 &  6 &         6 &  2 &  2 &           3 &  5 &  2 \\
-26 &             7 &  2 &  1 &         3 &  5 &  2 &           0 &  3 &  7 \\
-27 &             0 &  5 &  5 &         7 &  2 &  1 &           3 &  3 &  4 \\
-28 &             1 &  2 &  7 &         4 &  5 &  1 &           5 &  3 &  2 \\
-29 &             2 &  6 &  2 &         4 &  3 &  3 &           4 &  1 &  5 \\
+sample 1   &             1 &  4 &  5 &         6 &  2 &  2 &           3 &  4 &  3 \\
+sample 2   &             1 &  4 &  5 &         5 &  2 &  3 &           4 &  4 &  2 \\
+sample 3   &             1 &  3 &  6 &         7 &  3 &  0 &           2 &  4 &  4 \\
+sample 4   &             1 &  5 &  4 &         6 &  3 &  1 &           3 &  2 &  5 \\
+sample 5   &             0 &  6 &  4 &         8 &  2 &  0 &           2 &  2 &  6 \\
+sample 6   &             3 &  3 &  4 &         5 &  4 &  1 &           2 &  3 &  5 \\
+sample 7   &             4 &  3 &  3 &         4 &  4 &  2 &           2 &  3 &  5 \\
+sample 8   &             2 &  3 &  5 &         7 &  2 &  1 &           1 &  5 &  4 \\
+sample 9   &             1 &  3 &  6 &         3 &  5 &  2 &           6 &  2 &  2 \\
+sample 10  &             0 &  4 &  6 &         7 &  3 &  0 &           3 &  3 &  4 \\
+sample 11  &             0 &  6 &  4 &         7 &  3 &  0 &           3 &  1 &  6 \\
+sample 12 &             1 &  5 &  4 &         7 &  2 &  1 &           2 &  3 &  5 \\
+sample 13 &             3 &  3 &  4 &         5 &  4 &  1 &           2 &  3 &  5 \\
+sample 14 &             2 &  5 &  3 &         6 &  3 &  1 &           2 &  2 &  6 \\
+sample 15 &             2 &  1 &  7 &         4 &  6 &  0 &           4 &  3 &  3 \\
+sample 16 &             1 &  5 &  4 &         6 &  0 &  4 &           3 &  5 &  2 \\
+sample 17 &             1 &  4 &  5 &         6 &  4 &  0 &           3 &  2 &  5 \\
+sample 18 &             1 &  3 &  6 &         8 &  1 &  1 &           1 &  6 &  3 \\
+sample 19 &             1 &  4 &  5 &         7 &  3 &  0 &           2 &  3 &  5 \\
+sample 20 &             2 &  4 &  4 &         6 &  2 &  2 &           2 &  4 &  4 \\
+sample 21 &             1 &  2 &  7 &         4 &  6 &  0 &           5 &  2 &  3 \\
+sample 22 &             3 &  3 &  4 &         2 &  7 &  1 &           5 &  0 &  5 \\
+sample 23 &             3 &  4 &  3 &         6 &  4 &  0 &           1 &  2 &  7 \\
+sample 24 &             3 &  3 &  4 &         4 &  4 &  2 &           3 &  3 &  4 \\
+sample 25 &             2 &  6 &  2 &         7 &  3 &  0 &           1 &  1 &  8 \\
+sample 26 &             1 &  3 &  6 &         6 &  2 &  2 &           3 &  5 &  2 \\
+sample 27 &             7 &  2 &  1 &         3 &  5 &  2 &           0 &  3 &  7 \\
+sample 28 &             0 &  5 &  5 &         7 &  2 &  1 &           3 &  3 &  4 \\
+sample 29 &             1 &  2 &  7 &         4 &  5 &  1 &           5 &  3 &  2 \\
+sample 30 &             2 &  6 &  2 &         4 &  3 &  3 &           4 &  1 &  5 \\
 \bottomrule
 \end{tabular}
 \caption{Placement results}
+\caption*{How well the meta-algorithms faired with given sample}
 \end{table}
 
 
@@ -53,124 +71,143 @@ positions &             First &  Second &  Third &         First &  Second  &  T
 \toprule
 {} &  GuessesActive &  GuessesEx &  GuessesSamp \\
 \midrule
-First &       1.700000 &        3.8 &     4.500000 \\
-Second &       5.566667 &        3.3 &     1.133333 \\
-Third &       2.733333 &        2.9 &     4.366667 \\
+First  &           1.70 &        3.8 &         4.50 \\
+Second &           5.57 &        3.3 &         1.13 \\
+Third  &           2.73 &        2.9 &         4.37 \\
 \bottomrule
 \end{tabular}
-\caption{Placement results means}
+\caption{Average placement results across all samples}
 \end{table}
 
-If each of the algorithms were truly equal, we would expect the averaged numbers
-for each of the positions to be near 3.3. Instead, it appears that the sampler
-performed the best. Whether or not these results fall far enough outside
-expectation in order to reject the null hypothesis requires the machinary of
-classical statistics. Two fairly reliable measures of how unlikely these results
-are are the sampling distribution probabilities and t scores of each of the
-results. A brief description of each of these statistical methods follows.
+Each of the meta-set collections contains 10 basesets and the experiment
+compares the performance of 3 meta-learning algorithms. As such, the expected
+average number of first, second, and third place finishes given that the
+meta-learning algorithms are equal is 3.3. The values seen within the placement
+counts table given equal meta-learning algorithms should more often than not be
+either 3 or 4 and the averages of the placements across all samples should all
+be near 3.3. Instead, it appears that the sampler performed the best,
+with an average number of first place finshes of 4.5. Moreover most of the
+averages present in table 4.2 seem to be farther away from the expected value of
+3.3 than one would intuitively expect if the meta-learning algorithms were
+truly equal. Whether or not these results fall far enough outside
+expectation in order to reject the null hypothesis requires analysis with the
+machinary of classical statistics. Two well established hypothesis testing
+measures are the method of calculating sampling distribution probabilities and
+t score analysis.A brief description of each of these statistical methods
+follows.
 
 \subsection{Exact Sampling Distribution}
 The following description losely follows the procedure described in \cite{Cohen}.
-In it, the author asks you to imagine testing a coin to see whether or not it
-is fair, flipping the coin 1,2,..N times. He then asks you to consider whether
-some proportion of heads is actually fair from 0/N, 1/N.., N/N heads. The
-propability that some proportion of heads p = i/N is fair can be calculated
-exactly with the binomial distribution $$\frac{N!}{i!(N-i)!}r^{i}(1-r)^{N-i}$$.
+In it, the author asks the reader to imagine testing a coin to see whether or
+not it is fair, flipping the coin 1,2,..N times. He then asks the reader to
+consider whether some proportion of heads is actually fair from 0/N, 1/N.., N/N
+heads. The propability that some proportion of heads p = i/N is fair can be
+calculated exactly with the binomial distribution
+$$\frac{N!}{i!(N-i)!}r^{i}(1-r)^{N-i}$$
 This situation is analogous to the number of first, second, or third place
 finishes some meta-algorithm obtained in this thesis experiment. The probabilty
-of proportions for each of the meta-learning algorithms can be seen in table 4.3.
+of proportions for each of the meta-learning algorithms can be seen in table 4.3
+and the average of these proportions across all samples can be seen in table 4.4.
 
 \begin{table}
 \begin{tabular}{lrrrrrrrrr}
 \toprule
-algorithms & \multicolumn{3}{l}{GuessesActive} & \multicolumn{3}{l}{GuessesEx} & \multicolumn{3}{l}{GuessesSamp} \\
-positions &             0 &         1 &         2 &         0 &         1 &         2 &           0 &         1 &         2 \\
+ & \multicolumn{3}{l}{GuessesActive} & \multicolumn{3}{l}{GuessesEx} & \multicolumn{3}{l}{GuessesSamp} \\
+ &             First &     Second &     Third &   First &     Second &     Third &     First &     Second &  Third \\
 \midrule
-0  &      0.086708 &  0.227608 &  0.136565 &  0.056902 &  0.195092 &  0.195092 &    0.260123 &  0.227608 &  0.260123 \\
-1  &      0.086708 &  0.227608 &  0.136565 &  0.136565 &  0.195092 &  0.260123 &    0.227608 &  0.227608 &  0.195092 \\
-2  &      0.086708 &  0.260123 &  0.056902 &  0.016258 &  0.260123 &  0.017342 &    0.195092 &  0.227608 &  0.227608 \\
-3  &      0.086708 &  0.136565 &  0.227608 &  0.056902 &  0.260123 &  0.086708 &    0.260123 &  0.195092 &  0.136565 \\
-4  &      0.017342 &  0.056902 &  0.227608 &  0.003048 &  0.195092 &  0.017342 &    0.195092 &  0.195092 &  0.056902 \\
-5  &      0.260123 &  0.260123 &  0.227608 &  0.136565 &  0.227608 &  0.086708 &    0.195092 &  0.260123 &  0.136565 \\
-6  &      0.227608 &  0.260123 &  0.260123 &  0.227608 &  0.227608 &  0.195092 &    0.195092 &  0.260123 &  0.136565 \\
-7  &      0.195092 &  0.260123 &  0.136565 &  0.016258 &  0.195092 &  0.086708 &    0.086708 &  0.136565 &  0.227608 \\
-8  &      0.086708 &  0.260123 &  0.056902 &  0.260123 &  0.136565 &  0.195092 &    0.056902 &  0.195092 &  0.195092 \\
-9  &      0.017342 &  0.227608 &  0.056902 &  0.016258 &  0.260123 &  0.017342 &    0.260123 &  0.260123 &  0.227608 \\
-10 &      0.017342 &  0.056902 &  0.227608 &  0.016258 &  0.260123 &  0.017342 &    0.260123 &  0.086708 &  0.056902 \\
-11 &      0.086708 &  0.136565 &  0.227608 &  0.016258 &  0.195092 &  0.086708 &    0.195092 &  0.260123 &  0.136565 \\
-12 &      0.260123 &  0.260123 &  0.227608 &  0.136565 &  0.227608 &  0.086708 &    0.195092 &  0.260123 &  0.136565 \\
-13 &      0.195092 &  0.136565 &  0.260123 &  0.056902 &  0.260123 &  0.086708 &    0.195092 &  0.195092 &  0.056902 \\
-14 &      0.195092 &  0.086708 &  0.016258 &  0.227608 &  0.056902 &  0.017342 &    0.227608 &  0.260123 &  0.260123 \\
-15 &      0.086708 &  0.136565 &  0.227608 &  0.056902 &  0.017342 &  0.227608 &    0.260123 &  0.136565 &  0.195092 \\
-16 &      0.086708 &  0.227608 &  0.136565 &  0.056902 &  0.227608 &  0.017342 &    0.260123 &  0.195092 &  0.136565 \\
-17 &      0.086708 &  0.260123 &  0.056902 &  0.003048 &  0.086708 &  0.086708 &    0.086708 &  0.056902 &  0.260123 \\
-18 &      0.086708 &  0.227608 &  0.136565 &  0.016258 &  0.260123 &  0.017342 &    0.195092 &  0.260123 &  0.136565 \\
-19 &      0.195092 &  0.227608 &  0.227608 &  0.056902 &  0.195092 &  0.195092 &    0.195092 &  0.227608 &  0.227608 \\
-20 &      0.086708 &  0.195092 &  0.016258 &  0.227608 &  0.056902 &  0.017342 &    0.136565 &  0.195092 &  0.260123 \\
-21 &      0.260123 &  0.260123 &  0.227608 &  0.195092 &  0.016258 &  0.086708 &    0.136565 &  0.017342 &  0.136565 \\
-22 &      0.260123 &  0.227608 &  0.260123 &  0.056902 &  0.227608 &  0.017342 &    0.086708 &  0.195092 &  0.016258 \\
-23 &      0.260123 &  0.260123 &  0.227608 &  0.227608 &  0.227608 &  0.195092 &    0.260123 &  0.260123 &  0.227608 \\
-24 &      0.195092 &  0.056902 &  0.195092 &  0.016258 &  0.260123 &  0.017342 &    0.086708 &  0.086708 &  0.003048 \\
-25 &      0.086708 &  0.260123 &  0.056902 &  0.056902 &  0.195092 &  0.195092 &    0.260123 &  0.136565 &  0.195092 \\
-26 &      0.016258 &  0.195092 &  0.086708 &  0.260123 &  0.136565 &  0.195092 &    0.017342 &  0.260123 &  0.016258 \\
-27 &      0.017342 &  0.136565 &  0.136565 &  0.016258 &  0.195092 &  0.086708 &    0.260123 &  0.260123 &  0.227608 \\
-28 &      0.086708 &  0.195092 &  0.016258 &  0.227608 &  0.136565 &  0.086708 &    0.136565 &  0.260123 &  0.195092 \\
-29 &      0.195092 &  0.056902 &  0.195092 &  0.227608 &  0.260123 &  0.260123 &    0.227608 &  0.086708 &  0.136565 \\
+sample 1  &          0.09 &  0.23 &  0.14 &      0.06 &  0.20 &  0.20 &        0.26 &  0.23 &  0.26 \\
+sample 2  &          0.09 &  0.23 &  0.14 &      0.14 &  0.20 &  0.26 &        0.23 &  0.23 &  0.20 \\
+sample 3  &          0.09 &  0.26 &  0.06 &      0.02 &  0.26 &  0.02 &        0.20 &  0.23 &  0.23 \\
+sample 4  &          0.09 &  0.14 &  0.23 &      0.06 &  0.26 &  0.09 &        0.26 &  0.20 &  0.14 \\
+sample 5  &          0.02 &  0.06 &  0.23 &      0.00 &  0.20 &  0.02 &        0.20 &  0.20 &  0.06 \\
+sample 6  &          0.26 &  0.26 &  0.23 &      0.14 &  0.23 &  0.09 &        0.20 &  0.26 &  0.14 \\
+sample 7  &          0.23 &  0.26 &  0.26 &      0.23 &  0.23 &  0.20 &        0.20 &  0.26 &  0.14 \\
+sample 8  &          0.20 &  0.26 &  0.14 &      0.02 &  0.20 &  0.09 &        0.09 &  0.14 &  0.23 \\
+sample 9  &          0.09 &  0.26 &  0.06 &      0.26 &  0.14 &  0.20 &        0.06 &  0.20 &  0.20 \\
+sample 10 &          0.02 &  0.23 &  0.06 &      0.02 &  0.26 &  0.02 &        0.26 &  0.26 &  0.23 \\
+sample 11 &          0.02 &  0.06 &  0.23 &      0.02 &  0.26 &  0.02 &        0.26 &  0.09 &  0.06 \\
+sample 12 &          0.09 &  0.14 &  0.23 &      0.02 &  0.20 &  0.09 &        0.20 &  0.26 &  0.14 \\
+sample 13 &          0.26 &  0.26 &  0.23 &      0.14 &  0.23 &  0.09 &        0.20 &  0.26 &  0.14 \\
+sample 14 &          0.20 &  0.14 &  0.26 &      0.06 &  0.26 &  0.09 &        0.20 &  0.20 &  0.06 \\
+sample 15 &          0.20 &  0.09 &  0.02 &      0.23 &  0.06 &  0.02 &        0.23 &  0.26 &  0.26 \\
+sample 16 &          0.09 &  0.14 &  0.23 &      0.06 &  0.02 &  0.23 &        0.26 &  0.14 &  0.20 \\
+sample 17 &          0.09 &  0.23 &  0.14 &      0.06 &  0.23 &  0.02 &        0.26 &  0.20 &  0.14 \\
+sample 18 &          0.09 &  0.26 &  0.06 &      0.00 &  0.09 &  0.09 &        0.09 &  0.06 &  0.26 \\
+sample 19 &          0.09 &  0.23 &  0.14 &      0.02 &  0.26 &  0.02 &        0.20 &  0.26 &  0.14 \\
+sample 20 &          0.20 &  0.23 &  0.23 &      0.06 &  0.20 &  0.20 &        0.20 &  0.23 &  0.23 \\
+sample 21 &          0.09 &  0.20 &  0.02 &      0.23 &  0.06 &  0.02 &        0.14 &  0.20 &  0.26 \\
+sample 22 &          0.26 &  0.26 &  0.23 &      0.20 &  0.02 &  0.09 &        0.14 &  0.02 &  0.14 \\
+sample 23 &          0.26 &  0.23 &  0.26 &      0.06 &  0.23 &  0.02 &        0.09 &  0.20 &  0.02 \\
+sample 24 &          0.26 &  0.26 &  0.23 &      0.23 &  0.23 &  0.20 &        0.26 &  0.26 &  0.23 \\
+sample 25 &          0.20 &  0.06 &  0.20 &      0.02 &  0.26 &  0.02 &        0.09 &  0.09 &  0.00 \\
+sample 26 &          0.09 &  0.26 &  0.06 &      0.06 &  0.20 &  0.20 &        0.26 &  0.14 &  0.20 \\
+sample 27 &          0.02 &  0.20 &  0.09 &      0.26 &  0.14 &  0.20 &        0.02 &  0.26 &  0.02 \\
+sample 28 &          0.02 &  0.14 &  0.14 &      0.02 &  0.20 &  0.09 &        0.26 &  0.26 &  0.23 \\
+sample 29 &          0.09 &  0.20 &  0.02 &      0.23 &  0.14 &  0.09 &        0.14 &  0.26 &  0.20 \\
+sample 30 &          0.20 &  0.06 &  0.20 &      0.23 &  0.26 &  0.26 &        0.23 &  0.09 &  0.14 \\
 \bottomrule
 \end{tabular}
 \caption{Placement results proportion probabilities}
+\caption*{Proportion probabilities of placement results if the null hypothesis were true}
 \end{table}
 
-When averaged across samples, we get the following table:
 
 \begin{table}
 \begin{tabular}{lrrr}
 \toprule
 {} &  GuessesActive &  GuessesEx &  GuessesSamp \\
 \midrule
-0 &       0.130387 &   0.192563 &     0.156200 \\
-1 &       0.102735 &   0.188372 &     0.105133 \\
-2 &       0.187018 &   0.196050 &     0.160565 \\
+First  &        0.13 &       0.19 &         0.16 \\
+Second &        0.10 &       0.19 &         0.11 \\
+Third  &        0.19 &       0.20 &         0.16 \\
 \bottomrule
 \end{tabular}
-\caption{Average of proportion probabilities}
+\caption{Average of proportion probabilities across all samples}
 \end{table}
 
-The probability of drawing either of the values closest to expectation, 3 or 4,
-are 0.26 and 0.22 respectively. The average of all values within this table is
-0.15, significantly lower than either expected value. Still, this is not enough
-to reject the null hypothesis.
+We can calculate the probability of drawing either of the values closest
+to expectation, 3 or 4, by use of the previously mentioned binomial distribution,
+with $N = 10$, $r = 0.33$, and $i$ being either 3 or 4. The values we get for
+the propabilities of the most expected values are then 0.26 and 0.22
+respectively. The average of all values within this table is
+0.15, significantly lower than the probability of the expected value.
+Still, this is not enough to reject the null hypothesis as proportion
+probability analysis does not come with a rejection criteria.
 
 \subsection{t score}
-In order to confidantly reject the null hypothesis, we will make use of the
-T test.  The t test equation is as follows:
+$t$ score analysis is a form of hypothesis testing that allows one to determine
+whether or not some result emerged from some given distribution via consideration
+of how many standard deviations the result deviates from the mean of said given
+distribution. Its equation has the form:
 $$t =\frac{\overline{x}-\mu}{\hat{\sigma}_{\overline{x}}} = \frac{\overline{x}-\mu}{\frac{s}{\sqrt{N}}}$$
-where s is the sample standard deviation, N is the
-number of samples, overscore x is an individual samples mean/calculated value,
-and mu is the population mean/expected value.
+where $s$ is the sample standard deviation, $N$ is the number of samples,
+$\overline{x}$ is an individual samples mean/calculated value, and $\mu$ is
+the mean of the distribution of comparison.
 
-The idea is simple, take the diffrence between the observed mean of the sample
-and the expected mean and normalize this value by the standard deviation of the
-samples distribution. This results in some number of sample standard deviations
-by which the observed sample distributions mean differs from expectation. The
-fewer the number of sample the higher the margin of error in the t scores
-estimate, with a margin of error of 0.05 given for estimates made with 30
-samples. The critical thresholds for a two tailed t test are -1.96 and 1.96.
-If the averaged values of the t scores falls outside these bounds then we can
-reject the null hypothesis with a 5 percent margin of error. The standard
-deviations and t scores for each of the samples follows in table 4.4:
+The decision as to whether or not a specific $t$ score value implies a result
+is from a different distribution depends on how many samples were used in the
+calculation of the sample mean and on what the desired confidence interval is.
+The critical threshold used in order to make this decision is gained by the use
+of $t$ distribution table. In the case where 30 samples are used and the desired
+margin of error is 5\%, the critical thresholds for a two tailed $t$ test are
+-2.042 and 2.042. If the averaged values of the $t$ scores falls outside of
+these bounds then we can reject the null hypothesis with a 5 \% margin of error.
+The standard deviations and $t$ scores for each of the samples can be seen in
+table 4.4. Taking the average of the absolute value of each of these $t$ scores
+yeilds 5.11. We can thus comfortably reject the null hypothesis.
+
 
 \begin{table}
 \begin{tabular}{lrrr}
 \toprule
 {} &  GuessesActive &  GuessesEx &  GuessesSamp \\
 \midrule
-First &       1.417745 &   1.301281 &     1.477611 \\
-Second &       1.542365 &   1.530795 &     1.056199 \\
-Third &       1.364633 &   1.325393 &     1.580787 \\
+First  &           1.42 &       1.30 &     1.48 \\
+Second &           1.54 &       1.53 &     1.06 \\
+Third  &           1.36 &       1.33 &     1.58 \\
 \bottomrule
 \end{tabular}
-\caption{Placement results standard deviations}
+\caption{Placement results standard deviations across all samples}
 \end{table}
 
 
@@ -178,57 +215,55 @@ Third &       1.364633 &   1.325393 &     1.580787 \\
 \begin{tabular}{lrrrrrrrrr}
 \toprule
 algorithms & \multicolumn{3}{l}{GuessesActive} & \multicolumn{3}{l}{GuessesEx} & \multicolumn{3}{l}{GuessesSamp} \\
-positions &             0 &          1 &          2 &          0 &          1 &          2 &           0 &          1 &          2 \\
+positions &  First &   Second &    Third &    First &  Second &  Third &    First &  Second &  Third \\
 \midrule
-0  &    -10.408994 &   3.240168 &   7.133764 &  10.934820 &  -5.508733 &  -7.984048 &   -1.544874 &   3.181223 &  -1.333630 \\
-1  &    -10.408994 &   3.240168 &   7.133764 &   6.834263 &  -5.508733 &  -1.996012 &    3.089747 &   3.181223 &  -5.334519 \\
-2  &    -10.408994 &  -1.620084 &  11.414022 &  15.035378 &  -1.377183 & -19.960120 &   -6.179495 &   3.181223 &   2.667259 \\
-3  &    -10.408994 &   8.100420 &   2.853506 &  10.934820 &  -1.377183 & -13.972084 &   -1.544874 &  -6.362445 &   6.668149 \\
-4  &    -14.869991 &  12.960671 &   2.853506 &  19.135935 &  -5.508733 & -19.960120 &   -6.179495 &  -6.362445 &  10.669038 \\
-5  &     -1.486999 &  -1.620084 &   2.853506 &   6.834263 &   2.754366 & -13.972084 &   -6.179495 &  -1.590611 &   6.668149 \\
-6  &      2.973998 &  -1.620084 &  -1.426753 &   2.733705 &   2.754366 &  -7.984048 &   -6.179495 &  -1.590611 &   6.668149 \\
-7  &     -5.947996 &  -1.620084 &   7.133764 &  15.035378 &  -5.508733 & -13.972084 &  -10.814116 &   7.953056 &   2.667259 \\
-8  &    -10.408994 &  -1.620084 &  11.414022 &  -1.366853 &   6.885916 &  -7.984048 &   12.358990 &  -6.362445 &  -5.334519 \\
-9  &    -14.869991 &   3.240168 &  11.414022 &  15.035378 &  -1.377183 & -19.960120 &   -1.544874 &  -1.590611 &   2.667259 \\
-10 &    -14.869991 &  12.960671 &   2.853506 &  15.035378 &  -1.377183 & -19.960120 &   -1.544874 & -11.134279 &  10.669038 \\
-11 &    -10.408994 &   8.100420 &   2.853506 &  15.035378 &  -5.508733 & -13.972084 &   -6.179495 &  -1.590611 &   6.668149 \\
-12 &     -1.486999 &  -1.620084 &   2.853506 &   6.834263 &   2.754366 & -13.972084 &   -6.179495 &  -1.590611 &   6.668149 \\
-13 &     -5.947996 &   8.100420 &  -1.426753 &  10.934820 &  -1.377183 & -13.972084 &   -6.179495 &  -6.362445 &  10.669038 \\
-14 &     -5.947996 & -11.340587 &  15.694280 &   2.733705 &  11.017465 & -19.960120 &    3.089747 &  -1.590611 &  -1.333630 \\
-15 &    -10.408994 &   8.100420 &   2.853506 &  10.934820 & -13.771832 &   3.992024 &   -1.544874 &   7.953056 &  -5.334519 \\
-16 &    -10.408994 &   3.240168 &   7.133764 &  10.934820 &   2.754366 & -19.960120 &   -1.544874 &  -6.362445 &   6.668149 \\
-17 &    -10.408994 &  -1.620084 &  11.414022 &  19.135935 &  -9.640282 & -13.972084 &  -10.814116 &  12.724890 &  -1.333630 \\
-18 &    -10.408994 &   3.240168 &   7.133764 &  15.035378 &  -1.377183 & -19.960120 &   -6.179495 &  -1.590611 &   6.668149 \\
-19 &     -5.947996 &   3.240168 &   2.853506 &  10.934820 &  -5.508733 &  -7.984048 &   -6.179495 &   3.181223 &   2.667259 \\
-20 &    -10.408994 &  -6.480336 &  15.694280 &   2.733705 &  11.017465 & -19.960120 &    7.724369 &  -6.362445 &  -1.333630 \\
-21 &     -1.486999 &  -1.620084 &   2.853506 &  -5.467410 &  15.149015 & -13.972084 &    7.724369 & -15.906113 &   6.668149 \\
-22 &     -1.486999 &   3.240168 &  -1.426753 &  10.934820 &   2.754366 & -19.960120 &  -10.814116 &  -6.362445 &  14.669927 \\
-23 &     -1.486999 &  -1.620084 &   2.853506 &   2.733705 &   2.754366 &  -7.984048 &   -1.544874 &  -1.590611 &   2.667259 \\
-24 &     -5.947996 &  12.960671 &  -5.707011 &  15.035378 &  -1.377183 & -19.960120 &  -10.814116 & -11.134279 &  18.670816 \\
-25 &    -10.408994 &  -1.620084 &  11.414022 &  10.934820 &  -5.508733 &  -7.984048 &   -1.544874 &   7.953056 &  -5.334519 \\
-26 &     16.356990 &  -6.480336 &  -9.987269 &  -1.366853 &   6.885916 &  -7.984048 &  -15.448737 &  -1.590611 &  14.669927 \\
-27 &    -14.869991 &   8.100420 &   7.133764 &  15.035378 &  -5.508733 & -13.972084 &   -1.544874 &  -1.590611 &   2.667259 \\
-28 &    -10.408994 &  -6.480336 &  15.694280 &   2.733705 &   6.885916 & -13.972084 &    7.724369 &  -1.590611 &  -5.334519 \\
-29 &     -5.947996 &  12.960671 &  -5.707011 &   2.733705 &  -1.377183 &  -1.996012 &    3.089747 & -11.134279 &   6.668149 \\
+sample 1  &        -10.41 &   3.24 &   7.13 &     10.93 &  -5.51 &  -7.98 &       -1.54 &   3.18 &  -1.33 \\
+sample 2  &        -10.41 &   3.24 &   7.13 &      6.83 &  -5.51 &  -2.00 &        3.09 &   3.18 &  -5.33 \\
+sample 3  &        -10.41 &  -1.62 &  11.41 &     15.04 &  -1.38 & -19.96 &       -6.18 &   3.18 &   2.67 \\
+sample 4  &        -10.41 &   8.10 &   2.85 &     10.93 &  -1.38 & -13.97 &       -1.54 &  -6.36 &   6.67 \\
+sample 5  &        -14.87 &  12.96 &   2.85 &     19.14 &  -5.51 & -19.96 &       -6.18 &  -6.36 &  10.67 \\
+sample 6  &         -1.49 &  -1.62 &   2.85 &      6.83 &   2.75 & -13.97 &       -6.18 &  -1.59 &   6.67 \\
+sample 7  &          2.97 &  -1.62 &  -1.43 &      2.73 &   2.75 &  -7.98 &       -6.18 &  -1.59 &   6.67 \\
+sample 8  &         -5.95 &  -1.62 &   7.13 &     15.04 &  -5.51 & -13.97 &      -10.81 &   7.95 &   2.67 \\
+sample 9  &        -10.41 &  -1.62 &  11.41 &     -1.37 &   6.89 &  -7.98 &       12.36 &  -6.36 &  -5.33 \\
+sample 10 &        -14.87 &   3.24 &  11.41 &     15.04 &  -1.38 & -19.96 &       -1.54 &  -1.59 &   2.67 \\
+sample 11 &        -14.87 &  12.96 &   2.85 &     15.04 &  -1.38 & -19.96 &       -1.54 & -11.13 &  10.67 \\
+sample 12 &        -10.41 &   8.10 &   2.85 &     15.04 &  -5.51 & -13.97 &       -6.18 &  -1.59 &   6.67 \\
+sample 13 &         -1.49 &  -1.62 &   2.85 &      6.83 &   2.75 & -13.97 &       -6.18 &  -1.59 &   6.67 \\
+sample 14 &         -5.95 &   8.10 &  -1.43 &     10.93 &  -1.38 & -13.97 &       -6.18 &  -6.36 &  10.67 \\
+sample 15 &         -5.95 & -11.34 &  15.69 &      2.73 &  11.02 & -19.96 &        3.09 &  -1.59 &  -1.33 \\
+sample 16 &        -10.41 &   8.10 &   2.85 &     10.93 & -13.77 &   3.99 &       -1.54 &   7.95 &  -5.33 \\
+sample 17 &        -10.41 &   3.24 &   7.13 &     10.93 &   2.75 & -19.96 &       -1.54 &  -6.36 &   6.67 \\
+sample 18 &        -10.41 &  -1.62 &  11.41 &     19.14 &  -9.64 & -13.97 &      -10.81 &  12.72 &  -1.33 \\
+sample 19 &        -10.41 &   3.24 &   7.13 &     15.04 &  -1.38 & -19.96 &       -6.18 &  -1.59 &   6.67 \\
+sample 20 &         -5.95 &   3.24 &   2.85 &     10.93 &  -5.51 &  -7.98 &       -6.18 &   3.18 &   2.67 \\
+sample 21 &        -10.41 &  -6.48 &  15.69 &      2.73 &  11.02 & -19.96 &        7.72 &  -6.36 &  -1.33 \\
+sample 22 &         -1.49 &  -1.62 &   2.85 &     -5.47 &  15.15 & -13.97 &        7.72 & -15.91 &   6.67 \\
+sample 23 &         -1.49 &   3.24 &  -1.43 &     10.93 &   2.75 & -19.96 &      -10.81 &  -6.36 &  14.67 \\
+sample 24 &         -1.49 &  -1.62 &   2.85 &      2.73 &   2.75 &  -7.98 &       -1.54 &  -1.59 &   2.67 \\
+sample 25 &         -5.95 &  12.96 &  -5.71 &     15.04 &  -1.38 & -19.96 &      -10.81 & -11.13 &  18.67 \\
+sample 26 &        -10.41 &  -1.62 &  11.41 &     10.93 &  -5.51 &  -7.98 &       -1.54 &   7.95 &  -5.33 \\
+sample 27 &         16.36 &  -6.48 &  -9.99 &     -1.37 &   6.89 &  -7.98 &      -15.45 &  -1.59 &  14.67 \\
+sample 28 &        -14.87 &   8.10 &   7.13 &     15.04 &  -5.51 & -13.97 &       -1.54 &  -1.59 &   2.67 \\
+sample 29 &        -10.41 &  -6.48 &  15.69 &      2.73 &   6.89 & -13.97 &        7.72 &  -1.59 &  -5.33 \\
+sample 30 &         -5.95 &  12.96 &  -5.71 &      2.73 &  -1.38 &  -2.00 &        3.09 & -11.13 &   6.67 \\
 \bottomrule
 \end{tabular}
 \caption{Placement results t scores}
+\caption*{t score for each individual placement result}
 \end{table}
 
-Table 4.5 contains these t scores averaged across samples:
+
 
 \begin{table}
 \begin{tabular}{lrrr}
 \toprule
 {} &  GuessesActive &  GuessesEx &  GuessesSamp \\
 \midrule
-0 &      -7.286296 &   2.268117 &     4.993635 \\
-1 &       9.157912 &  -0.137718 &   -13.173679 \\
-2 &      -2.780773 &  -2.067795 &     4.134252 \\
+First  &      -7.29 &       2.27 &         4.99 \\
+Second &       9.16 &      -0.14 &       -13.17 \\
+Third  &      -2.78 &      -2.07 &         4.13 \\
 \bottomrule
 \end{tabular}
-\caption{Average of t scores}
+\caption{Average of t scores across all samples}
 \end{table}
-
-Taking the average of the absolute value of each of these t scores yeilds
-5.11. We can thus comfortably reject the null hypothesis.

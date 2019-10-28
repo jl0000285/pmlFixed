@@ -2,152 +2,183 @@
 \chapter{Review of the literature}
 \label{Chapter2}
 %---------------------------------------------------------------------------------------
-\section{No Free lunch theorem}
-Introduced in Wolpert and MacReady's ``No Free Lunch Theorems for Optimization'' 1997 paper,
-the No Free Lunch theorem states that the perfomance of all algorithms when averaged out across all
-datasets should be the same, that is to say there is no one algorithm that is universally the best.
-The root cause of this observation is in that differing algorithms make different assumptions about the
-distributions from which the data the algorithms work with arises. A learning algorithm with an implicit
-assumption of a random distriubtion will have a far lower test case classification accuracy than an
-algorithm that assumes a gaussian distribution if the distribution from which the set of observed
-samples derives from is truly normal and vice versa, if the distribution is truly random the gaussian
-classifier's accuracy will suffer relative to the classifier with a random assumption.
+\section{No Free Lunch Theorem}
+Introduced in Wolpert and Macready's ``No Free Lunch Theorems for Optimization''
+1997 paper, the No Free Lunch theorem states that the performance of all
+algorithms, when averaged out across all datasets, should be the same; that is
+to say there is no one algorithm that is universally the best. The root cause of
+this phenomenon is in that differing algorithms make different assumptions
+about the distributions from which the data the algorithms work with arises. A
+learning algorithm with an implicit assumption of a random distribution will
+have a far lower test case classification accuracy than an algorithm that
+assumes a Gaussian distribution if the distribution from which the set of
+observed samples derives from is truly normal and vice versa, if the
+distribution is truly random the Gaussian classifier's accuracy will suffer
+relative to the classifier with a random assumption.
 %-------------------------------------------------------------------------------------------
-\subsection{Brute force metabase}
-The most basic meta machine learning algorithm involves the collecting of the run statistics
-of the set of machines that a given meta learner can produce applied to a metabase with a clustering
-algorithm to produce results with new datasets. This version of metalearning will act as a sort of control
-for this study, the results of the more complicated meta learning strategies that follow only really mean
-anything with respect to how long it would've taken to train and how long it would've performed if we had
-just trained it via brute force.
+\subsection{Brute Force Metabase}
+The most basic meta-machine learning algorithm. The accuracies of the
+meta-learners producible machines for some metabase are gathered. To classify
+a new dataset $d_n$, a clustering algorithm (K-Means in the case of this experiment) is
+used to find $d_m$, the dataset within the metabase with which the new dataset $d_n$ is
+most similar. The algorithm which had the greatest classification accuracy for
+the metabase dataset $d_m$ will then be returned by the meta-learner.
 %-------------------------------------------------------------------------------------------
 \subsection{Active Meta Learning}
-The first of the metalearning strategies implemented within the study; Active
-Meta Learning is a meta learning technique  ``that reduces the cost of generating Meta examples
-by selecting relevant Meta examples'' \cite{Bhatt}. What this entails is a decision on what
-datasets to allow into a metalearners metabase, rather than analyze every candidate meta base dataset
-an active metalearner will analyze the next dataset with the highest uncertainty. The relative uncertainty
-between two datasets is defined by
+The second of the meta-learning strategies implemented within the study, Active
+Meta Learning is a meta learning technique  ``that reduces the cost of
+generating Meta examples by selecting relevant Meta examples'' \cite{Bhatt}.
+What this entails is a decision on what datasets to allow into a meta-learners
+metabase; rather than analyze every candidate meta base dataset, an active
+meta-learner will analyze the next dataset with the highest uncertainty. The
+relative uncertainty between two datasets is defined to be:
 $$\delta(V_x,d_i,V_x,d_j) = \frac{|V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$
 where $V_x,d_k$ is the value of some metaparameter $V_x$ for dataset $d_k$,
-$Max_{k\neq i}(V_x,d_k)$ is the maximum value of $V_x,d_k$ when dataset i is removed and
-$Min_{k\neq i}(V_x,d_k)$ is its corrosponding minimum. Determining which dataset has the overall highest
-uncertainty can be done by summing over the relative values for each metaparameter, ranking them then
-collecting their overall uncertainty scores then choosing the one that is highest where  $$\delta(V_x,d_i) = \frac{\sum_{j\neq i} |V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$ is the equation
-representing the overall uncertainty for dataset $d_i$ in metaparameter $V_x$.
+$Max_{k\neq i}(V_x,d_k)$ is the maximum value of $V_x,d_k$ when dataset $i$ is
+removed and $Min_{k\neq i}(V_x,d_k)$ is its corresponding minimum. Determining
+which dataset has the overall highest uncertainty can be done via the following
+procedure. First, sum the relative uncertainties for each dataset and
+meta-parameter combination. Then, rank the uncertainty scores of the datasets within
+each meta-parameter. After obtaining the uncertainty ranks within each parameter
+for each dataset, sum the parameter ranks in order to obtain an overall
+uncertainty rank for each dataset. Finally, select the parameter with the
+highest rank for inclusion in the metabase. The equation representing the
+overall uncertainty score in a specific metaparameter $V_x$ for dataset $d_i$ is
+$$\delta(V_x,d_i) = \frac{\sum_{j\neq i} |V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$
 %-----------------------------------------------------------------------------------------------
-\subsection{Predicting relative performance of classifiers from samples}
-The second of the metalearning strategies implemented within this study is one in which
-a representive subsection of the metabase is trained with each algorithm entirely, after
-which point the rest of the metabase under goes a sort of curve sampling analysis in which
-the results of future learning is predicted based off what dataset the new datasets learning
-curve most resembles. \cite{Leite} As with the other two meta learning strategies, the label
-for new datsets is the determined via clustering with the datasets within this post trained
-metabase.
-
+\subsection{Predicting Relative Performance of Classifiers from Samples}
+The third of the meta-learning strategies implemented within this study is one in
+which a representative subsection of the metabase is trained with each algorithm
+entirely, after which point the rest of the metabase under goes curve
+sampling analysis; the accuracies of the base algorithms are predicted from
+run curve similarity rather than directly ran. \cite{Leite}
+As with the other two meta learning strategies, the label for new datsets is
+then determined via clustering with the datasets contained within the metabase.
 %----------------------------------------------------------------------------------------
-\section{Summary of producable machines}
-The strategies mentioned in the previous section must be able to produce learning algorithms
-to be considered metalearing machines. The machines that these strategies can produce are
-the K-means clusterer, a neural network, a naive bayes classifier, the support vector machine,
-and regression; with the results coming from the regression machine being cast into
-classificatory bins from the real valued result that it would produce. An in depth
-description of each of these different earning algorithms will comprise the rest of
-this chapter.
+\section{Summary of Producible Machines}
+The strategies mentioned in the previous section all consume a vector
+representation of some dataset then make a guess as to what algorithm would best
+be able to classify its data. The machines that these strategies can produce are
+the K-means clustering algorithm, a neural network, a naive Bayes classifier, the support
+vector machine, and regression; with the results coming from the regression
+machine being cast into classificatory bins from the real valued result that it
+would produce. An in depth description of each of these different earning
+algorithms will comprise the rest of this chapter.
 %--------------------------------------------------------------------------------------------
 \section{Linear Regression}
-Linear regression is one of the most common and oldest machine learning techniques within
-literature. It asserts that the response is a linear function of the inputs. \cite{murphy}.
-This relation takes the following form:
+Linear regression is one of the most common and oldest machine learning
+techniques within literature. It asserts that the response is a linear function
+of the inputs. \cite{Murphy}. This relation takes the following form:
 $$ y(\textbf{x}) = \textbf{w}^T\textbf{x} + \epsilon = \sum_{j=1}^{D}w_jx_j + \epsilon $$
-where $w^Tx$ represents the inner or scalar product between the input vector $x$ and the
-model's weight vector $w^T$, and $\epsilon$ is the residual error between our linear predictions
-and the true response.
-To fit a linear regression model, the least squares approach is usually used. Given some
- ``overdetermined'' linear system (that is to say a system in which there are more data points
- than parameters) one can write an expression for the sum of squares of the system $$S(\beta) =
- (y_1 - \beta x_1)^2 + (y_2 - \beta x_2)^2 + ... (y_3 - \beta x_3)$$ then take the partial deriviate
- of this sum of sqaured deviations with respect to each of the components of $\beta$, set them to
- zero, then solve the resulting equations to directly determine what the values of the parameters
- are that minimizes the sum of the squared errors of the system. With linear regression in two dimensions
- (one dimension in the independant variable and one dimension in the dependant variable) we see a system
- with two parameters $\beta_0 = y intercept$ and $\beta_1 = slope$. If we had for example 3 data points
- (2,1),(3,7), and (4,5) we would have the equations $\beta_0 + 2*\beta_1 = 1$, $\beta_0 + 3*\beta_1 = 7$,
- and $\beta_0 + 4*\beta_1 = 5$. The sum of squared errors would then be
+where $w^Tx$ represents the inner or scalar product between the input vector $x$
+and the model's weight vector $w^T$, and $\epsilon$ is the residual error
+between our linear predictions and the true response.
+
+To fit a linear regression model, the least squares approach is usually used.
+Given some  ``overdetermined'' linear system (that is to say a system in which
+there are more data points than parameters) one can write an expression for the
+sum of squares of the system
+$$S(\beta) = (y_1 - \beta x_1)^2 + (y_2 - \beta x_2)^2 + ... (y_n - \beta x_n)^n$$
+then take the partial derivative of this sum of squares deviations with respect
+to each of the components of $\beta$, set them to zero, then solve the resulting
+equations to directly determine what the values of the parameters are that
+minimize the sum of the squared errors of the system. With linear regression in
+two dimensions (one dimension in the Independent variable and one dimension in
+the dependent variable) we see a system with two parameters
+$\beta_0 = y intercept$ and $\beta_1 = slope$. If we had for example 3 data
+points (2,1),(3,7), and (4,5) we would have the equations
+$\beta_0 + 2*\beta_1 = 1$, $\beta_0 + 3*\beta_1 = 7$, and
+$\beta_0 + 4*\beta_1 = 5$. The sum of squared errors would then be
  $S(\beta_0,\beta_1)= [1 - (\beta_0 + 2*\beta_1)]^2 + [7 - (\beta_0 + 3*\beta_1)]^2 + [5 - (\beta_0 + 4*\beta_1)]^2$
- ,which we could then differentiate with respect to $\beta_0$ and $\beta_1$ then directly solve the resulting set
- of linear equations directly for the minimum of the summed squares.
+,which we could then differentiate with respect to $\beta_0$ and $\beta_1$ then
+directly solve the resulting set of linear equations directly for the minimum of
+the summed squares.
 %--------------------------------------------------------------------------------------------
 \section{Naive Bayes}
-The Naive Bayes classifier algorithm fits a set of data to Bayes theorem with a strong assumption of
-feature independance. Given a set of discrete-valued features $x \in {1,...,K}^D$, we can calculate
-the class conditional density for each feature, then with our assumption of independance easily generate
-a guess at what the class should be for a new input by multiplying the conditional likelihood values
-for each of the new inputs features times the prior on the desired to be known class, that is to say
-$p(y|\textbf{x}) \propto p(y) \sum_{j}^{D}p(x_j|y)$. The calculation of the posterior probability for a new
-example can be done so ``by hand'' or can be done so from distributions that are infered from the
-provided data. Consider, for example, a collection of data listing individuals that did or did not purchase
-a house from a real estate agent, where, for some reason or another the only data remaining pertaining to
-these individuals is what their income level was, what their age was, and how far they have to or would have
-to drive to work from their new home. A set of possible example points is as follows:
+The Naive Bayes classifier algorithm fits a set of data to Bayes' theorem with a
+strong assumption of feature independence. Given a set of discrete-valued
+features $x \in {1,...,K}^D$, we can calculate the class conditional density for
+each feature, then with our assumption of independence generate a guess
+at what the class should be for a new input by multiplying the conditional
+likelihood values for each of the new inputs features times the prior on the
+desired to be known class, that is to say
+$p(y|\textbf{x}) \propto p(y) \sum_{j}^{D}p(x_j|y)$.
+The calculation of the posterior probability for a new example can be done so
+manually or can be done so from distributions that are inferred from the
+provided data. Consider, for example, a collection of data listing individuals
+that did or did not purchase a house from a real estate agent, where, for some
+reason or another, the only data remaining pertaining to these individuals is
+what their income level was, what their age was, and how far they have to or
+would have to drive to work from their new home.
 
-Say we get a new datapoint: $25,000 30 10$. In this case the conditional likelihood of this data given a
-yes for each of the individual features is 2/9, 1/9, and 2/9 respectively. The prior on yes is 1/3. The
-marginal likelihoods of each the individual features are 2/9, 1/9 and 2/9 respectively. As such the
-posteriors for our new datapoint are $p(y=yes|x)=\frac{(2/9)*(1/9)*(2/9)*(9/27)}{(6/27)*(3/27)*(6/27)} = \frac{0.00182}{0.00548} = 0.33$ and $p(y=no|x)=\frac{(4/18)(2/18)(4/18)(18/27)}{(6/27)(3/27)(6/27)} = \frac{0.0036}{0.00548} = 0.66$. Note that $0.66 > 0.33$ and as such our classifier would label this datapoint with
-a no, this individual is not likely to purchase a house.
+Say we get a new datapoint: income: \$25,000, age: 30, distance: 10. In this
+case the conditional likelihood of this data given a yes for each of the
+individual features is 2/9, 1/9, and 2/9 respectively. The prior on yes is 1/3.
+The marginal likelihoods of each the individual features are 2/9, 1/9 and 2/9
+respectively. As such the posteriors for our new datapoint are
+$p(y=yes|x)=\frac{(2/9)*(1/9)*(2/9)*(9/27)}{(6/27)*(3/27)*(6/27)} = \frac{0.00182}{0.00548} = 0.33$ and $p(y=no|x)=\frac{(4/18)(2/18)(4/18)(18/27)}{(6/27)(3/27)(6/27)} = \frac{0.0036}{0.00548} = 0.66$.
 
-This ``by hand'' calculation of the posterior for every new data point is fine when the number of
-examples is low but can quickly grow out of hand when the number of data points is very large. In
-this case it is better to extract the parameters of the assumed distributions of the various
-portions of the equation (for the data likelihoods, the prior, the marginals, etc). For this example
-the data likelihoods and marginals are all gaussians. The relative means of each of the distributions can
-easily be seen from the data table (35,000, 40, 15 for each of the features marginal and conditionl
-probabilities). The variances can be calculated by summing the distances from the means and dividing by
-the number of points in each given distribution, at which point all the means and variances will be known.
-Plugging this values into the definition of the gaussian $$p(x|\mu,\rho^{2})=\frac{1}{\sqrt{2\pi\rho^{2}}}e^{\frac{x-\mu^{2}}{\rho^{2}}}$$ would give us the probability for each of the values for a given new data point,
-at which point the calculation of the posterior would follow in exactly the same fashion as the ``by hand'' example.
+Note that $0.66 > 0.33$ and as such our classifier would label this datapoint
+with a no, this individual is not likely to purchase a house.
+
 %--------------------------------------------------------------------------------------------
 \section{Support Vector Machine}
-The support vector machine is a two-group classification algorithm that attempts to find a hyper
-plane that seperates the inputs within the given input space with a maximum margin of seperation
-between the hyper plane and the ``support vectors'', those vectors on either side of the hyper plane
-that are closest too it. To arrive at a form of the support vector machine that can be used to classify
-new inputs, one first needs a representation of the potential seperating hyper plane $$y_i(\mathbf{w}*\mathbf{x_i} + b) > 1$$ such that $y_i$ is the truth label of given training input $x_i$, $w$ is a vector normal to our
-candidate seperating hyper plane that represents how much ``weight'' is to be applied to an input, and $b$ is a bias constant representing the threshold the weight/input product needs to pass before it is considered
-classified. The distance of given hyper plane can be determined by calculating the difference between
-these previously mentioned ``support vectors'' in the direction normal to this hyper plane. This difference
-can be calculated via $$(\bold{x_{s+}}-\bold{x_{s-}})\bold{\frac{w}{||w||}}$$ where $\bold{x_{s+}}$ and
-$\bold{x_{s-}}$ are respectively positive and negative support vectors and $\bold{\frac{w}{||w||}}$ is
-the unit vector in the direction normal to the hyper plane towards the positive examples. The size
-of the margin is $2/||w||$. As such the discovery of a working svm can be found by solving a
-constrained optimization problem in which the thing to be minimized is $1/2||w||^2$ subject to the
-constraints $y_i(\bold{w}*\bold{x_i} + b) = 1$ for support vectors. Crafting an expression of this
-constrained optimization that can be solved by a computer can be done by taking the Lagrangian
+The support vector machine (svm) is a two-group classification algorithm that attempts
+to find a hyper plane that separates the inputs within a given input space
+with a maximum margin of separation between the hyper plane and the
+``support vectors'', those vectors on either side of the hyper plane
+that are closest to it. To arrive at a form of the support vector machine that
+can be used to classify new inputs, one first needs a representation of the
+potential separating hyper plane $$y_i(\mathbf{w}*\mathbf{x_i} + b) > 1$$ such
+that $y_i$ is the truth label of given training input $x_i$, $w$ is a vector
+normal to our candidate separating hyper plane that represents how much
+``weight'' is to be applied to an input, and $b$ is a bias constant representing
+the threshold the weight/input product needs to pass before it is considered
+classified. The distance of a given hyper plane can be determined by calculating
+the difference between these previously mentioned ``support vectors'' in the
+direction normal to this hyper plane. This difference can be calculated via the
+following equation:
+$$(\bold{x_{s+}}-\bold{x_{s-}})\bold{\frac{w}{||w||}}$$ where $\bold{x_{s+}}$
+and $\bold{x_{s-}}$ are respectively positive and negative support vectors and
+$\bold{\frac{w}{||w||}}$ is the unit vector in the direction normal to the hyper
+plane towards the positive examples. The size of the margin is $2/||w||$. As
+such, the discovery of a working svm can be found by solving a constrained
+optimization problem in which the thing to be minimized is $1/2||w||^2$, subject
+to the constraints $y_i(\bold{w}*\bold{x_i} + b) = 1$ for support vectors.
+Crafting an expression of this constrained optimization that can be solved by a
+computer can be done by taking the Lagrangian:
 $$L(\bold{W},\bold{\Lambda}, \bold{Y}) = 1/2||\bold{w}||^2 \sum_{i=1}^{n}y_i(\bold{w}*\bold{x_i}+b)-1)$$
-then taking care of the fact that the vector $w_o$ that determines the optimal hyperplane can be written
-as a linear combination of the training vectors: $w_{0}=\sum_{i=1}^{n}y_{i}\alpha_{i}^{0}\bold{x_i}$ \cite{Vapnik}. Swapping this equation into the Lagrangian yields
+then taking care of the fact that the vector $w_o$ that determines the optimal
+hyperplane can be written as a linear combination of the training vectors:
+$w_{0}=\sum_{i=1}^{n}y_{i}\alpha_{i}^{0}\bold{x_i}$ \cite{Vapnik}. Swapping this
+equation into the Lagrangian yields:
 $$L = \sum \alpha_{i} - 1/2 \sum_{i}\sum_{j}\alpha_{i}\alpha_{j}y_{i}y_{j}(\bold{x_i}\cdot\bold{x_j})$$
-at which point one should consult their closest computer so that it can maximize this expression.
+at which point one should consult their closest computer so that it can maximize
+this expression.
 
-This final form of the Lagrangian reveals the support vector machines most powerful attribute: the kernel.
-The optimization of the hyperplane within the inputs depends only on their dot product of pairs of inputs,
-they do not appear anywhere else in the Lagrangian other than the very end and then only so as pairs of dot products. This fact allows the writing of a decision function on new inputs $$f(\bold{u}) = \sum_{i}^{N}\alpha_{i}y_{i}(\bold{x_i}\cdot\bold{u})+b$$ where $\bold{u}$ is a vector who's label we do not know.
-The supporector machine can use ``kernels'', to map input vectors into
-non-linear high-demensional feature space without actually calculating the position of
-the vectors within that feature space \cite{Vapnik}. The kernel accomplishes this by calculating the
-distance between (or similarity) of its two input vectors in this space without reference to their exact
-position within this higher space. This then allows the computation of a linear seperation between
-the points in this higher dimensional space which translates into a non-linear seperation for the
-vectors in their original lower dimensional space where a seperation might other wise not have been
-discoverable.
+This final form of the Lagrangian reveals the support vector machines most
+powerful attribute: the kernel. The optimization of the hyperplane within the
+inputs depends only on their dot product of pairs of inputs; they do not appear
+anywhere else in the Lagrangian other than the very end and then only so as
+pairs of dot products. This fact allows the writing of a decision function on
+new inputs: $$f(\bold{u}) = \sum_{i}^{N}\alpha_{i}y_{i}(\bold{x_i}\cdot\bold{u})+b$$
+where $\bold{u}$ is a vector whose label we do not know. The support vector
+machine can use kernels to map input vectors into
+non-linear high-dimensional feature space without actually calculating the
+position of the vectors within that feature space \cite{Vapnik}. The kernel
+accomplishes this by calculating the distance between (or similarity) of its two
+input vectors in this space without reference to their exact position within
+this higher space. This then allows the computation of a linear separation
+between the points in this higher dimensional space which translates into a
+non-linear separation for the vectors in their original lower dimensional space
+where a separation might otherwise not have been discoverable.
 %--------------------------------------------------------------------------------------------
-\section{K-Means clustering}
-The objective of the k-means algorithm (which results in a k-means model) is to partition
-a dataset into k groups such that the points within some group are all closest to
+\section{K-Means Clustering}
+The objective of the k-means algorithm is to partition a dataset into k groups
+such that the points within some group are all closest to
 the mean of that group than they are to any other group. A clear
-informal explanation of the work that the k-means algorith performs
-was given by James McQueen in 1967: "...the k-means procedure
+informal explanation of the work that the k-means algorithm performs
+was given by James MacQueen in 1967: "...the k-means procedure
 consists of simply starting with k groups each of which consists of a
 single random point, and thereafter adding each new point to the
 group whose mean the new point is nearest. After a point is added to
@@ -160,20 +191,20 @@ over all total summed in class distance between each point and its
 closest center such that $\mathbb \Phi = \sum_{x \in X} min_{c \in C}{x-c^{2}}$
 \cite{Arthur}.
 
-The k-means model is a type of gaussian mixture model that is trained with a procedure
+The k-means model is a type of Gaussian mixture model that is trained with a procedure
 called expectation maximization. Given a set of distributions with missing data
-, mixture models tend to have derivitaves that are either difficult to define
-or entirely undefinable. On the other hand, the calculation of some ML/MAP
+, mixture models tend to have derivatives that are either difficult to define
+or are entirely undefinable. On the other hand, the calculation of some ML/MAP
 estimates for some set of models can generally be calculated with little
 difficulty if every point within the distributions is known (at which point our
 learner would obviously have nothing to do) and thus calculus would be entirely
-unneccessary (i.e it wouldn't matter that the derivitive cant be defined).
+unnecessary (i.e it would not matter that the derivative cannot be defined).
 Expectation maximization uses this fact in order to obtain an estimation of the
-ML/MAP in a roundabout way.The algorithm consists of two steps. First, an estimate as
+ML/MAP indirectly. The algorithm consists of two steps. First, an estimate as
 to what the expected value of the hidden data is based off the current guess for the
 parameters is made. Then the likelihood function for the parameters is maximized under
-the assumption that the data discovered in the previous step is complete i.e that there
-is no longer any hidden data. These steps are then repeated until some convergance criteria
+the assumption that the data discovered in the previous step is complete, i.e, that there
+is no longer any hidden data. These steps are then repeated until some convergence criteria
 is met. The k-means is exactly this type of algorithm but with the covariance matrix
 $\Sigma_{k} = \rho^{2}*I_{D}$ and the mixing weights $\Pi_{k} = 1/K$ all being fixed such
 that the only free parameters are the cluster centers $\mu_{k} \in \mathbb{R}^{D}$
@@ -182,11 +213,11 @@ and such that the hidden data that is the ground truth label of the data points.
 \section{Neural Networks}
 A neural network is a type of machine learning algorithm that mimics
 the interconnectivity of animal brains in order to automatically
-discover rules to classify given inputs. Being that it is one of the most
-flexible learning algorithms within literature (actually able to
-approximate any continuous function)\cite{Hornik}, its inclusion within a
-metalearning system is almost mandatory.  Genrally, such a system
-works by first being presented with a set of classified or
+discover rules to classify given inputs. The neural network is one of the most
+flexible learning algorithms within literature, so flexible in fact that it is
+capable of approximating any continuous function\cite{Hornik}. As such its
+inclusion within a metalearning system is almost mandatory.  Genrally,
+such a system works by first being presented with a set of classified or
 unclassified inputs. Said neural network system will then attempt to
 make a decision on these inputs on which an error value will then be
 assigned. The system will then see some kind of correction function
@@ -206,15 +237,15 @@ layer of this stack is called the input layer and consists of a set of
 neurons ${x_i|x_1,x_2,x_3...,x_m}$ representing the input's
 features. Each neuron in the hidden layer transforms the values from
 the previous layer via weighted linear summation $w_1X_1 + w_2x_2 +...w_mx_m$
-which is then passed into a non linear-action function $g()$, such as the logistic
-function or the hyperbolic tangent function. It is important to note that g must be non-linear,
-otherwise the entire model will collapse into a large linear regression model of
-the form $y = w^T(Vx)$. \cite{Murphy}
+which is then passed into a non linear-action function $g()$, such as the
+logistic function or the hyperbolic tangent function. It is important to note
+that $g$ must be non-linear, otherwise the entire model will collapse into a
+large linear regression model of the form $y = w^T(Vx)$. \cite{Murphy}
 
-In order to train the MLP it provides, sci-kit learn uses an error
-propagation/training technique called backpropagation. Backpropagation
-is a procedure that repeatedly adjusts the weights of the connections
-in a neural network so as to minimize a measure of the difference
+The multi-layer perceptrons created in this experiment will be trained used in
+by an error propagation/training technique called backpropagation.
+Backpropagation is a procedure that repeatedly adjusts the weights of the
+connections in a neural network so as to minimize a measure of the difference
 between the actual output vector of the net and the desired output
 vector. \cite{Rumelhart}. In order to accomplish this, the algorithm
 adjusts the weights of the nerual network by considering the error of
@@ -223,27 +254,28 @@ to each of the weights within the network. Specifically, the gradient
 vector of the negative log likelihood error on the output neurons is
 computed by use of the chain rule of calculus.\cite{Murphy}.Say we
 have a one layer neural network in which the hidden layer is described
-by $\alpha^{L} = \sigma(w^{L}\alpha^{L-1} + b^{L}) = \sigma(z^{L})$
+by $\alpha^{L} = \sigma(w^{L}\alpha^{L-1} + b^{L}) = \sigma(z^{L})$,
 where $L$ superscript refers to the hidden layer and $L-1$ refers
 to the input layer of the network. The parameters of this network can
 be said to be $\Theta = (V,W)$ where $V$ is the weight vector for the input
 layer and $W$ is the weight vector for the hidden layer. The error (or
-more specifically the costs function) of a such a network is given by $$J(\Theta ) =
-- \sum_n\sum_k(\hat{y}_{nk}(\Theta)-y_{nk})^2$$ in the case of
-regression and via cross entropy $$J(\Theta ) =
+more specifically the costs function) of a such a network is given by: $$J(\Theta ) =
+- \sum_n\sum_k(\hat{y}_{nk}(\Theta)-y_{nk})^2$$, in the case of
+regression and via cross entropy: $$J(\Theta ) =
 - \sum_n\sum_ky_{nk}log\hat{y}_{nk}(\Theta)$$ in the case of
 classification. The gradient of this error $\nabla_{\Theta}J$ is
-found via the chain rule of calculus: $$\frac{\partial C}{\partial
+found via the chain rule of calculus:
+$$\frac{\partial C}{\partial
 w^{L}} = \frac{\partial z^{L}}{\partial
 w^{L}}\frac{\partial \alpha}{\partial z^{L}}\frac{\partial
-C}{\partial \alpha^{L}}$$. This equation is easiest to understand if
-read from right to left, notice how in each stage the rates being
-compared are between nearest elements, first the error to the output
-that produced it, then the output to the element to which the
-non-linearity is applied, then finally the the non-linerity recieving
-value to the weight vector. The result of this calculation easily
-gives us the direction of the gradient, the negative of which we will
-use to modify $w^{L}$ in a direction that will reduce the output
+  C}{\partial \alpha^{L}}$$
+This equation is easiest to understand if read from right to left.
+Notice how in each stage the rates being compared are between nearest
+elements, first the error to the output that produced it, then the output
+to the element to which the non-linearity is applied, then finally the the
+non-linerity recieving value to the weight vector. The result of this
+calculation easily gives us the direction of the gradient, the negative of
+which we will use to modify $w^{L}$ in a direction that will reduce the output
 error. Reduction of the error of a multilayer perceptron with more
 than one neuron in each layer works mostly the same way. Once again,
 the chain rule of calculus is used in order to find the derivative of
@@ -253,12 +285,11 @@ neurons $\frac{\partial C}{\partial w^{L}_{n-j}}$ where $L$ is the
 target neurons layer (the last layer in this case), n is the index of
 a neuron within this layer, and $j$ is the index of the neuron in the
 previous layer $L-1$ from which neuron n is recieving input (note
-that in this case the hyphen does not mean subtract but rather
-indicates that their is a connection between these
-neurons). For an output neuron, its error is then given by
+that in this case the hyphen does not mean subtract, but rather
+indicates that there is a connection between these neurons). For an output
+neuron, its error is then given by:
 $$\frac{\partial C}{\partial w^{L}_{n-j}} = \frac{\partial z^{L}_{j}}{\partial w^{L}_{n-j}}\frac{\partial \alpha^{L}_{j}}{\partial z^{L}_{j}}\frac{\partial C}{\partial \alpha^{L}_{j}}$$
-,with the error relative to neurons
-earlier in the network being calculable by continuing usage of the
-chain rule. *Place a figure here* . For an excellent and intuitive
-explanation of how neural networks work, pls consider viewing the
-animated overview of the method at 3Blue1Brown's youtube channel.
+,with the error relative to neurons earlier in the network being calculable by
+continuing usage of the chain rule. For an excellent and intuitive explanation
+of how neural networks work, pls consider viewing the animated overview of the
+method at 3Blue1Brown's youtube channel.
