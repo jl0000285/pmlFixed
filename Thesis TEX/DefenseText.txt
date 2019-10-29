@@ -11,56 +11,63 @@ No free lunch theorem applies to meta-learning strategies.
 
 When analyzing a dataset, one must decide on an algorithm. This
 decision is very often made by an individual with both familiarity in the
-datasets relevant problem domain and in machine learning literature. The deciding
-of an algorithm by such an expert is, however, not always necessary. Meta-learning
-strategies automate the algorithm selection process by use of stored run statistics
-for previously analyzed datasets. Given a new dataset a meta-learning algorithm
-first uses some measure of similarity between the new dataset and those datasets
-that had previously been analyzed, here after refereed to by the term "metabase".
-After selecting the dataset of greatest similarity from the metabase, the meta-learner
-will return the algorithm that maximizes the desired run statistic, which is usually the
-classification accuracy.
+datasets relevant problem domain and in machine learning literature.
+The deciding of an algorithm by such an expert is, however, not always necessary.
+Meta-learning strategies automate the algorithm selection process by use of
+stored run statistics for previously analyzed datasets. Given a new dataset a
+meta-learning algorithm first uses some measure of similarity between the new
+dataset and those datasets that had previously been analyzed, here after
+refereed to by the term "metabase". After selecting the dataset of greatest
+similarity from the metabase, the meta-learner will return the algorithm that
+maximizes the desired run statistic, which is usually the classification accuracy.
 
-The reason a selection must be made on an algorithm at all is that the performance an
-algorithm has on a dataset is contingent on what problem that dataset extends from. This
-phenomenon was first formally noted by Wolpert and Macready in "No free lunch theorems for 
-optimization". In the paper they demonstrate that an algorithm that has enhanced performance
-in one specific problem domain will have as a consequence of this enhanced performance degraded
-performance in other problem domains. As such, the decision of what algorithm to use in order to
-analyze a dataset is non-arbitrary; no one algorithm is best at analyzing every dataset.
+The reason a selection must be made on an algorithm at all is that the
+performance an algorithm has on a dataset is contingent on what problem that
+dataset extends from. This phenomenon was first formally noted by Wolpert and
+Macready in "No free lunch theorems for optimization". In the paper they
+demonstrate that an algorithm that has enhanced performance in one specific
+problem domain will have as a consequence of this enhanced performance degraded
+performance in other problem domains. As such, the decision of what algorithm to
+use in order to analyze a dataset is non-arbitrary; no one algorithm is best at
+analyzing every dataset.
 
-The decision as to what algorithm to use on a dataset itself constitutes a sort of learning algorithm,
-with different individuals having different rules behind their decision of algorithm choice and
-different meta-learning systems employing different strategies in order to automate this decision.
-This implies that the no free lunch theorem should apply to meta-learning strategies as well, that is to
-say no one meta-learning strategy should perform best with every possible metabase.
+The decision as to what algorithm to use on a dataset itself constitutes a sort
+of learning algorithm, with different individuals having different rules behind
+their decision of algorithm choice and different meta-learning systems employing
+different strategies in order to automate this decision. This implies that the
+no free lunch theorem should apply to meta-learning strategies as well, that is
+to say no one meta-learning strategy should perform best with every possible
+metabase.
 
 As such the goal of this experiment was  to ascertain
 whether or not the no free lunch hypothesis applies to meta learning algorithms,
-that is to say to ascertain whether or not some meta learning algorithms strictly
-dominate other meta learning algorithms.
+that is to say to ascertain whether or not some meta learning algorithms
+strictly dominate other meta learning algorithms.
 
 
 literature review/theoretical framework (5 min ~ 1000 words - curr 1245 words)
 ---------------------------
-The three metalearning algorithms that I chose for comparison were the Brute Force
-Algorithm, the Active Meta learning strategy and the Strategy of Nearest Learning
-Curve Comparison. Each of these algorithms takes as its inputs a metabase and a dataset
-outside of that metabase and produces a guess at what algorithm would best classify this
-new dataset. 
+A few terms from literature must be defined before continuing on to a
+description of the methodology.
+
+The three metalearning algorithms that I chose for comparison were the Brute
+Force Algorithm, the Active Meta learning strategy and the Strategy of Nearest
+Learning Curve Comparison. Each of these algorithms takes as its inputs a
+metabase and a dataset outside of that metabase and produces a guess at what
+algorithm would best classify this new dataset.
 
 The Brute Force approach to meta-learning takes a given metabase as is, then
 when given a new dataset applies a given similarity measure (in the case of this
 thesis the clustering algorithm) then returns the algorithm that performed
 best on the dataset from the metabase that was found to be most similar to the
-new dataset. 
+new dataset.
 
-Introduced in the journal article "Ranking of Classifiers based on Dataset 
+Introduced in the journal article "Ranking of Classifiers based on Dataset
 Characteristics using Active Meta Learning", Active Meta Learning is a
-that reduces the cost of generating Meta examples by selecting relevant Meta examples (cite Bhatt here). 
-It is a meta-learning technique in which a candidate dataset is only allowed into
-the metabase if it has a higher uncertainty score relative to its peers.
-The relative uncertainty between two datasets is defined by
+that reduces the cost of generating Meta examples by selecting relevant Meta
+examples. It is a meta-learning technique in which a candidate dataset is only
+allowed into the metabase if it has a higher uncertainty score relative to its
+peers. The relative uncertainty between two datasets is defined by
 $$\delta(V_x,d_i,V_x,d_j) = \frac{|V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$
 where $V_x,d_k$ is the value of some metaparameter $V_x$ for dataset $d_k$,
 $Max_{k\neq i}(V_x,d_k)$ is the maximum value of $V_x,d_k$ when dataset i is
@@ -77,64 +84,49 @@ a brute force learner and that the resultant meta-learner also has a higher
 classification accuracy than a brute force learner. Moreover, due to it having
 a smaller metabase, the time it takes for a system that trains its meta-learner
 with an active learner will also take less time to classify new datasets than
-a brute force learner. 
+a brute force learner.
 
-Introduced in the paper "Predicting Relative Performance of Classifiers from Samples",
-the strategy of nearest learning curve comparison (hereafter shortened to curve comparison)
-gathers run statistics on the datasets within its metabase at various fractions
-of the full size of the training portion of that dataset. Categorization of new datasets
-is can then be done in two steps. First, the new dataset is trained with some fractions of its training set with
-each candidate algorithm. These results are then compared with the learning curves of each 
-of the sets in the metabase. The meta-learner then returns the best algorithm of the dataset
-within the metabase with which the new datasets learning curves is most similar. The authors
-state that this process trains its meta-learner in less time than a brute force learner and
-the the resultant meta-learner will also have a higher classification accuracy than a brute
-force meta-learner. 
+Introduced in the paper "Predicting Relative Performance of Classifiers from
+Samples", the strategy of nearest learning curve comparison gathers run
+statistics on the datasets within its metabase at various fractions of the full
+size of the training portion of that dataset. Categorization of new datasets
+is can then be done in two steps. First, the new dataset is trained with some
+fractions of its training set with each candidate algorithm. These results are
+then compared with the learning curves of each of the sets in the metabase.
+The meta-learner then returns the best algorithm of the dataset within the
+metabase with which the new datasets learning curves is most similar. The
+authors state that this process trains its meta-learner in less time than a
+brute force learner and the the resultant meta-learner will also have a higher
+classification accuracy than a brute force meta-learner.
 
 The machines learning algorithms that these meta-machine learning strategies
 can return as their answers are one of either K-means clustering, neural network,
-naive bayes classifier, support vector machine or regression. 
+naive bayes classifier, support vector machine or regression.
 
-- Linear Regression (currently 209 words) -
-Linear regression is one of the most common and oldest machine learning techniques
-within literature. It asserts that the response is a linear function of the inputs.
-This relation takes the following form:
+Linear regression is a method that asserts that the response is a linear
+function of the inputs. This relation takes the following form:
 
 $$ y(\textbf{x}) = \textbf{w}^T\textbf{x} + \epsilon = \sum_{j=1}^{D}w_jx_j + \epsilon $$
 
 where $w^Tx$ represents the inner or scalar product between the input vector $x$
-and the model's weight vector $w^T$, and $\epsilon$ is the residual error between
-our linear predictions and the true response.
-To fit a linear regression model, the least squares approach is usually used. Given
-some ``overdetermined'' linear system (that is to say a system in which there are
-more data points than parameters) one can write an expression for the sum of squares of the system $$S(\beta) =(y_1 - \beta x_1)^2 + (y_2 - \beta x_2)^2 + ...
-(y_3 - \beta x_3)$$ then take the partial deriviate of this sum of sqaured
-deviations with respect to each of the components of $\beta$, set them to zero,
-then solve the resulting equations to directly determine what the values of the
-parameters are that minimizes the sum of the squared errors of the system. With
-linear regression in two dimensions (one dimension in the independant variable and
-one dimension in the dependant variable) we see a system with two parameters
-$\beta_0 = y intercept$ and $\beta_1 = slope$.
+and the model's weight vector $w^T$, and $\epsilon$ is the residual error
+between our linear predictions and the true response.
 
--Naive Bayes (currently 121 words) -
 The Naive Bayes classifier algorithm fits a set of data to Bayes theorem with a
-strong assumption of feature independance. Given a set of discrete-valued features
-$x \in {1,...,K}^D$, we can calculate the class conditional density for each
-feature, then with our assumption of independance easily generate a guess at what
-the class should be for a new input by multiplying the conditional likelihood values
-for each of the new inputs features times the prior on the desired to be known
-class, that is to say $p(y|\textbf{x}) \propto p(y) \sum_{j}^{D}p(x_j|y)$. The
-calculation of the posterior probability for a new example can be done so
-``by hand'' or can be done so from distributions that are infered from the
-provided data.
+strong assumption of feature independance. Given a set of discrete-valued
+features $x \in {1,...,K}^D$, we can calculate the class conditional density for
+each feature, then with this assumption of independance, generate a guess as to
+what the class should be for a new input by multiplying the conditional
+likelihood values for each of the new inputs features times the prior on the
+desired to be known class, that is to say
+$p(y|\textbf{x}) \propto p(y) \sum_{j}^{D}p(x_j|y)$.
 
--Support Vector Machines (currently 53 words)-
-The support vector machine is a two-group classification algorithm that attempts to
-find a hyper plane that seperates the inputs within the given input space with a
-maximum margin of seperation between the hyper plane and the ``support vectors'',
-those vectors on either side of the hyper plane that are closest too it.
+The support vector machine is a two-group classification algorithm that attempts
+to find a hyper plane that seperates the inputs within the given input space
+with a maximum margin of seperation between the hyper plane and the
+``support vectors'', those vectors on either side of the hyper plane that are
+closest too it.
 
--K Means Clustering (currently 180 words)-
 The objective of the k-means algorithm is to partition a dataset into k groups
 such that the points within some group are all closest to
 the mean of that group than they are to any other group. A clear
@@ -145,54 +137,50 @@ single random point, and thereafter adding each new point to the
 group whose mean the new point is nearest. After a point is added to
 a group, the mean of that group is adjusted in order to take account
 of the new point. Thus at each stage the k-means are, in fact, the
-means of the groups they represent." \cite{MacQueen} Formally stated,
-given an integer $k$ and a set of $n$ data points in
-$\mathbb{R}^{d}$ the K-means algorithm seeks to minimize  $\Phi$, the
-over all total summed in class distance between each point and its
-closest center such that $\mathbb \Phi = \sum_{x \in X} min_{c \in C}{x-c^{2}}$
-\cite{Arthur}.
+means of the groups they represent."
 
--Neural Networks (currently 148 words )
 A neural network is a type of machine learning algorithm that mimics
 the interconnectivity of animal brains in order to automatically
-discover rules to classify given inputs. Being that it is one of the most
-flexible learning algorithms within literature (actually able to
-approximate any continuous function)\cite{Hornik}, its inclusion within a
-metalearning system is almost mandatory.  Genrally, such a system
-works by first being presented with a set of classified or
-unclassified inputs. Said neural network system will then attempt to
-make a decision on these inputs on which an error value will then be
-assigned. The system will then see some kind of correction function
-applied to it. This process will continue until the system has
-exhausted its supply of training data, at which point it will
-hopefully have discovered a strong set of rules for peforming whatever
-work it is that it was designed to perform.
+discover rules to classify the inputs given to it. A neural network system
+takes the inputs given to it, attempts to make a decision on these inputs,
+then assigns, an error value to the decision it made on these inputs based off
+how close the answer produced by the system was to its true value. The system
+then uses a correction function, often times backpropagation, in order to modify
+the weights of the connections between the neurons within the network. This
+process will continue until the system has obtained the desire error within its
+supply of training data or until it reaches a point where iterations of this
+improvement cycle no longer result in improved performance.
 
 
 methodology (5 min ~ 1000 words)
 -----------
-- Describe general idea (currently 217 words) -
-
 The overall goal of this experiment was to determine whether or not one
 metalearning strategy within a given set can strictly dominate the others. The
 elements required in order to determine this were a set of metalearning
 strategies to be compared, sets of metabase datasets on which to apply the
 different strategies, and a means to evaluate the results so as to determine the
-relative performance of the metalearners. The general flow of the program that
-constitutes this experiment begins with a set of unprocessed datasets then
-extracts the metafeatures that are required to perform dataset clustering and to
-run the active metalearning strategy. The program then constructs 10
-metalearning bases with the elements in these sets choosen at random. A run with
-every machine algorithm and dataset combination is then performed, with the
-results being stored in the runs all table. Learning curves for each
-dataset/algorithm combination are then crafted. Finally, enough information now
-exists within the the database to start collecting result samples. An individual
-result sample is composed of a set of metabases and the results on that set of
-metabases. During the experiment, 30 of these samples was gathered. This results
-in enough information so that t-test analysis can be performed on the null hypothesis
-at a 5 percent margin of error. 
-
-- Describe general parsing plan (currently 230 words) -
+relative performance of the metalearners. An overview of the procedure this
+experiments representive program uses in order to accomplish this now follows.
+The program first begins with a set of unprocessed datasets, then extracts the
+metafeatures that are required to perform dataset clustering and to run the
+active metalearning strategy, storing the results in a local database table.
+On completion of this task the program then iterates thru each of the dataset in
+our available pool of datasets and extracts run statistics for each of these
+datasets; for each available base algorithm a model is trained and
+classification is performed on each instance in the dataset that was not used
+for the training. The time taken to train the model and the accuracy of the
+trained model are then stored within the database. On completion of this task
+the program then once again iterates thru the datasets but this time collects
+learning curves of the type described earlier, storing them within their own
+table in the local database. On completion of this task the program then goes on
+to construct 30 collections of the sets of the metabases that will be needed in
+order to produce the samples that will be needed for later analysis. On
+completion of this task then applies each of the meta-learning strategies to
+each of the metabase sets within each of the metabase set collections, storing
+the guesses made by a meta-learner within individual database tables. The
+program finishes by then running an analysis method on the meta-learners guesses
+tables. A more detailed explanation of each of the steps taken by this
+experiments program now follows.
 
 All machine learning algorithms boil down to a set of mathematical equations at
 the end of the day, with some vector representing a dataset fed in at one end
@@ -265,7 +253,7 @@ findings(Doc suggests 10, going to do 5 mins ~ 1000 - 2000 words, currently 595 
 -----------------------
 In order to test the null hypothesis, 30 such samples of the kind previously
 described were created. The samples and their means can be seen in the following
-tables. 
+tables.
 
 If each of the algorithms were truly equal, we would expect the averaged numbers
 for each of the positions to be near 3.3. Instead, it appears that the sampler
@@ -310,7 +298,7 @@ estimate, with a margin of error of 0.05 given for estimates made with 30
 samples. The critical thresholds for a two tailed t test are -1.96 and 1.96.
 If the averaged values of the t scores falls outside these bounds then we can
 reject the null hypothesis with a 5 percent margin of error. The standard
-deviations and t scores for each of the samples can be seen in the following table. 
+deviations and t scores for each of the samples can be seen in the following table.
 
 The following table contains these t scores averaged across samples:
 
@@ -343,11 +331,10 @@ Two flaws exist within this experiment that I would correct had I more time: I
 was only able to obtain three meta-learning algorithms, and I was only able to
 obtain one set of datasets with 88 instances in it. Originally I had desired 5
 meta learning algorithms and at least 10 unique sets of datasets. What I am forced to
-do here is essentially a form of cross validation, I take a large number of the 
+do here is essentially a form of cross validation, I take a large number of the
 possible combination of floor(88 * 0.2) = 17 datasets and segregate them into
 groups of 10 and label each of those a sample.  The ideal would have been for
 each individual sample to have its own set of 100 or so datasets within it so
 as to eliminate any chance of bias within the data. Unfortunately for this to be
 a reality I would have had to get my hands on 30 * 100 = 3000 datasets, a task
 that I have no idea as to how to begin accomplishing.
-
