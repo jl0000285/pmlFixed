@@ -1,29 +1,41 @@
 ;; This buffer is for text that is not saved, and for Lisp evaluation.
 ;; To create a file, visit it with C-x C-f and enter text in its buffer.
 
-Test implies that we speak at about 200 words a minute 
+Test implies that we speak at about 200 words a minute
 
-Goal/Objectives (2 min ~ 400 words - Currently 304 words)
---------------------------
-Determining what algorithm to use when analyzing a dataset is a problem as old as
-machine learning itself. In ``No free lunch theorems for optimization'' Wolpert and
-Macready demonstrate that the performance of all machine learning algorithms even
-out across all datasets, that is to say that no one machine learning algorithm is
-best in every situation\; performance is contengent on the problem space in
-which the algorithm is operating. As such, the decision of algorithm is non arbitrary and some strategy must be employed in order to decide on an algorithm. In some
-cases, the individuals wishing to perform an analysis have access to an expert,
-possibly themselves, that can simply tell them which algorithm is best in the
-given situation. In other situations, the individuals wishing to perform analysis
-may not have the budget necessary to acquire access to such an expert, in which
-case the usage of a metalearner becomes appropriate. With a metalearner one feeds to
-the metalearner a dataset and it returns to the user what it thinks is the most
-appropriate machine with which to perform analysis. To get to the point wherein a
-decision can be made on new datasets the metalearner itself must first be trained,
-and this training itself requires some sort of learning strategy. This fact suggests
-that the decision of what metalearning strategy to use for some given body of
-datasets should be susceptible to the previously mentioned no free lunch theorem,
-that is to say that some metalearning strategies will work better on some given
-set of databases than others. As such the goal of this experiment was  to ascetain
+
+Introduction/Goal/Objectives (2 min ~ 400 words - currently 370 words)
+---------------
+In this thesis, I conduct an experiment to see whether or not the
+No free lunch theorem applies to meta-learning strategies.
+
+When analyzing a dataset, one must decide on an algorithm. This
+decision is very often made by an individual with both familiarity in the
+datasets relevant problem domain and in machine learning literature. The deciding
+of an algorithm by such an expert is, however, not always necessary. Meta-learning
+strategies automate the algorithm selection process by use of stored run statistics
+for previously analyzed datasets. Given a new dataset a meta-learning algorithm
+first uses some measure of similarity between the new dataset and those datasets
+that had previously been analyzed, here after refereed to by the term "metabase".
+After selecting the dataset of greatest similarity from the metabase, the meta-learner
+will return the algorithm that maximizes the desired run statistic, which is usually the
+classification accuracy.
+
+The reason a selection must be made on an algorithm at all is that the performance an
+algorithm has on a dataset is contingent on what problem that dataset extends from. This
+phenomenon was first formally noted by Wolpert and Macready in "No free lunch theorems for 
+optimization". In the paper they demonstrate that an algorithm that has enhanced performance
+in one specific problem domain will have as a consequence of this enhanced performance degraded
+performance in other problem domains. As such, the decision of what algorithm to use in order to
+analyze a dataset is non-arbitrary; no one algorithm is best at analyzing every dataset.
+
+The decision as to what algorithm to use on a dataset itself constitutes a sort of learning algorithm,
+with different individuals having different rules behind their decision of algorithm choice and
+different meta-learning systems employing different strategies in order to automate this decision.
+This implies that the no free lunch theorem should apply to meta-learning strategies as well, that is to
+say no one meta-learning strategy should perform best with every possible metabase.
+
+As such the goal of this experiment was  to ascertain
 whether or not the no free lunch hypothesis applies to meta learning algorithms,
 that is to say to ascertain whether or not some meta learning algorithms strictly
 dominate other meta learning algorithms.
@@ -31,68 +43,57 @@ dominate other meta learning algorithms.
 
 literature review/theoretical framework (5 min ~ 1000 words - curr 1245 words)
 ---------------------------
+The three metalearning algorithms that I chose for comparison were the Brute Force
+Algorithm, the Active Meta learning strategy and the Strategy of Nearest Learning
+Curve Comparison. Each of these algorithms takes as its inputs a metabase and a dataset
+outside of that metabase and produces a guess at what algorithm would best classify this
+new dataset. 
 
-- No free lunch Description (currently 141 words)-
+The Brute Force approach to meta-learning takes a given metabase as is, then
+when given a new dataset applies a given similarity measure (in the case of this
+thesis the clustering algorithm) then returns the algorithm that performed
+best on the dataset from the metabase that was found to be most similar to the
+new dataset. 
 
-Introduced in Wolpert and MacReady's ``No Free Lunch Theorems for Optimization''
-1997 paper, the No Free Lunch theorem states that the perfomance of all
-algorithms when averaged out across all datasets should be the same, that is to
-say there is no one algorithm that is universally the best. The root cause of
-this observation is in that differing algorithms make different assumptions
-about the distributions from which the data the algorithms work with arises. A
-learning algorithm with an implicit assumption of a random distriubtion will
-have a far lower test case classification accuracy than an algorithm that
-assumes a gaussian distribution if the distribution from which the set of
-observed samples derives from is truly normal and vice versa, if the
-distribution is truly random the gaussian classifier's accuracy will suffer
-relative to the classifier with a random assumption.
-
-- Meta learners intro (curr 23 words) -
-The three metalearning algorithms chosen for comparison are the brute force
-approach, the Active Meta learning strategy and the Strategy of Curve Comparison.
-
-- Brute Force Metalearner (curr 94 words)- 
-The most basic meta machine learning algorithm involves the collecting of the
-run statistics of the set of machines that a given meta learner can produce
-applied to a metabase with a clustering algorithm to produce results with new
-datasets. This version of metalearning will act as a sort of control for this
-study, the results of the more complicated meta learning strategies that follow
-only really mean anything with respect to how long it would've taken to train
-and how long it would've performed if we had just trained it via brute force.
-
-- Active Meta Laerning (currently 187 words)-
-The second of the metalearning strategies implemented within the study; Active
-Meta Learning is a meta learning technique  ``that reduces the cost of
-generating Meta examples by selecting relevant Meta examples'' \cite{Bhatt}.
-What this entails is a decision on what datasets to allow into a metalearners
-metabase, rather than analyze every candidate meta base dataset an active
-metalearner will analyze the next dataset with the highest uncertainty. The
-relative uncertainty between two datasets is defined by
+Introduced in the journal article "Ranking of Classifiers based on Dataset 
+Characteristics using Active Meta Learning", Active Meta Learning is a
+that reduces the cost of generating Meta examples by selecting relevant Meta examples (cite Bhatt here). 
+It is a meta-learning technique in which a candidate dataset is only allowed into
+the metabase if it has a higher uncertainty score relative to its peers.
+The relative uncertainty between two datasets is defined by
 $$\delta(V_x,d_i,V_x,d_j) = \frac{|V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$
 where $V_x,d_k$ is the value of some metaparameter $V_x$ for dataset $d_k$,
 $Max_{k\neq i}(V_x,d_k)$ is the maximum value of $V_x,d_k$ when dataset i is
 removed and $Min_{k\neq i}(V_x,d_k)$ is its corrosponding minimum. Determining
 which dataset has the overall highest uncertainty can be done by summing over
 the relative values for each metaparameter, ranking them then collecting their
-overall uncertainty scores then choosing the one that is highest where
+overall uncertainty scores then choosing the dataset that has the highest score where
 $$\delta(V_x,d_i) = \frac{\sum_{j\neq i} |V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$
 is the equation representing the overall uncertainty for dataset
 $d_i$ in metaparameter $V_x$.
 
-- Learning Curves (currently 89 words)-
-The third of the metalearning strategies implemented within this study is one in
-which a representive subsection of the metabase is trained with each algorithm
-entirely, after which point the rest of the metabase under goes a sort of curve
-sampling analysis in which the results of future learning is predicted based off what dataset the new datasets learning curve most resembles. As with the other two meta
-learning strategies, the label for new datsets is the determined via clustering with the datasets within this post trained metabase.
+The paper states that this process trains its meta-learner in less time than
+a brute force learner and that the resultant meta-learner also has a higher
+classification accuracy than a brute force learner. Moreover, due to it having
+a smaller metabase, the time it takes for a system that trains its meta-learner
+with an active learner will also take less time to classify new datasets than
+a brute force learner. 
 
- - Quick description of present regular algorithms (currently 65 words)-
-The strategies mentioned in the previous section must be able to produce learning
-algorithms to be considered metalearing machines. The machines that these strategies
-can produce are the K-means clusterer, a neural network, a naive bayes classifier,
-the support vector machine, and regression; with the results coming from the
-regression machine being cast into classificatory bins from the real valued result
-that it would produce. 
+Introduced in the paper "Predicting Relative Performance of Classifiers from Samples",
+the strategy of nearest learning curve comparison (hereafter shortened to curve comparison)
+gathers run statistics on the datasets within its metabase at various fractions
+of the full size of the training portion of that dataset. Categorization of new datasets
+is can then be done in two steps. First, the new dataset is trained with some fractions of its training set with
+each candidate algorithm. These results are then compared with the learning curves of each 
+of the sets in the metabase. The meta-learner then returns the best algorithm of the dataset
+within the metabase with which the new datasets learning curves is most similar. The authors
+state that this process trains its meta-learner in less time than a brute force learner and
+the the resultant meta-learner will also have a higher classification accuracy than a brute
+force meta-learner. 
+
+The machines learning algorithms that these meta-machine learning strategies
+can return as their answers are one of either K-means clustering, neural network,
+naive bayes classifier, support vector machine or regression. 
 
 - Linear Regression (currently 209 words) -
 Linear regression is one of the most common and oldest machine learning techniques
