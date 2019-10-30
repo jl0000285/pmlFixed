@@ -12,8 +12,8 @@ about the distributions from which the data the algorithms work with arises. A
 learning algorithm with an implicit assumption of a random distribution will
 have a far lower test case classification accuracy than an algorithm that
 assumes a Gaussian distribution if the distribution from which the set of
-observed samples derives from is truly normal and vice versa, if the
-distribution is truly random the Gaussian classifier's accuracy will suffer
+observed samples derives is truly normal and vice versa, if the
+distribution is truly random, the Gaussian classifier's accuracy will suffer
 relative to the classifier with a random assumption.
 %-------------------------------------------------------------------------------------------
 \subsection{Brute Force Metabase}
@@ -28,8 +28,8 @@ the metabase dataset $d_m$ will then be returned by the meta-learner.
 The second of the meta-learning strategies implemented within the study, Active
 Meta Learning is a meta learning technique  ``that reduces the cost of
 generating Meta examples by selecting relevant Meta examples'' \cite{Bhatt}.
-What this entails is a decision on what datasets to allow into a meta-learners
-metabase; rather than analyze every candidate meta base dataset, an active
+What this entails is a decision on what datasets to allow into a meta-learner's
+metabase. Rather than analyze every candidate meta base dataset, an active
 meta-learner will analyze the next dataset with the highest uncertainty. The
 relative uncertainty between two datasets is defined to be:
 $$\delta(V_x,d_i,V_x,d_j) = \frac{|V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$
@@ -49,26 +49,26 @@ $$\delta(V_x,d_i) = \frac{\sum_{j\neq i} |V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,
 \subsection{Predicting Relative Performance of Classifiers from Samples}
 The third of the meta-learning strategies implemented within this study is one in
 which a representative subsection of the metabase is trained with each algorithm
-entirely, after which point the rest of the metabase under goes curve
+entirely, after which point the rest of the metabase undergoes curve
 sampling analysis; the accuracies of the base algorithms are predicted from
-run curve similarity rather than directly ran. \cite{Leite}
+run curve similarity rather than directly ran \cite{Leite}.
 As with the other two meta learning strategies, the label for new datsets is
 then determined via clustering with the datasets contained within the metabase.
 %----------------------------------------------------------------------------------------
 \section{Summary of Producible Machines}
 The strategies mentioned in the previous section all consume a vector
-representation of some dataset then make a guess as to what algorithm would best
-be able to classify its data. The machines that these strategies can produce are
+representation of some dataset, and then make a guess as to what algorithm would best
+be able to classify its data. The machines that these strategies can choose from are
 the K-means clustering algorithm, a neural network, a naive Bayes classifier, the support
 vector machine, and regression; with the results coming from the regression
 machine being cast into classificatory bins from the real valued result that it
-would produce. An in depth description of each of these different earning
+would produce. An in depth description of each of these different learning
 algorithms will comprise the rest of this chapter.
 %--------------------------------------------------------------------------------------------
 \section{Linear Regression}
 Linear regression is one of the most common and oldest machine learning
-techniques within literature. It asserts that the response is a linear function
-of the inputs. \cite{Murphy}. This relation takes the following form:
+techniques. It asserts that the response is a linear function
+of the inputs \cite{Murphy}. This relation takes the following form:
 $$ y(\textbf{x}) = \textbf{w}^T\textbf{x} + \epsilon = \sum_{j=1}^{D}w_jx_j + \epsilon $$
 where $w^Tx$ represents the inner or scalar product between the input vector $x$
 and the model's weight vector $w^T$, and $\epsilon$ is the residual error
@@ -76,16 +76,16 @@ between our linear predictions and the true response.
 
 To fit a linear regression model, the least squares approach is usually used.
 Given some  ``overdetermined'' linear system (that is to say a system in which
-there are more data points than parameters) one can write an expression for the
+there are more data points than parameters), one can write an expression for the
 sum of squares of the system
 $$S(\beta) = (y_1 - \beta x_1)^2 + (y_2 - \beta x_2)^2 + ... (y_n - \beta x_n)^n$$
-then take the partial derivative of this sum of squares deviations with respect
+and then take the partial derivative of this sum of squares deviations with respect
 to each of the components of $\beta$, set them to zero, then solve the resulting
-equations to directly determine what the values of the parameters are that
+equations to directly determine the values of the parameters that
 minimize the sum of the squared errors of the system. With linear regression in
 two dimensions (one dimension in the Independent variable and one dimension in
-the dependent variable) we see a system with two parameters
-$\beta_0 = y intercept$ and $\beta_1 = slope$. If we had for example 3 data
+the Dependent variable, we see a system with two parameters
+$\beta_0 = y intercept$ and $\beta_1 = slope$. If we had, for example, 3 data
 points (2,1),(3,7), and (4,5) we would have the equations
 $\beta_0 + 2*\beta_1 = 1$, $\beta_0 + 3*\beta_1 = 7$, and
 $\beta_0 + 4*\beta_1 = 5$. The sum of squared errors would then be
@@ -95,27 +95,27 @@ directly solve the resulting set of linear equations directly for the minimum of
 the summed squares.
 %--------------------------------------------------------------------------------------------
 \section{Naive Bayes}
-The Naive Bayes classifier algorithm fits a set of data to Bayes' theorem with a
+The Naive Bayes classifier algorithm fits a set of data to Bayes' Theorem with a
 strong assumption of feature independence. Given a set of discrete-valued
 features $x \in {1,...,K}^D$, we can calculate the class conditional density for
-each feature, then with our assumption of independence generate a guess
+each feature, then, with our assumption of independence, generate a guess
 at what the class should be for a new input by multiplying the conditional
 likelihood values for each of the new inputs features times the prior on the
 desired to be known class, that is to say
 $p(y|\textbf{x}) \propto p(y) \sum_{j}^{D}p(x_j|y)$.
-The calculation of the posterior probability for a new example can be done so
-manually or can be done so from distributions that are inferred from the
+The calculation of the posterior probability for a new example can be done
+manually, or can be derived from distributions that are inferred from the
 provided data. Consider, for example, a collection of data listing individuals
 that did or did not purchase a house from a real estate agent, where, for some
 reason or another, the only data remaining pertaining to these individuals is
 what their income level was, what their age was, and how far they have to or
-would have to drive to work from their new home.
+would have had to drive to work from their new home.
 
 Say we get a new datapoint: income: \$25,000, age: 30, distance: 10. In this
 case the conditional likelihood of this data given a yes for each of the
 individual features is 2/9, 1/9, and 2/9 respectively. The prior on yes is 1/3.
 The marginal likelihoods of each the individual features are 2/9, 1/9 and 2/9
-respectively. As such the posteriors for our new datapoint are
+respectively. As such, the posteriors for our new datapoint are
 $p(y=yes|x)=\frac{(2/9)*(1/9)*(2/9)*(9/27)}{(6/27)*(3/27)*(6/27)} = \frac{0.00182}{0.00548} = 0.33$ and $p(y=no|x)=\frac{(4/18)(2/18)(4/18)(18/27)}{(6/27)(3/27)(6/27)} = \frac{0.0036}{0.00548} = 0.66$.
 
 Note that $0.66 > 0.33$ and as such our classifier would label this datapoint
@@ -124,25 +124,25 @@ with a no, this individual is not likely to purchase a house.
 %--------------------------------------------------------------------------------------------
 \section{Support Vector Machine}
 The support vector machine (svm) is a two-group classification algorithm that attempts
-to find a hyper plane that separates the inputs within a given input space
-with a maximum margin of separation between the hyper plane and the
-``support vectors'', those vectors on either side of the hyper plane
+to find a hyperplane that separates the inputs within a given input space
+with a maximum margin of separation between the hyperplane and the
+``support vectors,'' those vectors on either side of the hyperplane
 that are closest to it. To arrive at a form of the support vector machine that
 can be used to classify new inputs, one first needs a representation of the
-potential separating hyper plane $$y_i(\mathbf{w}*\mathbf{x_i} + b) > 1$$ such
-that $y_i$ is the truth label of given training input $x_i$, $w$ is a vector
-normal to our candidate separating hyper plane that represents how much
+potential separating hyperplane $$y_i(\mathbf{w}*\mathbf{x_i} + b) > 1$$ where
+$y_i$ is the truth label of given training input $x_i$, $w$ is a vector
+normal to our candidate separating hyperplane that represents how much
 ``weight'' is to be applied to an input, and $b$ is a bias constant representing
 the threshold the weight/input product needs to pass before it is considered
-classified. The distance of a given hyper plane can be determined by calculating
+classified. The distance of a given hyperplane can be determined by calculating
 the difference between these previously mentioned ``support vectors'' in the
-direction normal to this hyper plane. This difference can be calculated via the
+direction normal to this hyperplane. This difference can be calculated via the
 following equation:
 $$(\bold{x_{s+}}-\bold{x_{s-}})\bold{\frac{w}{||w||}}$$ where $\bold{x_{s+}}$
 and $\bold{x_{s-}}$ are respectively positive and negative support vectors and
 $\bold{\frac{w}{||w||}}$ is the unit vector in the direction normal to the hyper
 plane towards the positive examples. The size of the margin is $2/||w||$. As
-such, the discovery of a working svm can be found by solving a constrained
+such, the discovery of a working svm can be accomplished by solving a constrained
 optimization problem in which the thing to be minimized is $1/2||w||^2$, subject
 to the constraints $y_i(\bold{w}*\bold{x_i} + b) = 1$ for support vectors.
 Crafting an expression of this constrained optimization that can be solved by a
@@ -178,13 +178,13 @@ The objective of the k-means algorithm is to partition a dataset into k groups
 such that the points within some group are all closest to
 the mean of that group than they are to any other group. A clear
 informal explanation of the work that the k-means algorithm performs
-was given by James MacQueen in 1967: "...the k-means procedure
+was given by James MacQueen in 1967: ``...the k-means procedure
 consists of simply starting with k groups each of which consists of a
 single random point, and thereafter adding each new point to the
 group whose mean the new point is nearest. After a point is added to
 a group, the mean of that group is adjusted in order to take account
 of the new point. Thus at each stage the k-means are, in fact, the
-means of the groups they represent." \cite{MacQueen} Formally stated,
+means of the groups they represent'' \cite{MacQueen}. Formally stated,
 given an integer $k$ and a set of $n$ data points in
 $\mathbb{R}^{d}$ the K-means algorithm seeks to minimize  $\Phi$, the
 over all total summed in class distance between each point and its
@@ -192,22 +192,21 @@ closest center such that $\mathbb \Phi = \sum_{x \in X} min_{c \in C}{x-c^{2}}$
 \cite{Arthur}.
 
 The k-means model is a type of Gaussian mixture model that is trained with a procedure
-called expectation maximization. Given a set of distributions with missing data
-, mixture models tend to have derivatives that are either difficult to define
-or are entirely undefinable. On the other hand, the calculation of some ML/MAP
+called expectation maximization. Given a set of distributions with missing data, mixture models tend to have derivatives that are either difficult to define
+or are entirely undefinable. On the other hand, the calculation of some ML/MAP (maximum likelihood/maximum a posteriori)
 estimates for some set of models can generally be calculated with little
 difficulty if every point within the distributions is known (at which point our
 learner would obviously have nothing to do) and thus calculus would be entirely
-unnecessary (i.e it would not matter that the derivative cannot be defined).
+unnecessary ($i.e.$, it would not matter that the derivative cannot be defined).
 Expectation maximization uses this fact in order to obtain an estimation of the
 ML/MAP indirectly. The algorithm consists of two steps. First, an estimate as
 to what the expected value of the hidden data is based off the current guess for the
 parameters is made. Then the likelihood function for the parameters is maximized under
-the assumption that the data discovered in the previous step is complete, i.e, that there
+the assumption that the data discovered in the previous step is complete, $i.e.$, that there
 is no longer any hidden data. These steps are then repeated until some convergence criteria
-is met. The k-means is exactly this type of algorithm but with the covariance matrix
-$\Sigma_{k} = \rho^{2}*I_{D}$ and the mixing weights $\Pi_{k} = 1/K$ all being fixed such
-that the only free parameters are the cluster centers $\mu_{k} \in \mathbb{R}^{D}$
+is met. The k-means is exactly this type of algorithm, but with the covariance matrix
+$\Sigma_{k} = \rho^{2}*I_{D}$ and the mixing weights $\Pi_{k} = 1/K$ all being fixed, such
+that the only free parameters are the cluster centers $\mu_{k} \in \mathbb{R}^{D}$,
 and such that the hidden data that is the ground truth label of the data points.
 %--------------------------------------------------------------------------------------------
 \section{Neural Networks}
@@ -215,10 +214,10 @@ A neural network is a type of machine learning algorithm that mimics
 the interconnectivity of animal brains in order to automatically
 discover rules to classify given inputs. The neural network is one of the most
 flexible learning algorithms within literature, so flexible in fact that it is
-capable of approximating any continuous function\cite{Hornik}. As such its
+capable of approximating any continuous function \cite{Hornik}. As such, its
 inclusion within a metalearning system is almost mandatory.  Genrally,
-such a system works by first being presented with a set of classified or
-unclassified inputs. Said neural network system will then attempt to
+a neural network system works by first being presented with a set of classified or
+unclassified inputs. Said system will then attempt to
 make a decision on these inputs on which an error value will then be
 assigned. The system will then see some kind of correction function
 applied to it. This process will continue until the system has
@@ -227,44 +226,44 @@ hopefully have discovered a strong set of rules for peforming whatever
 work it is that it was designed to perform.
 
 The type of neural network that will be used within this thesis is
-what is called the feed-forward neural network (multilayer perceptron
-aka MLP). The feed forward neural network is essentially a series of
+what is called the feed-forward neural network (multilayer perceptron,
+a.k.a. MLP). The feed forward neural network is essentially a series of
 logistic regression models stacked on top of each other, with the
 final layer being either another logicstic regression or linear
 regression model depending on whether or not a classification or
-regression problem is being solved.\cite{Murphy}. The leftmost
+regression problem is being solved \cite{Murphy}. The leftmost
 layer of this stack is called the input layer and consists of a set of
-neurons ${x_i|x_1,x_2,x_3...,x_m}$ representing the input's
+neurons ${x_i|x_1,x_2,x_3,...,x_m}$ representing the input's
 features. Each neuron in the hidden layer transforms the values from
-the previous layer via weighted linear summation $w_1X_1 + w_2x_2 +...w_mx_m$
+the previous layer via weighted linear summation $w_1X_1 + w_2x_2 +...+w_mx_m$
 which is then passed into a non linear-action function $g()$, such as the
 logistic function or the hyperbolic tangent function. It is important to note
 that $g$ must be non-linear, otherwise the entire model will collapse into a
-large linear regression model of the form $y = w^T(Vx)$. \cite{Murphy}
+large linear regression model of the form $y = w^T(Vx)$ \cite{Murphy}.
 
 The multi-layer perceptrons created in this experiment will be trained used in
 by an error propagation/training technique called backpropagation.
 Backpropagation is a procedure that repeatedly adjusts the weights of the
 connections in a neural network so as to minimize a measure of the difference
 between the actual output vector of the net and the desired output
-vector. \cite{Rumelhart}. In order to accomplish this, the algorithm
+vector \cite{Rumelhart}. In order to accomplish this, the algorithm
 adjusts the weights of the nerual network by considering the error of
 the outputs then minimizes this error via gradient decent with respect
 to each of the weights within the network. Specifically, the gradient
 vector of the negative log likelihood error on the output neurons is
-computed by use of the chain rule of calculus.\cite{Murphy}.Say we
+computed by use of the chain rule of calculus.\cite{Murphy}. Say we
 have a one layer neural network in which the hidden layer is described
 by $\alpha^{L} = \sigma(w^{L}\alpha^{L-1} + b^{L}) = \sigma(z^{L})$,
 where $L$ superscript refers to the hidden layer and $L-1$ refers
 to the input layer of the network. The parameters of this network can
 be said to be $\Theta = (V,W)$ where $V$ is the weight vector for the input
 layer and $W$ is the weight vector for the hidden layer. The error (or
-more specifically the costs function) of a such a network is given by: $$J(\Theta ) =
-- \sum_n\sum_k(\hat{y}_{nk}(\Theta)-y_{nk})^2$$, in the case of
-regression and via cross entropy: $$J(\Theta ) =
-- \sum_n\sum_ky_{nk}log\hat{y}_{nk}(\Theta)$$ in the case of
-classification. The gradient of this error $\nabla_{\Theta}J$ is
-found via the chain rule of calculus:
+more specifically the costs function) of a such a network is given by:
+$$J(\Theta ) = - \sum_n\sum_k(\hat{y}_{nk}(\Theta)-y_{nk})^2$$
+in the case of regression, and via cross entropy
+$$J(\Theta ) = - \sum_n\sum_ky_{nk}log\hat{y}_{nk}(\Theta)$$
+in the case of classification. The gradient of this error $\nabla_{\Theta}J$
+is found via the chain rule of calculus:
 $$\frac{\partial C}{\partial
 w^{L}} = \frac{\partial z^{L}}{\partial
 w^{L}}\frac{\partial \alpha}{\partial z^{L}}\frac{\partial
@@ -282,14 +281,14 @@ the chain rule of calculus is used in order to find the derivative of
 the output error with respect to the weights of the connections
 between the hidden layer before the output neurons and the output
 neurons $\frac{\partial C}{\partial w^{L}_{n-j}}$ where $L$ is the
-target neurons layer (the last layer in this case), n is the index of
+target neurons layer (the last layer in this case), $n$ is the index of
 a neuron within this layer, and $j$ is the index of the neuron in the
-previous layer $L-1$ from which neuron n is recieving input (note
+previous layer $L-1$ from which neuron $n$ is recieving input (note
 that in this case the hyphen does not mean subtract, but rather
 indicates that there is a connection between these neurons). For an output
 neuron, its error is then given by:
 $$\frac{\partial C}{\partial w^{L}_{n-j}} = \frac{\partial z^{L}_{j}}{\partial w^{L}_{n-j}}\frac{\partial \alpha^{L}_{j}}{\partial z^{L}_{j}}\frac{\partial C}{\partial \alpha^{L}_{j}}$$
-,with the error relative to neurons earlier in the network being calculable by
-continuing usage of the chain rule. For an excellent and intuitive explanation
-of how neural networks work, pls consider viewing the animated overview of the
-method at 3Blue1Brown's youtube channel.
+with the error relative to neurons earlier in the network being calculable by continuing usage of the chain rule.
+
+%For an excellent and intuitive explanation of how neural networks work, pls consider viewing the animated overview of the method at 3Blue1Brown's youtube channel.
+% WAY TOO INFORMAL!

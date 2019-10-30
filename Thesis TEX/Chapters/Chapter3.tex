@@ -5,16 +5,16 @@
 \section{General Plan}
 The overall goal of this experiment is to determine whether one metalearning
 strategy within a given set can strictly dominate the others. The core elements
-required in order to determine this are a set of metalearning strategies to be
-compared, sets of metabase datasets on which to apply the different strategies,
-and a means to evaluate the results so as to determine the relative performance
+required in order to determine this are: (1) a set of metalearning strategies to be
+compared, (2) sets of metabase datasets on which to apply the different strategies,
+and (3) a means to evaluate the results so as to determine the relative performance
 of the metalearners. The general flow of the program that constitutes this
-experiment begins with a set of unprocessed datasets then extracts the
+experiment begins with a set of unprocessed datasets, and then extracts the
 metafeatures that are required to perform dataset clustering and to
 run the active metalearning strategy. The program then constructs 10
 metalearning bases with the elements in these sets choosen at random. A run with
 every machine algorithm and dataset combination is then performed, with the
-results being stored in the runs all table of this experiments database. Learning curves for each
+results being stored in the experiments database. Learning curves for each
 dataset/algorithm combination are then crafted. Finally, enough information now
 exists within the the database to run the metalearning strategies
 and extract results. This process is then repeated 30 times, with each run
@@ -22,7 +22,7 @@ constituting an individual sample. This produces enough information in order
 to perform statistical analysis techniques to test the null hypothesis and
 obtain a margin of error of 5 percent. A detailed explanation of the experiment
 steps follows now, with a description of the statistical analysis to follow in
-Chapter 3.
+Chapter 4.
 
 \section{Data Parsing}
 The data used in this experiment comes from the UCI Irvine Machine learning
@@ -32,16 +32,16 @@ all at once. To make use of a dataset from the repository, the algorithms used
 in this experiment required a vector representation of the dataset currently
 being analyzed; the data could not be used without first translating it into
 this form. As such, I needed to do two things with the data before making use
-of it: ensure that the data could be parsed into a vector via the use of program,
+of them: ensure that the data could be parsed into a vector via the use of program,
 then write a program in order to do this. The strategy I employed in order to
-accomplish these goal was was two fold: I first went thru the set of candidate
+accomplish these goals was was twofold: I first went through the set of candidate
 datasets and ensured non of them was in a format so exotic that they could not
 be parsed programatically. Manual examination of the files revealed that those
 of either the .data, .svm, or .dat format were agreeable to formating and so it
-is these that are processed by the parser. These files are then inspected by the
-parser, with each datasets column vectors being inspected one by one. Those
-column vectors containing only numerical data are left as is, those with any
-non-numerical data are assumed to be categorical, with the categories of said
+is these that were processed by the parser. These files were then inspected by the
+parser, with each dataset's column vectors being inspected one by one. Those
+column vectors containing only numerical data were left as is, those with any
+non-numerical data were assumed to be categorical, with the categories of said
 vector being translated to numbers with a unique number being assigned to each
 unique string. Rather than storing the numerical representation of each dataset
 within the database, the parsed form of a given dataset is crafted when it is
@@ -55,7 +55,7 @@ differing structures with respect to metrics such as the number of features
 and the maximum and minimum values of these features, the project requires a set
 of normalized meta-features that are applicable to any possible individual
 distribution or set of probability distribution(s). A set of features that meet
-this criteria are weighted mean, coefficient of variation, skew, kurtosis, and
+this criteria are weighted mean, coefficient of variation, skewness, kurtosis, and
 entropy. The vector that represents a given dataset is crafted by taking the
 value of each of these attributes for each of said datasets features then
 normalizing them by dividing by the total number of features within that dataset,
@@ -67,7 +67,7 @@ column $i$, and $N$ is the number of columns within dataset $d$. The vector that
 represents a given dataset is then determined to be
 $V_d = (F_{1d}, F_{2d},..., F_{ad})$.
 
-\section{Metabases construction and perfomance testing}
+\section{Metabase construction and perfomance testing}
 The work of a metalearning algorithm is essentially the applying the things
 known from a specific set of datasets towards a new, unlabeled dataset. That
 initial set of datasets is known as a meta database, which I shorten to metabase
@@ -87,7 +87,7 @@ analysis.
 \section{Compiling Results}
 Once the guess tables are populated, it is finally possible to compile a table
 of results. Each entry in the table notes the metalearning strategy being
-evaluated, the metabase collection (i.e the sample), the metabase within that
+evaluated, the metabase collection ($i.e.,$ the sample), the metabase within that
 sample that the strategy used in order to analyze its test datasets, and the
 accuracy, training time, and rate correct score as its performance metrics,
 where the rate correct time measures how often the metalearner makes the correct
