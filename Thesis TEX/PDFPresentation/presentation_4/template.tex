@@ -1,0 +1,335 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Focus Beamer Presentation
+% LaTeX Template
+% Version 1.0 (8/8/18)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Pasquale Africa (https://github.com/elauksap/focus-beamertheme) with modifications by
+% Vel (vel@LaTeXTemplates.com)
+%
+% Template license:
+% GNU GPL v3.0 License
+%
+% Important note:
+% The bibliography/references need to be compiled with bibtex.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass{beamer}
+
+\usetheme{focus} % Use the Focus theme supplied with the template
+% Add option [numbering=none] to disable the footer progress bar
+% Add option [numbering=fullbar] to show the footer progress bar as always full with a slide count
+
+% Uncomment to enable the ice-blue theme
+%\definecolor{main}{RGB}{92, 138, 168}
+%\definecolor{background}{RGB}{240, 247, 255}
+
+%------------------------------------------------
+
+\usepackage{booktabs} % Required for better table rules
+%\usepackage[backend=biber, style=ieee]{biblatex}
+%\addbibresource{example.bib} % The filename of the bibliography
+%----------------------------------------------------------------------------------------
+%	 TITLE SLIDE
+%----------------------------------------------------------------------------------------
+
+\title{A comparison of meta-learning strategies}
+
+\author{John Liddell}
+
+%\titlegraphic{\includegraphics[scale=1.25]{Images/focuslogo.pdf}} % Optional title page image, comment this line to remove it
+
+\institute{1200 N Dupont Hwy, Dover, DE 19901}
+
+\date{11 01 2019}
+
+%------------------------------------------------
+
+\begin{document}
+
+%------------------------------------------------
+
+\begin{frame}
+	\maketitle % Automatically created using the information in the commands above
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}{Introduction}
+  \begin{itemize}
+  \item Machine learning algorithm decision is not arbitrary
+  \item No Free Lunch for Optimization
+  \item Does NFL theory apply to meta-learners?
+  \end{itemize}
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}{Background/Necessary terms}
+  \begin{itemize}
+  \item Meta Learners
+    \begin{itemize}
+    \item Brute Force - Cluter on all datasets in metabase
+    \item Active Meta Learning - Cluster on datasets in metabase with most
+      information
+    \item Learning Curves - Choose item in metabase with learning curve
+      most similar to new dataset
+    \end{itemize}
+  \item Base Algorithms
+    \begin{itemize}
+    \item Linear Regression - Fit Curve to data
+    \item Support Vector Machine - Sepearte data with hyperplane
+    \item K-Means Clustering - Draw borders around similar datapoints
+    \item Naive Bayes - Guess Likelihood of data class with Bayes theorem
+    \item Neural Networks - Decide class of data thru interconnected network
+      of weights
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}[t]
+  \begin{itemize}
+  \item Brute Force Meta Learner
+    \begin{itemize}
+       \item Most basic possible meta learning strategy
+       \item Gather run statistics for a group of datasets (metabase)
+       \item Take in new dataset, run clustering algorithm with metabase
+       \item Use algorithm of closest set in metabase
+    \end{itemize}
+  \item Active meta-learning
+    \begin{itemize}
+       \item Meta Learning strategy described in ``Ranking of Classifiers
+             based on Dataset Characteristics using Active Meta Learning''
+       \item Allows a dataset into metabase only if it has a higher uncertainty
+         score than its peers
+       \item Relative uncertainty between two datasets:
+
+         $$\delta(V_x,d_i,V_x,d_j) = \frac{|V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$
+          \begin{itemize}
+             \item where:
+             \item $V_x,d_k$ = value of metapamater $V_x$ for dataset $d_k$
+             \item $Max_{k\neq i}(V_x,d_k)$ = Maximum $V_x,d_k$ with dataset $i$
+                   removed
+             \item $Min_{k\neq i}(V_x,d_k)$ = Minimum $V_x,d_k$ with dataset $i$
+                   removed
+          \end{itemize}
+
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}[t]
+  \begin{itemize}
+    \item Active meta-learning (cont)
+    \begin{itemize}
+       \item Selection accomplished by summing uncertainties, ranking, then
+             selecting highest ranked dataset
+       \item Process reduces training time and increases classification
+             accuracy relative to Brute Force Learner
+    \end{itemize}
+  \end{itemize}
+
+  \begin{itemize}
+  \item Nearest Learning Curve Analysis
+    \begin{itemize}
+       \item Gather algorithms classification accuracy for some dataset at
+             various fractions of the training set
+       \item Plotting these accuracies reveals a learning curve
+       \item Categorization of the new datasets then accomplished in 3 steps:
+          \begin{description}
+               \item[First]  Train model with each candidate algorithm at same
+                             fractions present in learning curves in metabase
+               \item[Second] Get distance measure between this new curve and
+                             older curves
+               \item[Third]  Return algorithm that worked best on dataset
+                             represented by curve
+          \end{description}
+    \end{itemize}
+   \end{itemize}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}{Methodology}
+  \begin{itemize}
+  \item Overall goal: Determine meta-learning dominance
+  \item Requirements:
+     \begin{itemize}
+        \item Set of meta learning strategies to compare
+        \item A pool of datasets from which to build metabases
+              and on which to analyze performance
+        \item Analysis techniques to compare meta learners performances
+     \end{itemize}
+  \item Program Flow:
+    \begin{itemize}
+       \item Parse unprocessed datasets
+       \item Run base algorithms
+       \item Collect learning curves
+       \item Construct metabase sets
+       \item Populate meta learner guess tables
+       \item Compile results
+       \item Produce results charts
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+%----------------------------------------------------------------------
+\begin{frame}[t]
+ \begin{itemize}
+    \item Development Environment Description:
+      \begin{itemize}
+         \item languages: python 3.7, bash
+         \item editors: emacs, pycharm
+         \item runtime environment: ipython in powershell
+         \item Personal pc metrics:
+           \begin{itemize}
+              \item RAM: 16 GB
+              \item Processor: Intel i5-4460
+              \item OS: Windows 10
+           \end{itemize}
+      \end{itemize}
+     \item Datasource Description:
+       \begin{itemize}
+           \item Gathered with script from UCI Irvine Machine Learning
+                 Repository
+           \item Manual investigation of parability:
+           \begin{description}
+             \item[First]  Write code to parse data
+             \item[Second] Examine data to see if parsed
+             \item[Third]  If not parsed, discover why parse failed
+             \item[Fourth] Repeat Sequence
+           \end{description}
+           \item Resulting parser flow:
+           \begin{description}
+              \item[First] Ensure file of allowed type then import if allowed
+              \item[Second] Check each columns data type
+              \item[Third] Transform unusable columns
+           \end{description}
+       \end{itemize}
+ \end{itemize}
+\end{frame}
+
+%-------------------------------------------------------------------------
+\begin{frame}[t]
+  \begin{itemize}
+      \item System required generally applicable ``meta features'': features the
+        meta learning algorithms could use to classify the datasets
+      \item A set of meta features that met this criteria were:
+        \begin{itemize}
+        \item weighted mean - The mean of a distribution normalized by its
+                 maximum value
+               \item coefficient of variation - A measure of the dispersion of a
+                 distribution.
+                 %It is the ratio between the standard deviation and mean of a
+                 %distribution
+               \item skewness - A measure of the asymmetry of a probility
+                 distribution.
+                 %It is proportional to the ratio between the third and
+                 %second moments of a distriubtion (where a moment is a measure of
+                 %of shape)
+                \item kurtosis - A measure of the ``tailedness of a probibility
+                  distribution i.e. how many of much of the weight of a probabiliy
+                  distribution lies in its tails
+                  %It is the ratio between the fourth moment of a
+                  %distribution and its standard deviation
+                \item shannon entropy - A measure of the minimum number of bits
+                  needed to encode a string of symbols. Is a measure of how much
+                  information is contained in a body of data.
+                  %Is the negative of the summation of the probability of a symbol
+                  %multiplied by its base 2 log
+        \end{itemize}
+  \end{itemize}
+\end{frame}
+
+%-----------------------------------------------------------------------
+\begin{frame}[t]
+  \begin{itemize}
+  \item A vector is formed using these meta features via the following
+        process:
+       \begin{description}
+         \item[First] Apply meta feature to each column
+         \item[Second] Sum these values, divide by number of columns
+            $$ F_{ad} = \frac{\sum_{c=i}^{N}f_{ai}}{N}$$
+           \begin{itemize}
+              \item where:
+              \item $F_{ad}$ Composite meta feature value
+              \item $a$ = label of meta feature
+              \item $d$ = label of dataset
+              \item $c$ = iterator across columns in the dataset
+              \item $f_{ai}$ = value of meta feature $a$ in column $i$
+              \item $N$ = overall number of columns in dataset
+           \end{itemize}
+         \item[Third] Repeat for other meta features
+         \item[Fourth] Craft vector with features
+           $$V_d = (F_{1d}, F_{2d},...F_{ad})$$
+       \end{description}
+  \end{itemize}
+\end{frame}
+
+%-----------------------------------------------------------------------
+\begin{frame}{Database Description}
+  \begin{itemize}
+  \item Database created and used via a python library called sqlalchemy
+    \begin{itemize}
+      \item Object relation mapper - maps data structures to sql statements
+    \end{itemize}
+  \item Database Tables:
+    \begin{itemize}
+        \item algorithm - each row contains information on a basic algorithm
+        \item all\_data - each row contains name,path, and vector
+          representation of a dataset
+        \item runs\_all - each row contains a combination of algorithm, dataset,
+          training time, and test accuracy
+        \item learning\_curves - each row contains test set accuracy at 10, 20,
+          and 30 percent training set size
+        \item base\_set\_collection tables - each table contains a set of
+          metabases
+        \item guesses tables - each table contains meta algorithm guesses
+        \item results - each row contains meta algorithm name, collection table
+          name, metabase name, accuracy, training time
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+%------------------------------------------------------------------------
+\begin{frame}{Methodology continued}
+  \begin{itemize}
+     \item Ran all algorithm/dataset combinations and stored in table
+     \item Analysis session flow:
+       \begin{description}
+         \item[First] Parse dataset for data matrix
+         \item[Second] Randomize order of the data matrix's rows
+         \item[Third] Use first 20 percent to train algorithm
+         \item[Fourth] For each algorithm:
+           \begin{itemize}
+              \item Train a model with given algorithm
+              \item Analyze test set with trained model
+              \item save classification accuracy and training time to
+                    database
+           \end{itemize}
+       \end{description}
+     \item Same procedure used to gather learning curves but training
+           occured only at 10, 20, and 30 percent the size of the training
+           set
+  \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+%	 CLOSING/SUPPLEMENTARY SLIDES
+%----------------------------------------------------------------------------------------
+\begin{frame}{References}
+	\nocite{*} % Display all references regardless of if they were cited
+	%\printbibliography
+	%\bibliography{example.bib}
+	%\bibliographystyle{plain}
+\end{frame}
+
+\end{document}

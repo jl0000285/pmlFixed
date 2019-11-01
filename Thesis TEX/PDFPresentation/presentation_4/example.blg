@@ -1,0 +1,5 @@
+[0] Config.pm:304> INFO - This is Biber 2.12
+[0] Config.pm:307> INFO - Logfile is 'example.blg'
+[34] biber-MSWIN64:315> INFO - === 
+[547] Utils.pm:209> ERROR - Cannot find control file 'example.bcf'! - Did latex run successfully on your .tex file before you ran biber?
+[547] Biber.pm:114> INFO - ERRORS: 1

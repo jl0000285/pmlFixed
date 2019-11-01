@@ -3,8 +3,9 @@
 
 Test implies that we speak at about 200 words a minute
 
-Introduction/Goal/Objectives (2 min ~ 400 words - currently 363 words)
----------------------------------------------------------------------------------
+%----------------------------------------------------------------------
+%Introduction/Goal/Objectives (2 min ~ 400 words - currently 363 words)
+%----------------------------------------------------------------------
 In this thesis, I conduct an experiment to see whether or not the
 No free lunch theorem applies to meta-learning strategies.
 
@@ -43,10 +44,9 @@ As such the goal of this experiment was  to ascertain whether or not the no free
 lunch hypothesis applies to meta-learning algorithms, that is to say to
 ascertain whether or not some meta-learning algorithms strictly dominate other
 meta-learning algorithms.
----------------------------------------------------------------------------------
-
-literature review/theoretical framework (5 min ~ 1000 words - curr 1245 words)
----------------------------------------------------------------------------------
+%---------------------------------------------------------------------------------
+%literature review/theoretical framework (5 min ~ 1000 words - curr 1245 words)
+%---------------------------------------------------------------------------------
 A few terms from literature must be defined before continuing on to a
 description of the methodology.
 
@@ -70,7 +70,9 @@ data.
 It is a meta-learning technique in which a candidate dataset is only
 allowed into the metabase if it has a higher uncertainty score relative to its
 peers. The relative uncertainty between two datasets is defined by
+
 $$\delta(V_x,d_i,V_x,d_j) = \frac{|V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$
+
 where $V_x,d_k$ is the value of some metaparameter $V_x$ for dataset $d_k$,
 $Max_{k\neq i}(V_x,d_k)$ is the maximum value of $V_x,d_k$ when dataset i is
 removed and $Min_{k\neq i}(V_x,d_k)$ is its corrosponding minimum.
@@ -79,6 +81,7 @@ Determining which dataset has the overall highest uncertainty can be done by
 summing over the relative values for each metaparameter, ranking them then
 collecting their overall uncertainty scores then choosing the dataset that has
 the highest score where
+
 $$\delta(V_x,d_i) = \frac{\sum_{j\neq i} |V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$
 
 is the equation representing the overall uncertainty for dataset
@@ -110,6 +113,9 @@ authors state that this process trains its meta-learner in less time than a
 brute force learner and the resultant meta-learner will also have a higher
 classification accuracy than a brute force meta-learner.
 
+%-----------------------------------------------------------------------------
+%Optional base learner section,  only if asked
+%-----------------------------------------------------------------------------
 The machine-learning algorithms that these meta-machine learning strategies
 can return as their answers are one of either K-means clustering, neural network,
 Naive Bayes classifier, support vector machine or regression.
@@ -161,17 +167,24 @@ the weights of the connections between the neurons within the network. This
 process will continue until the system has obtained the desired error within its
 supply of training data or until it reaches a point where iterations of this
 improvement cycle no longer results in improved performance.
+%-------------------------------------------------------------------------------
+%End optional base learners
+%-------------------------------------------------------------------------------
 
----------------------------------------------------------------------------------
-methodology (5 min ~ 1000 words, currently 1,589 words)
----------------------------------------------------------------------------------
+%---------------------------------------------------------------------------------
+% methodology (5 min ~ 1000 words, currently 1,589 words)
+%---------------------------------------------------------------------------------
 The overall goal of this experiment was to determine whether or not one
-meta-learning strategy within a given set can strictly dominate the others. The
-elements required in order to determine this were a set of meta-learning
-strategies to be compared, sets of metabase datasets on which to apply the
-different strategies, and a means to evaluate the results so as to determine the
-relative performance of the meta-learners. An overview of the procedure this
-experiments representative program uses in order to accomplish this now follows.
+meta-learning strategy within a given set can strictly dominate the others.
+
+The elements required in order to determine this were a set of meta-learning
+strategies to be compared, a pool of datasets from which draw metabases, gather
+run statistics, and compare meta learner performances, and a means to evaluate
+the results so as to determine the relative performance of the meta learners.
+
+I wrote a program in order to meet these requirements.
+An overview of the procedure this program goes through now follows
+
 The program first begins with a set of unprocessed datasets, then extracts the
 metafeatures that are required to perform dataset clustering and to run the
 active meta-learning strategy, storing the results in a local database table.
@@ -189,10 +202,12 @@ order to produce the samples that will be needed for later analysis. On
 completion of this task, the system then applies each of the meta-learning
 strategies to each of the metabase sets within each of the metabase set
 collections, storing the guesses made by a meta-learner within individual
-database tables. The program finishes by then running an analysis method on
-the meta-learners guesses tables. A more detailed explanation of each of the
-steps taken by this experiments program will follow after a quick description
-of the development environment.
+database tables. The program finishes by first compiling the result table
+containing the relative placement counts of the meta learners, that is to say
+how well a meta learner did with some specific meta base relative to its
+neighboors, then produces the neccessary charts needed to perform analysis.
+A more detailed explanation of each of the steps taken by this experiments
+program will follow after a quick description of the development environment.
 
 The languages of use for the experiments program and its utilities were python
 3.7 and bash, with bash having been used for the script that gathered the
@@ -222,12 +237,14 @@ its number.
 
 The resulting matrix representations of the data files can thus be used for
 classification by the base machine learning algorithms, but were too large and
-unwieldy for inclusion in a database. As such, only small vector meta-feature
-representations of the data are stored within the database. The datasets are
-then parsed only when needed. Being as how the datasets used within this project
-have vastly differing structures along lines such as the number of features and
-the maximum and minimum values of these features, the project required a set of
-normalized meta-features that are applicable to any possible individual
+unwieldy for inclusion in a database. As such, only a small meta vector feature
+representation of the data was stored within the database. Instead of permanant
+storage, the datasets would be parsed only when needed.
+
+Being as how the datasets used within this project have vastly differing
+structures along lines such as the number of features and the maximum and
+minimum values of these features, the project required a set of
+normalized meta features that are applicable to any possible individual
 distribution or set of probability distribution(s). A set of features that met
 this criteria were weighted mean, coefficient of variation, skewness, kurtosis,
 and entropy. The vector that represents a given dataset is crafted by taking the
@@ -247,20 +264,25 @@ clarity. The experiments database is created programmatically. A type of softwar
 known as an "Object Relational Mapper", a program that can map data types to
 database statements, was used to create and maintain this database. The name of
 the python module used in the experiments program for this purpose is sqlalchemy.
+Contained within the database were tables to store algorithm information,
+dataset information, algorithm run results, learning curves, base set
+collections, guess tables, and meta algorithm run results.
 
-Rather than run a selected algorithm for testing on selection, every algorithm
-and dataset combination is attempted once, with the results of the analysis
-session then being stored within the database. The session would go as such:
+Rather than run a selected algorithm for testing when selected by a meta
+algorithm, every algorithm and dataset combination is trained once, with the
+results of the analysis session then being stored within the database. An
+analysis session would go as such:
+
 First, the target dataset is parsed and the order of the rows in the matrix
 returned from this parsing procedure would be randomized. The first 20 percent
-of this randomized dataset is then chosen as the training set. This training
-set is then used to train a model with each of the base algorithms
-used within this experiment. These algorithms are provided via the use of
-a machine learning library called "sci-kit learn" which is a machine learning
-extension to the SciPy ecosystem. Once trained, the model would then be used to
-predict the class of the rest of every point in the dataset with the exclusion
-of those that were used within the training set. The time used to train the
-model and its labeling accuracy would then be stored within the database.
+of this randomized dataset is then chosen as the training set and the later
+80 percent as the testing set. For each algorithm in the system, a model is then
+trained with the training set and tested with the testing set. The versions
+of the algorithms used in this system are provided via a python machine learning
+library called "sci-kit learn", which is a machine learning extension to the
+SciPy ecosystem. The time it took to train the model and its labeling accuracy
+are then stored within the database.
+
 This same procedure is used to gather and store learning curves within the
 database; but in the instance of the learning curve, 3 different models would
 be trained for each algorithm: 1 with 10 percent of the training set, 1 with 20
@@ -288,7 +310,7 @@ is to train each of the other sets not currently within its metabase. The guess
 made by the algorithm and whether or not it was correct, what metabase was used
 to make the guess and what collection that metabase exists within are then all
 stored within the database. This process is repeated for every combination of
-meta-algorithm, metabase collection and metabase within the collections.
+meta algorithm, metabase collection and metabase within the collections.
 
 With the results now available within the database, analysis is now possible.
 The system iterates thru each metabase collection, crafting a results matrix
