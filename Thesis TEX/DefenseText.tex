@@ -307,95 +307,83 @@ metabase collection is then selected. A meta-algorithm is then selected. The
 meta-algorithm uses its learning strategy to train with the metabase. The
 trained meta-learner then makes a guess as to what it thinks the best algorithm
 is to train each of the other sets not currently within its metabase. The guess
-made by the algorithm and whether or not it was correct, what metabase was used
-to make the guess and what collection that metabase exists within are then all
-stored within the database. This process is repeated for every combination of
-meta algorithm, metabase collection and metabase within the collections.
+made by the algorithm, the correct best performing dataset, whether or not the
+guess was correct, what metabase was used to make the guess and what collection
+that metabase exists within are then all stored within the database. This
+process is repeated for every combination of meta algorithm, metabase collection
+and metabase within the collections.
 
+The last table required within the database for analysis to become possible
+is the results table. Each results table row contains the name of a meta
+algorithm and what its testing accuracy and training time was when trained
+with a meta base from a given meta collection.
+
+%----------------------------------------------------------------------------------
+%findings(Doc suggests 10, going to do 5 mins ~ 1000 - 2000 words, currently 595
+%words)
+%--------------------------------------------------------------------------------
 With the results now available within the database, analysis is now possible.
-The system iterates thru each metabase collection, crafting a results matrix
-for each collection. Each row of the matrix represents a meta-learning
+The system iterates thru each metabase collection name, crafting a results
+matrix for each collection from the results present in the results
+database table. Each row of the matrix represents a meta-learning
 algorithm, and each column within this matrix represents how many times
 that algorithm got that relative results placement within the metabases that
-comprises that collection. Say, for instance, the brute force learner had
-the highest accuracy when using 5 of the metabases within the first collection,
-the second highest accuracy 3 times when using the metabases within the first
-collection, and the worst accuracy twice when using the metabases within the
-first collection. The row representing its result would be 5 3 1, with the
-other two rows having analogous results for the active and curve based
-meta-learners. Note that because there are 10 metabases within each
+comprises that collection.
+
+%Do the equal of this with first example in actual placement table
+
+Say, for instance, the active meta learner had the highest accuracy when using 1
+of the metabases within the first collection, the second highest accuracy 4
+times when using the metabases within the first collection, and the worst
+accuracy 5 times when using the metabases within the first collection.
+The row representing its result is thusd  1 4 5, as can be seen
+here in the chart. Note that because there are 10 metabases within each
 meta-collection, the sum of each row is always 10. A matrix of this sort is
-created for each metabase collection. The analysis of these matrixes comprises
-the results of this experiment and I will now describe these results.
+created for each metabase collection.
 
-
-----------------------------------------------------------------------------------
-findings(Doc suggests 10, going to do 5 mins ~ 1000 - 2000 words, currently 595
-words)
---------------------------------------------------------------------------------
 In order to test the null hypothesis, 30 such samples of the kind previously
-described were created. The samples and their means can be seen in the following
-tables.
+described were created.
 
-If each of the algorithms were truly equal, we would expect the averaged numbers
-for each of the positions to be near 3.3. Instead, it appears that the sampler
-performed the best, with an average number of first place finishes of 4.5 and the
-active strategy performed the worst, with an average number of first place
-finishes of 1.7. Whether or not these results fall far enough outside
-expectation in order to reject the null hypothesis requires the machinary of
-classical statistics. Two fairly reliable measures of how unlikely these results
-are are the sampling distribution probabilities and t scores of each of the
-results.
+If each of the meta learning algorithms were truly equal, we would expect the
+averaged numbers for each of the positions to be near 3.3. Instead, it appears
+that the sampler performed the best, with an average number of first place
+finishes of 4.5 and the active strategy performed the worst, with an average
+number of first place finishes of 1.7. Whether or not these results fall far
+enough outside expectation in order to reject the null hypothesis requires the
+machinary of classical statistics. A common and reliable way of  measuring
+how unlikely a set of results is is the t test, and it is this test that is used
+to test these results.
 
-The following description losely follows the procedure described in \cite{Cohen}.
-In it, the author asks you to imagine testing a coin to see whether or not it
-is fair by flipping the coin some number of times N. He then asks you to consider
-whether some proportion of heads i/N is actually fair. The propability that some
-proportion of heads p = i/N is fair can be calculated exactly with the binomial
-distribution $$\frac{N!}{i!(N-i)!}r^{i}(1-r)^{N-i}$$.
-
-This situation is analogous to the number of first, second, or third place
-finishes some meta-algorithm obtained in this thesis experiment. The probabilty
-of proportions for each of the meta-learning algorithms can be seen in table 4.3.
-
-When averaged across samples, we get the following table
-
-The probability of drawing either of the values closest to expectation, 3 or 4,
-are 0.26 and 0.22 respectively. The average of all values within this table is
-0.15, significantly lower than either expected value. Still, this is not enough
-to reject the null hypothesis.
-
-In order to confidantly reject the null hypothesis, we will make use of the
-T test.  The t test equation is as follows:
+The $t$ test equation is as follows:
 $$t =\frac{\overline{x}-\mu}{\hat{\sigma}_{\overline{x}}} = \frac{\overline{x}-\mu}{\frac{s}{\sqrt{N}}}$$
-where s is the sample standard deviation, N is the
-number of samples, overscore x is an individual samples mean/calculated value,
-and mu is the population mean/expected value.
+where $s$ is the sample standard deviation, $N$ is the number of samples,
+$\overline{x}$ is the  sample mean, and $\mu$ is the population mean/expected value.
 
-The idea is simple, take the diffrence between the observed mean of the sample
-and the expected mean and normalize this value by the standard deviation of the
-samples distribution. This results in some number of sample standard deviations
-by which the observed sample distributions mean differs from expectation. The
-fewer the number of sample the higher the margin of error in the t scores
-estimate, with a margin of error of 0.05 given for estimates made with 30
-samples. The critical thresholds for a two tailed t test are -1.96 and 1.96.
+In this equation, the diffrence between the observed mean of the sample
+and the expected mean is taken and the result is normalize, giving the number
+of sample standard deviations by which the observed sample distributions mean
+differs from expectation. The fewer the number of samples, the more the number
+of standard deviations the means need to differ for rejection at some desired
+margin of error. In the case where we have 30 samples, the critical threshholds
+for a two tailed test (a test in which positive and negative differences are
+considered noteworthy) at a 5 percent margin of error are -2.04 and 2.04.
+
 If the averaged values of the t scores falls outside these bounds then we can
 reject the null hypothesis with a 5 percent margin of error. The standard
 deviations and t scores for each of the samples can be seen in the following
 table.
 
-The following table contains these t scores averaged across samples:
-
 In order to determine whether or not the results as a whole fall significantly
 outside of expectation we can take the average of all the averaged t scores
-absolute value. This will give as a measure of how much the values observed her
+absolute values. This will give as a measure of how much the values observed her
 deviate from expectation as a whole. The value we get after under taking this
-procedure is 5.11, more than twice the t score value needed in order to
+procedure is 4.42, more than twice the $t$ score value needed in order to
 reject the null hypothesis at 5 percent margin of error. We can thus comfortably
 reject the null hypothesis.
 
-recommendations (5 min ~ 1000 words, currently 345 words)
------------------------
+% --------------------------------------------------------
+% recommendations (5 min ~ 1000 words, currently 345 words)
+% -----------------------
 In this thesis I proposed that the no free lunch hypotheis might not apply to
 meta learning algorithms. In order to test this hypothesis I first built a
 system to determine the accuracy of three meta learning strategies:
@@ -414,15 +402,12 @@ then performed, giving an average among the absolute values of each of the t
 scores of 5.11, allowing us to reject the null hypothesis at a 5 percent margin
 of error.
 
-Two flaws exist within this experiment that I would correct had I more time: I
-was only able to obtain three meta-learning algorithms, and I was only able to
-obtain one set of datasets with 88 instances in it. Originally I had desired 5
-meta learning algorithms and at least 10 unique sets of datasets. What I am
-forced to do here is essentially a form of cross validation, I take a large
-number of the possible combination of floor(88 * 0.2) = 17 datasets and
-segregate them into groups of 10 and label each of those a sample. The ideal
-would have been for each individual sample to have its own set of 100 or so
-datasets within it so as to eliminate any chance of bias within the data.
-Unfortunately for this to be a reality I would have had to get my hands on
-30 * 100 = 3000 datasets, a task that I have no idea as to how to begin
-accomplishing.
+As a followup to this experiment, I would have liked to repeat the process
+with more datasets. Given that the size of the pool of available datasets is 88
+there exists a chance of bias in the metabase sets. Increasing the size of the
+pool of datasets to increase the uniqueness of each of the metabases would reduce
+this bias likelihood. Idealistically, each of the datasets in each of the
+metabases would be unique. This would require 30 * 100 datasets = 3000 observed,
+programmatically parsable datasets, a number which is prohibitively difficult to
+acquire. If, however, this number of datasets becomes aquirable in the future,
+this experiment would be worth repeating with this new body of datasets.

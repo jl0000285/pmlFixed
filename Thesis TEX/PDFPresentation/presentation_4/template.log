@@ -1,4 +1,4 @@
-This is LuaTeX, Version 1.10.0 (MiKTeX 2.9.7000 64-bit)  (format=lualatex 2019.3.24)  31 OCT 2019 23:19
+This is LuaTeX, Version 1.10.0 (MiKTeX 2.9.7000 64-bit)  (format=lualatex 2019.3.24)  1 NOV 2019 08:09
  restricted system commands enabled.
 **"C:/Users/0-4/Desktop/Computer_Science_MS/Thesis/pml/pmlFixed/Thesis TEX/PDFP
 resentation/presentation_4/template.tex"
@@ -1407,6 +1407,40 @@ LaTeX Font Info:    Font shape `T1/FiraSans-OsF/regular/it' will be
 
 ] [12
 
+] [13
+
+]
+Overfull \hbox (97.59358pt too wide) in paragraph at lines 414--414
+ [] 
+ []
+
+
+Overfull \vbox (311.98582pt too high) detected at line 414
+ []
+
+[14
+
+] [15
+
+]
+LaTeX Font Info:    Font shape `T1/FiraSans-OsF/m/it' in size <14.4> not availab
+le
+(Font)              Font shape `T1/FiraSans-OsF/regular/it' tried instead on inp
+ut line 446.
+LaTeX Font Info:    Font shape `T1/FiraSans-OsF/regular/it' will be
+(Font)              scaled to size 14.4pt on input line 446.
+ [16
+
+] [17
+
+] [18
+
+] [19
+
+] [20
+
+] [21
+
 ]
 \tf@nav=\write6
 
@@ -1417,25 +1451,26 @@ LaTeX Font Info:    Font shape `T1/FiraSans-OsF/regular/it' will be
 \tf@snm=\write8
 
 \openout8 = template.snm
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 335.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 335.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 514.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 514.
  (./template.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 335.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 335.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 514.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 514.
 Package rerunfilecheck Info: File `template.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
 )
 
 Here is how much of LuaTeX's memory you used:
- 22759 strings out of 494300
+ 22853 strings out of 494300
  100000,552014 words of node,token memory allocated
- 2836 words of node memory still in use:
-   17 hlist, 8 vlist, 5 rule, 2 disc, 1 local_par, 26 glue, 249 kern, 8 penalty,
- 13 glyph, 141 attribute, 58 glue_spec, 141 attribute_list, 4 write, 16 pdf_colo
+ 3593 words of node memory still in use:
+   17 hlist, 8 vlist, 5 rule, 2 disc, 1 local_par, 26 glue, 353 kern, 8 penalty,
+ 13 glyph, 199 attribute, 59 glue_spec, 199 attribute_list, 4 write, 16 pdf_colo
 rstack nodes
-   avail lists: 1:3,2:644,3:234,4:262,5:319,6:51,7:2828,8:48,9:287,10:13,11:194
- 25754 multiletter control sequences out of 65536+200000
- 110 fonts using 7760991 bytes
+   avail lists: 1:3,2:1682,3:234,4:262,5:227,6:51,7:5342,8:48,9:893,10:13,11:194
+
+ 25821 multiletter control sequences out of 65536+200000
+ 118 fonts using 8298911 bytes
  71i,16n,77p,879b,938s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Users/0-4/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/fira/fir_iln36p.
 enc}{C:/Users/0-4/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/fira/fir_2mf
@@ -1453,10 +1488,11 @@ sfonts/cm/cmss9.pfb><C:/Users/0-4/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/
 public/amsfonts/cm/cmsy10.pfb><C:/Users/0-4/AppData/Local/Programs/MiKTeX 2.9/fo
 nts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/0-4/AppData/Local/Programs/MiKT
 eX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/0-4/AppData/Local/Prog
-rams/MiKTeX 2.9/fonts/type1/public/amsfonts/symbols/msam10.pfb>
-Output written on template.pdf (12 pages, 203546 bytes).
+rams/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/0-4/AppData/L
+ocal/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/symbols/msam10.pfb>
+Output written on template.pdf (21 pages, 249293 bytes).
 
-PDF statistics: 136 PDF objects out of 1000 (max. 8388607)
- 25 named destinations out of 1000 (max. 131072)
+PDF statistics: 188 PDF objects out of 1000 (max. 8388607)
+ 43 named destinations out of 1000 (max. 131072)
  16 words of extra memory for PDF output out of 10000 (max. 100000000)
 
