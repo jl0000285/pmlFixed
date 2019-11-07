@@ -16,6 +16,12 @@ observed samples derives is truly normal and vice versa, if the
 distribution is truly random, the Gaussian classifier's accuracy will suffer
 relative to the classifier with a random assumption.
 %-------------------------------------------------------------------------------------------
+\section{Summary of the compared meta learning strategies}
+In order to ascertain whether or not the NFL theorem applies to meta learning strategies,
+we require a set of meta learning strategies with which to make run comparisons. The
+meta learning strategies used in the experiment that comprises this thesis are described within
+this section.
+%-------------------------------------------------------------------------------------------
 \subsection{Brute Force Metabase}
 The most basic meta-machine learning algorithm. The accuracies of the
 meta-learners producible machines for some metabase are gathered. To classify
@@ -23,6 +29,14 @@ a new dataset $d_n$, a clustering algorithm (K-Means in the case of this experim
 used to find $d_m$, the dataset within the metabase with which the new dataset $d_n$ is
 most similar. The algorithm which had the greatest classification accuracy for
 the metabase dataset $d_m$ will then be returned by the meta-learner.
+\begin{figure}[h]
+\includegraphics{Chapters/Images/BaseLearner/BaseLearner.pdf}
+\caption{Example of base meta learning}
+\centering
+A. Metabase sets with given meta feature vectors \\
+B. Classify new dataset by meta feature vector comparison \\
+C. Return best algorithm of associated meta base set
+\end{figure}
 %-------------------------------------------------------------------------------------------
 \subsection{Active Meta Learning}
 The second of the meta-learning strategies implemented within the study, Active
@@ -45,6 +59,14 @@ uncertainty rank for each dataset. Finally, select the parameter with the
 highest rank for inclusion in the metabase. The equation representing the
 overall uncertainty score in a specific metaparameter $V_x$ for dataset $d_i$ is
 $$\delta(V_x,d_i) = \frac{\sum_{j\neq i} |V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$
+\begin{figure}[h]
+\includegraphics{Chapters/Images/ActiveLearner/ActiveLearner.pdf}
+\caption{Example of active meta learning}
+\centering
+A. Set of candidate metabase sets \\
+B. Random selection of half the original candidates \\
+C. Inclusion of half remaining candidates by uncertainty comparison \\
+\end{figure}
 %-----------------------------------------------------------------------------------------------
 \subsection{Predicting Relative Performance of Classifiers from Samples}
 The third of the meta-learning strategies implemented within this study is one in
@@ -54,6 +76,11 @@ sampling analysis; the accuracies of the base algorithms are predicted from
 run curve similarity rather than directly ran \cite{Leite}.
 As with the other two meta learning strategies, the label for new datsets is
 then determined via clustering with the datasets contained within the metabase.
+\begin{figure}[h]
+\includegraphics{Chapters/Images/LearningCurve/LearningCurve.PNG}
+\caption{Example of a learning curve}
+\centering
+\end{figure}
 %----------------------------------------------------------------------------------------
 \section{Summary of Producible Machines}
 The strategies mentioned in the previous section all consume a vector
@@ -65,7 +92,7 @@ machine being cast into classificatory bins from the real valued result that it
 would produce. An in depth description of each of these different learning
 algorithms will comprise the rest of this chapter.
 %--------------------------------------------------------------------------------------------
-\section{Linear Regression}
+\subsection{Linear Regression}
 Linear regression is one of the most common and oldest machine learning
 techniques. It asserts that the response is a linear function
 of the inputs \cite{Murphy}. This relation takes the following form:
@@ -94,7 +121,7 @@ $\beta_0 + 4*\beta_1 = 5$. The sum of squared errors would then be
 directly solve the resulting set of linear equations directly for the minimum of
 the summed squares.
 %--------------------------------------------------------------------------------------------
-\section{Naive Bayes}
+\subsection{Naive Bayes}
 The Naive Bayes classifier algorithm fits a set of data to Bayes' Theorem with a
 strong assumption of feature independence. Given a set of discrete-valued
 features $x \in {1,...,K}^D$, we can calculate the class conditional density for
@@ -122,7 +149,7 @@ Note that $0.66 > 0.33$ and as such our classifier would label this datapoint
 with a no, this individual is not likely to purchase a house.
 
 %--------------------------------------------------------------------------------------------
-\section{Support Vector Machine}
+\subsection{Support Vector Machine}
 The support vector machine (svm) is a two-group classification algorithm that attempts
 to find a hyperplane that separates the inputs within a given input space
 with a maximum margin of separation between the hyperplane and the
@@ -173,7 +200,7 @@ between the points in this higher dimensional space which translates into a
 non-linear separation for the vectors in their original lower dimensional space
 where a separation might otherwise not have been discoverable.
 %--------------------------------------------------------------------------------------------
-\section{K-Means Clustering}
+\subsection{K-Means Clustering}
 The objective of the k-means algorithm is to partition a dataset into k groups
 such that the points within some group are all closest to
 the mean of that group than they are to any other group. A clear
@@ -209,7 +236,7 @@ $\Sigma_{k} = \rho^{2}*I_{D}$ and the mixing weights $\Pi_{k} = 1/K$ all being f
 that the only free parameters are the cluster centers $\mu_{k} \in \mathbb{R}^{D}$,
 and such that the hidden data that is the ground truth label of the data points.
 %--------------------------------------------------------------------------------------------
-\section{Neural Networks}
+\subsection{Neural Networks}
 A neural network is a type of machine learning algorithm that mimics
 the interconnectivity of animal brains in order to automatically
 discover rules to classify given inputs. The neural network is one of the most

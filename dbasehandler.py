@@ -806,6 +806,30 @@ class ResultsAnalyzer:
 
         return averaged_grid
 
+    def get_dataframe_from_datasets(self):
+        datasets = self.dbh.session.query(repo.DatasetAll).all()
+        keys = ['data_name', 'weighted_mean', 'coefficient_variation',
+                'fpskew', 'kurtosis', 'entropy', 'metric_time']
+        dicts = []
+
+        for dset in datasets:
+            this_dict = {}
+            for key in keys:
+                value = getattr(dset, key)
+                this_dict[key] = value
+            dicts.append(this_dict)
+
+        frame = pd.DataFrame(dicts)
+        frame = frame[keys]
+
+        sframe = pd.DataFrame()
+        sframe['data_name'] = frame['data_name']
+        sframe['description'] = ''
+
+        pdb.set_trace()
+        return dicts
+
+
     @staticmethod
     def get_nested_dict_frame(nested):
         frame = pd.DataFrame.from_dict({(i, j): nested[i][j]
@@ -891,6 +915,8 @@ class ResultsAnalyzer:
         means_latex = means_frame.to_latex()
         averaged_props_latex = averaged_props_frame.to_latex()
         averaged_t_scores_latex = averaged_t_scores_frame.to_latex()
+
+        dataset_frame = self.get_dataframe_from_datasets()
 
         print('Placement results')
         print(results_latex)
