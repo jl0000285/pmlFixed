@@ -1,0 +1,122 @@
+\documentclass[12pt]{report}
+\usepackage{fontspec}
+\usepackage[paper=letterpaper, top=0.875in, bottom=1.6375in, left=1in, right=1in, nohead, driver=xetex]{geometry}
+\usepackage{setspace}
+\usepackage[utf8]{inputenc}
+\usepackage[style=ieee, dashed=false, backend=biber]{biblatex}
+\usepackage{tocloft}
+\usepackage{titlesec}
+\usepackage{etoolbox}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{booktabs}
+%\usepackage{standalone}
+%\usepackage{pgf,tikz}
+%\usetikzlibrary{babel}
+\usepackage[ruled, noline]{algorithm2e}
+
+\setmainfont{Times New Roman}
+
+\titleformat{\chapter}{\centering\normalsize\bfseries\MakeUppercase}{CHAPTER \thechapter:}{0.33em}{\normalsize\bfseries\MakeUppercase}
+\titlespacing{\chapter}{0pt}{-16pt}{24pt}
+
+\titleformat{\section}{\normalfont\normalsize\bfseries\MakeUppercase}{SECTION \thesection:}{0.33em}{\normalfont\normalsize\bfseries\MakeUppercase}
+\titlespacing{\section}{0pt}{16pt}{0pt}
+
+\addbibresource{Thesis.bib}
+
+\tocloftpagestyle{plain}
+
+\setlength{\cftbeforetoctitleskip}{-16pt}
+\setlength{\cftaftertoctitleskip}{0pt}
+\renewcommand{\contentsname}{Table of Contents}
+\renewcommand{\cfttoctitlefont}{\hspace*{\fill}\normalsize\bfseries\MakeUppercase}
+\renewcommand{\cftaftertoctitle}{\hspace*{\fill}}
+
+\preto\section{\ifnum\value{section}=0\addtocontents{toc}{\vskip12pt}\fi}
+
+\renewcommand{\cftchapdotsep}{4.5}
+\renewcommand{\cftsecdotsep}{4.5}
+\renewcommand{\cftsecleader}{\bfseries\cftdotfill{\cftsecdotsep}}
+\renewcommand{\cftsecpagefont}{\bfseries}
+
+\setlength{\cftchapnumwidth}{7em}
+\renewcommand{\cftchappresnum}{CHAPTER }
+\renewcommand{\cftchapaftersnum}{:}
+
+\renewcommand{\cftchapafterpnum}{}
+
+\renewcommand{\cftsecfont}{\bfseries}
+\setlength{\cftsecnumwidth}{7em}
+\renewcommand{\cftsecpresnum}{SECTION }
+\renewcommand{\cftsecaftersnum}{:}
+
+\setlength{\cftbeforelottitleskip}{-16pt}
+\setlength{\cftafterlottitleskip}{0pt}
+\renewcommand{\cftlottitlefont}{\hspace*{\fill}\normalsize\bfseries\MakeUppercase}
+\renewcommand{\cftafterlottitle}{\hspace*{\fill}}
+
+\setlength{\cftbeforeloftitleskip}{-16pt}
+\setlength{\cftafterloftitleskip}{0pt}
+\renewcommand{\cftloftitlefont}{\hspace*{\fill}\normalsize\bfseries\MakeUppercase}
+\renewcommand{\cftafterloftitle}{\hspace*{\fill}}
+
+\begin{document}
+
+  \singlespacing
+
+  \pagenumbering{roman}
+
+  \include{Title}
+
+  \include{Copyright}
+
+  %\include{Dedication}
+
+  \include{Acknowledgements}
+
+  \include{Abstract}
+
+  \singlespacing
+
+  \clearpage
+  \tableofcontents
+
+  \clearpage
+  \addcontentsline{toc}{chapter}{\MakeUppercase\listtablename}
+  \listoftables
+
+  \clearpage
+  \addcontentsline{toc}{chapter}{\MakeUppercase\listfigurename}
+  \listoffigures
+
+  \pagebreak
+
+  \doublespacing
+
+  \pagenumbering{arabic}
+
+  \include{Chapters/Abstract}
+  \include{Chapters/Chapter1}
+  \include{Chapters/Chapter2}
+  \include{Chapters/Chapter3}
+  \include{Chapters/Chapter4}
+  \include{Chapters/Chapter5}
+
+
+  \singlespacing
+  \addcontentsline{toc}{chapter}{REFERENCES}
+  \renewcommand*{\UrlFont}{\rmfamily}
+  \printbibliography[title={References}]
+  \pagebreak
+
+  \setcounter{chapter}{1}
+  \renewcommand{\thechapter}{\Alph{chapter}}
+  \setcounter{table}{0}
+
+  \doublespacing
+
+  \addcontentsline{toc}{chapter}{APPENDIX}
+  \include{Appendix}
+
+\end{document}
