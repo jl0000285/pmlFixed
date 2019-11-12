@@ -3,7 +3,6 @@
 \usepackage[paper=letterpaper, top=0.875in, bottom=1.6375in, left=1in, right=1in, nohead, driver=xetex]{geometry}
 \usepackage{setspace}
 \usepackage[utf8]{inputenc}
-\usepackage[style=ieee, dashed=false, backend=biber]{biblatex}
 \usepackage{tocloft}
 \usepackage{titlesec}
 \usepackage{etoolbox}
@@ -14,6 +13,8 @@
 %\usepackage{pgf,tikz}
 %\usetikzlibrary{babel}
 \usepackage[ruled, noline]{algorithm2e}
+\usepackage[backend=biber, dashed=false, style=ieee]{biblatex}
+\addbibresource{Thesis.bib} % The filename of the bibliography
 
 \setmainfont{Times New Roman}
 
@@ -22,8 +23,6 @@
 
 \titleformat{\section}{\normalfont\normalsize\bfseries\MakeUppercase}{SECTION \thesection:}{0.33em}{\normalfont\normalsize\bfseries\MakeUppercase}
 \titlespacing{\section}{0pt}{16pt}{0pt}
-
-\addbibresource{Thesis.bib}
 
 \tocloftpagestyle{plain}
 
@@ -108,6 +107,7 @@
   \addcontentsline{toc}{chapter}{REFERENCES}
   \renewcommand*{\UrlFont}{\rmfamily}
   \printbibliography[title={References}]
+  %\printbibliography
   \pagebreak
 
   \setcounter{chapter}{1}

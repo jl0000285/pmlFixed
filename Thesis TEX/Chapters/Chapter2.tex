@@ -15,6 +15,67 @@ assumes a Gaussian distribution if the distribution from which the set of
 observed samples derives is truly normal and vice versa, if the
 distribution is truly random, the Gaussian classifier's accuracy will suffer
 relative to the classifier with a random assumption.
+%------------------------------------------------------------------------------------
+\section{On Meta Learning}
+Before describing each of the individual meta learners compared within this
+experiment, it is neccessary to describe what a meta learning algorithm is.
+Much like regular machine learning algorithms, meta learning algorithms process
+inputs and make predictions on new instances from experience. Where meta learners
+differ from base learners is in the scope of the level of their adaptation; whereas
+learning at the base level is focued on accumulating experience on a specific
+learning task (e.g., credit rating, medical diagnosis, mine-rock discrimination,
+fraud detection, etc.), learning at the meta level is concerned with accumulating
+experience on the performance of multiple applications of a learning system
+\cite{Vilalta}. As such, base learners attempt to optimize performance with
+respect to a specific task or problem domain, while meta learners attempt to
+predict what the best base learner would be for a given task or problem domain.
+This allows users wishing to use machine learning in their problem domain to skip
+the struggle associated with descovering the best algorithm for the specific
+problem; they need only gain access to a trained meta learner, present the dataset
+they wish to analyze, then make use of the base learner suggested by the meta
+learner.
+
+All meta learners operate in two phases: Acquisition mode and advisory mode.
+During the knowledge acquisition mode, the main goal is to learn about the
+learning process itself \cite{Vilalta}. The meta learner recieves as its input
+during this phase a set of database sets (hereafter refered to as a ``metabase'')
+from which dataset characteristics and run statistics are extracted. The goal
+of the extraction of these characteristics and statistics is to gather
+information that can be used to generalize the run results from this specific
+metabase to other unproccessed distributions.
+
+\begin{figure}[h]
+\resizebox{\columnwidth}{!}{%
+\includegraphics{Chapters/Images/MetaLearningAcquasition/MetaLearningAcquasition.PNG}}
+\caption{An Example of Meta Learner Knowledge Acquisition}
+\centering
+Image borrowed from \cite{Vilalta} \\
+Parameter setting not applicable in this experiment
+\end{figure}
+
+In advisory mode, the meta learning system makes use of the knowledge gathered in
+the acquisition phase in order to suggest a best learning algorithm for a new
+dataset. Meta features extracted from the dataset are ``matched'' with the
+meta knowledge base to produce a recommendation regarding the best available
+learning strategy \cite{Vilalta}.
+
+What this entails is a mapping between meta features and an optimum base learning
+strategy. In the case of this thesis, this mapping is accomplished via the k-means
+algorithm; with the meta features being a set of standard statistical measures
+in the case of the brute force and active strategies (these features are described
+in section 3.3) and the meta features being ``learning curves'' in the case of the
+curve comparison strategy (these curves are described in section 2.3.3).
+
+\begin{figure}[h]
+\resizebox{\columnwidth}{!}{%
+\includegraphics{Chapters/Images/MetaLearningAdvisory/MetaLearningAdvisory.PNG}
+}
+\caption{An Example of Meta Learner Advisory Mode}
+\centering
+Image borrowed from \cite{Vilalta} \\
+Parameter setting not applicable in this experiment
+\end{figure}
+
 %-------------------------------------------------------------------------------------------
 \section{Summary of the compared meta learning strategies}
 In order to ascertain whether or not the NFL theorem applies to meta learning strategies,
@@ -33,9 +94,11 @@ the metabase dataset $d_m$ will then be returned by the meta-learner.
 \includegraphics{Chapters/Images/BaseLearner/BaseLearner.pdf}
 \caption{Example of base meta learning}
 \centering
+\begin{flushleft}
 A. Metabase sets with given meta feature vectors \\
 B. Classify new dataset by meta feature vector comparison \\
 C. Return best algorithm of associated meta base set
+\end{flushleft}
 \end{figure}
 %-------------------------------------------------------------------------------------------
 \subsection{Active Meta Learning}
@@ -63,9 +126,11 @@ $$\delta(V_x,d_i) = \frac{\sum_{j\neq i} |V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,
 \includegraphics{Chapters/Images/ActiveLearner/ActiveLearner.pdf}
 \caption{Example of active meta learning}
 \centering
+\begin{flushleft}
 A. Set of candidate metabase sets \\
 B. Random selection of half the original candidates \\
 C. Inclusion of half remaining candidates by uncertainty comparison \\
+\end{flushleft}
 \end{figure}
 %-----------------------------------------------------------------------------------------------
 \subsection{Predicting Relative Performance of Classifiers from Samples}
@@ -80,6 +145,12 @@ then determined via clustering with the datasets contained within the metabase.
 \includegraphics{Chapters/Images/LearningCurve/LearningCurve.PNG}
 \caption{Example of a learning curve}
 \centering
+\begin{flushleft}
+where: \\
+A. Horizontal axis: Fractions of training set \\
+B. Verticle axis: Test case accuracy for given set fraction \\
+\end{flushleft}
+Image borrowed from \cite{Leite}
 \end{figure}
 %----------------------------------------------------------------------------------------
 \section{Summary of Producible Machines}
