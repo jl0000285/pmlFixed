@@ -1,34 +1,34 @@
 %Chapter 5
 \chapter{Conclusion and Future Work}
 \label{Chapter5}
-In this thesis, I proposed that the no free lunch hypotheis might not apply to
+In this thesis, I proposed that the no free lunch hypothesis might not apply to
 meta learning algorithms. In order to test this hypothesis, I first built a
 system to determine the accuracy of three meta learning strategies:
 Exhaustive, Active, and Sampling. To use these strategies, a base of
-datasets would first be randomly choosen from the collection of all available
+datasets would first be randomly chosen from the collection of all available
 datasets that had been gathered from the UCI Irvine data repository.
 Each strategy would then be carried out on the metabase and make an
 estimate as to what algorithm would result in the highest classification
 accuracy. Each algorithm would make this guess for each dataset in the
 collection of available datasets excluding the datasets within the current
-metabase. A new metabase would then be choosen at random and the process would be
+metabase. A new metabase would then be chosen at random and the process would be
 repeated 9 more times, giving a number between 0 and 10 for how many times
 each algorithm got the First, second, or third most correct guesses.
 This process was repeated 30 times, resulting in 30 samples. $t$ test analysis
-was then performed, giving an an average among the absolute values of each of
+was then performed, giving an average among the absolute values of each of
 the position $t$ scores of 5.11, allowing us to reject the null
 hypothesis at a 5 percent margin of error.
 
 Future work could involve repeat runs of the system described in this thesis
 with more datasets, which would test the results in a wider variety of problem
 domains, therefore strengthening the results. Other interesting variations of
-this experiment could come from testing the results with diffrent meta features,
+this experiment could come from testing the results with different meta features,
 testing the results with noisy datasets, and even testing the results with
 artificially generated datasets. One could also test the results of this
 procedure with an intermediary parameter tuning step, that is to say
 we could tune the parameters of the various base algorithms to fit the domain
 of the dataset currently being analyzed. Also, a future researcher might also
 choose to vary the algorithm used to classify the meta features, as here we
-make use of the k-means clustring algorithm to make our choice from the meta
+make use of the k-means clustering algorithm to make our choice from the meta
 features of our modified meta bases and the selection of a different algorithm
 could change the results.

@@ -12,17 +12,17 @@ about the distributions from which the data the algorithms work with arises. A
 learning algorithm with an implicit assumption of a random distribution will
 have a far lower test case classification accuracy than an algorithm that
 assumes a Gaussian distribution if the distribution from which the set of
-observed samples derives is truly normal and vice versa, if the
+observed samples derive is truly normal and vice versa, if the
 distribution is truly random, the Gaussian classifier's accuracy will suffer
 relative to the classifier with a random assumption.
 %------------------------------------------------------------------------------------
 \section{On Meta Learning}
 Before describing each of the individual meta learners compared within this
-experiment, it is neccessary to describe what a meta learning algorithm is.
+experiment, it is necessary to describe what a meta learning algorithm is.
 Much like regular machine learning algorithms, meta learning algorithms process
 inputs and make predictions on new instances from experience. Where meta learners
 differ from base learners is in the scope of the level of their adaptation; whereas
-learning at the base level is focued on accumulating experience on a specific
+learning at the base level is focused on accumulating experience on a specific
 learning task (e.g., credit rating, medical diagnosis, mine-rock discrimination,
 fraud detection, etc.), learning at the meta level is concerned with accumulating
 experience on the performance of multiple applications of a learning system
@@ -30,19 +30,19 @@ experience on the performance of multiple applications of a learning system
 respect to a specific task or problem domain, while meta learners attempt to
 predict what the best base learner would be for a given task or problem domain.
 This allows users wishing to use machine learning in their problem domain to skip
-the struggle associated with descovering the best algorithm for the specific
+the struggle associated with discovering the best algorithm for the specific
 problem; they need only gain access to a trained meta learner, present the dataset
 they wish to analyze, then make use of the base learner suggested by the meta
 learner.
 
 All meta learners operate in two phases: Acquisition mode and advisory mode.
 During the knowledge acquisition mode, the main goal is to learn about the
-learning process itself \cite{Vilalta}. The meta learner recieves as its input
-during this phase a set of database sets (hereafter refered to as a ``metabase'')
+learning process itself \cite{Vilalta}. The meta learner receives as its input
+during this phase a set of database sets (hereafter referred to as a ``metabase'')
 from which dataset characteristics and run statistics are extracted. The goal
 of the extraction of these characteristics and statistics is to gather
 information that can be used to generalize the run results from this specific
-metabase to other unproccessed distributions.
+metabase to other unprocessed distributions.
 
 \begin{figure}[h]
 \resizebox{\columnwidth}{!}{%
@@ -61,7 +61,7 @@ learning strategy \cite{Vilalta}.
 
 What this entails is a mapping between meta features and an optimum base learning
 strategy. In the case of this thesis, this mapping is accomplished via the k-means
-algorithm; with the meta features being a set of standard statistical measures
+algorithm, with the meta features being a set of standard statistical measures
 in the case of the brute force and active strategies (these features are described
 in section 3.3) and the meta features being ``learning curves'' in the case of the
 curve comparison strategy (these curves are described in section 2.3.3).
@@ -84,12 +84,14 @@ meta learning strategies used in the experiment that comprises this thesis are d
 this section.
 %-------------------------------------------------------------------------------------------
 \subsection{Brute Force Metabase}
-The most basic meta-machine learning algorithm. The accuracies of the
-meta-learners producible machines for some metabase are gathered. To classify
-a new dataset $d_n$, a clustering algorithm (K-Means in the case of this experiment) is
-used to find $d_m$, the dataset within the metabase with which the new dataset $d_n$ is
-most similar. The algorithm which had the greatest classification accuracy for
-the metabase dataset $d_m$ will then be returned by the meta-learner.
+The most basic meta-machine learning algorithm. During the acquisition phase,  the
+accuracies of the meta learners producible machines for some metabase are gathered
+and stored within a database. Classification of a new dataset $d_n$ during advisory
+mode is accomplished via the usage of a clustering algorithm (K-Means in the case
+of this experiment) and is used to find $d_m$, the dataset within the metabase
+with which the new dataset $d_n$ is most similar. The algorithm which was found
+to have had the greatest classification accuracy for the metabase dataset $d_m$
+during acquisition will then be returned by the meta-learner.
 \begin{figure}[h]
 \includegraphics{Chapters/Images/BaseLearner/BaseLearner.pdf}
 \caption{Example of base meta learning}
@@ -102,25 +104,25 @@ C. Return best algorithm of associated meta base set
 \end{figure}
 %-------------------------------------------------------------------------------------------
 \subsection{Active Meta Learning}
-The second of the meta-learning strategies implemented within the study, Active
+The second of the meta learning strategies implemented within this study, Active
 Meta Learning is a meta learning technique  ``that reduces the cost of
 generating Meta examples by selecting relevant Meta examples'' \cite{Bhatt}.
-What this entails is a decision on what datasets to allow into a meta-learner's
-metabase. Rather than analyze every candidate meta base dataset, an active
-meta-learner will analyze the next dataset with the highest uncertainty. The
-relative uncertainty between two datasets is defined to be:
+What this entails is a decision on what datasets to allow into a meta learner's
+metabase during acquisition mode. Rather than analyze every candidate meta base
+dataset, an active meta learner will analyze the next dataset with the highest
+uncertainty. The relative uncertainty between two datasets is defined to be:
 $$\delta(V_x,d_i,V_x,d_j) = \frac{|V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$
-where $V_x,d_k$ is the value of some metaparameter $V_x$ for dataset $d_k$,
+where $V_x,d_k$ is the value of some meta parameter $V_x$ for dataset $d_k$,
 $Max_{k\neq i}(V_x,d_k)$ is the maximum value of $V_x,d_k$ when dataset $i$ is
 removed and $Min_{k\neq i}(V_x,d_k)$ is its corresponding minimum. Determining
 which dataset has the overall highest uncertainty can be done via the following
 procedure. First, sum the relative uncertainties for each dataset and
-meta-parameter combination. Then, rank the uncertainty scores of the datasets within
-each meta-parameter. After obtaining the uncertainty ranks within each parameter
+meta parameter combination. Then, rank the uncertainty scores of the datasets within
+each meta parameter. After obtaining the uncertainty ranks within each parameter
 for each dataset, sum the parameter ranks in order to obtain an overall
 uncertainty rank for each dataset. Finally, select the parameter with the
 highest rank for inclusion in the metabase. The equation representing the
-overall uncertainty score in a specific metaparameter $V_x$ for dataset $d_i$ is
+overall uncertainty score in a specific meta parameter $V_x$ for dataset $d_i$ is
 $$\delta(V_x,d_i) = \frac{\sum_{j\neq i} |V_x,d_i - V_x,d_j|}{Max_{k\neq i}(V_x,d_k)- Min_{k\neq i}(V_x,d_k)}$$
 \begin{figure}[h]
 \includegraphics{Chapters/Images/ActiveLearner/ActiveLearner.pdf}
@@ -134,13 +136,26 @@ C. Inclusion of half remaining candidates by uncertainty comparison \\
 \end{figure}
 %-----------------------------------------------------------------------------------------------
 \subsection{Predicting Relative Performance of Classifiers from Samples}
-The third of the meta-learning strategies implemented within this study is one in
-which a representative subsection of the metabase is trained with each algorithm
-entirely, after which point the rest of the metabase undergoes curve
-sampling analysis; the accuracies of the base algorithms are predicted from
-run curve similarity rather than directly ran \cite{Leite}.
-As with the other two meta learning strategies, the label for new datsets is
-then determined via clustering with the datasets contained within the metabase.
+Introduced in the paper "Predicting Relative Performance of Classifiers from
+Samples", the strategy of nearest learning curve comparison gathers run
+statistics on the datasets within its metabase at various fractions of the full
+size of the training portion of that dataset. It is then possible to plot a 2D
+``learning curve'', with the $x$ axis of such a graph being a specific fraction
+of the training set and the $y$ axis of such a graph being the test classification
+accuracy at that percent. The creation of these learning curves for each of the
+datasets within the metabase is the work of this meta learning strategies
+acquisition mode.
+
+The categorization of new datasets during advisement mode can then be
+accomplished in two steps. First, a model is trained on the new dataset with
+some fractions of its training set using each candidate algorithm. These results
+are then compared with the learning curves of each of the sets in the metabase.
+The meta learner then returns the best algorithm of the dataset within the
+metabase with which the new datasets learning curves is most similar. The
+authors state that this process trains its meta learner in less time than a
+brute force learner and that the resultant meta learner will also have a higher
+classification accuracy than a brute force meta learner.
+
 \begin{figure}[h]
 \includegraphics{Chapters/Images/LearningCurve/LearningCurve.PNG}
 \caption{Example of a learning curve}
@@ -154,14 +169,16 @@ Image borrowed from \cite{Leite}
 \end{figure}
 %----------------------------------------------------------------------------------------
 \section{Summary of Producible Machines}
-The strategies mentioned in the previous section all consume a vector
-representation of some dataset, and then make a guess as to what algorithm would best
-be able to classify its data. The machines that these strategies can choose from are
-the K-means clustering algorithm, a neural network, a naive Bayes classifier, the support
-vector machine, and regression; with the results coming from the regression
-machine being cast into classificatory bins from the real valued result that it
-would produce. An in depth description of each of these different learning
-algorithms will comprise the rest of this chapter.
+The strategies mentioned in the previous section all have advisory modes in which
+some kind of vector representation of an unprocessed dataset is consumed and a
+prediction as to what algorithm would best be able to classify its data is made.
+The machines that these strategies can choose from are the K-means clustering
+algorithm, a neural network, a naive Bayes classifier, the support
+vector machine, and regression. A brief description of each of these different
+learning algorithms will comprise the rest of this chapter. For a more in-depth
+discussion of the algorithms discussed within this chapter, feel free to consult
+the appropriate chapter in Murphy's general purpose machine learning text
+\cite{Murphy}.
 %--------------------------------------------------------------------------------------------
 \subsection{Linear Regression}
 Linear regression is one of the most common and oldest machine learning
@@ -209,10 +226,10 @@ reason or another, the only data remaining pertaining to these individuals is
 what their income level was, what their age was, and how far they have to or
 would have had to drive to work from their new home.
 
-Say we get a new datapoint: income: \$25,000, age: 30, distance: 10. In this
+Say, for example, we get a new datapoint: income: \$25,000, age: 30, distance: 10. In this
 case the conditional likelihood of this data given a yes for each of the
 individual features is 2/9, 1/9, and 2/9 respectively. The prior on yes is 1/3.
-The marginal likelihoods of each the individual features are 2/9, 1/9 and 2/9
+The marginal likelihoods of each of the individual features are 2/9, 1/9 and 2/9
 respectively. As such, the posteriors for our new datapoint are
 $p(y=yes|x)=\frac{(2/9)*(1/9)*(2/9)*(9/27)}{(6/27)*(3/27)*(6/27)} = \frac{0.00182}{0.00548} = 0.33$ and $p(y=no|x)=\frac{(4/18)(2/18)(4/18)(18/27)}{(6/27)(3/27)(6/27)} = \frac{0.0036}{0.00548} = 0.66$.
 
@@ -221,9 +238,9 @@ with a no, this individual is not likely to purchase a house.
 
 %--------------------------------------------------------------------------------------------
 \subsection{Support Vector Machine}
-The support vector machine (svm) is a two-group classification algorithm that attempts
-to find a hyperplane that separates the inputs within a given input space
-with a maximum margin of separation between the hyperplane and the
+The support vector machine (svm) is a two-group classification algorithm that
+attempts to find a hyperplane that separates the inputs within a given input
+space with a maximum margin of separation between the hyperplane and the
 ``support vectors,'' those vectors on either side of the hyperplane
 that are closest to it. To arrive at a form of the support vector machine that
 can be used to classify new inputs, one first needs a representation of the
@@ -286,26 +303,28 @@ means of the groups they represent'' \cite{MacQueen}. Formally stated,
 given an integer $k$ and a set of $n$ data points in
 $\mathbb{R}^{d}$ the K-means algorithm seeks to minimize  $\Phi$, the
 over all total summed in class distance between each point and its
-closest center such that $\mathbb \Phi = \sum_{x \in X} min_{c \in C}{x-c^{2}}$
+closest center such that $\Phi = \sum_{x \in X} min_{c \in C}||{x-c^{2}}||$
 \cite{Arthur}.
 
-The k-means model is a type of Gaussian mixture model that is trained with a procedure
-called expectation maximization. Given a set of distributions with missing data, mixture models tend to have derivatives that are either difficult to define
-or are entirely undefinable. On the other hand, the calculation of some ML/MAP (maximum likelihood/maximum a posteriori)
-estimates for some set of models can generally be calculated with little
-difficulty if every point within the distributions is known (at which point our
-learner would obviously have nothing to do) and thus calculus would be entirely
-unnecessary ($i.e.$, it would not matter that the derivative cannot be defined).
-Expectation maximization uses this fact in order to obtain an estimation of the
-ML/MAP indirectly. The algorithm consists of two steps. First, an estimate as
-to what the expected value of the hidden data is based off the current guess for the
-parameters is made. Then the likelihood function for the parameters is maximized under
-the assumption that the data discovered in the previous step is complete, $i.e.$, that there
-is no longer any hidden data. These steps are then repeated until some convergence criteria
-is met. The k-means is exactly this type of algorithm, but with the covariance matrix
-$\Sigma_{k} = \rho^{2}*I_{D}$ and the mixing weights $\Pi_{k} = 1/K$ all being fixed, such
-that the only free parameters are the cluster centers $\mu_{k} \in \mathbb{R}^{D}$,
-and such that the hidden data that is the ground truth label of the data points.
+The k-means model is a type of Gaussian mixture model that is trained with a
+procedure called expectation maximization. Given a set of distributions with
+missing data, mixture models tend to have derivatives that are either difficult
+to define or are entirely undefinable. On the other hand, the calculation of some
+ML/MAP (maximum likelihood/maximum a posteriori) estimates for some set of models
+can generally be calculated with little difficulty if every point within the
+distributions is known (at which point our learner would have nothing to do) and
+thus calculus would be unnecessary ($i.e.$, it would not matter that the derivative
+cannot be defined). Expectation maximization uses this fact in order to obtain an
+estimation of the ML/MAP indirectly. The algorithm consists of two steps. First,
+an estimate as to what the expected value of the hidden data is based off the
+current guess for the parameters is made. Then the likelihood function for the
+parameters is maximized under the assumption that the data discovered in the
+previous step is complete, $i.e.$, that there is no longer any hidden data. These
+steps are then repeated until some convergence criteria is met. The k-means is
+exactly this type of algorithm, but with the covariance matrix
+$\Sigma_{k} = \rho^{2}*I_{D}$ and the mixing weights $\Pi_{k} = 1/K$ all being fixed,
+such that the only free parameters are the cluster centers $\mu_{k} \in \mathbb{R}^{D}$,
+and such that the hidden data is the ground truth label of the data points.
 %--------------------------------------------------------------------------------------------
 \subsection{Neural Networks}
 A neural network is a type of machine learning algorithm that mimics
@@ -313,42 +332,42 @@ the interconnectivity of animal brains in order to automatically
 discover rules to classify given inputs. The neural network is one of the most
 flexible learning algorithms within literature, so flexible in fact that it is
 capable of approximating any continuous function \cite{Hornik}. As such, its
-inclusion within a metalearning system is almost mandatory.  Genrally,
+inclusion within a meta learning system is almost mandatory.  Generally,
 a neural network system works by first being presented with a set of classified or
 unclassified inputs. Said system will then attempt to
 make a decision on these inputs on which an error value will then be
 assigned. The system will then see some kind of correction function
 applied to it. This process will continue until the system has
 exhausted its supply of training data, at which point it will
-hopefully have discovered a strong set of rules for peforming whatever
+hopefully have discovered a strong set of rules for performing whatever
 work it is that it was designed to perform.
 
 The type of neural network that will be used within this thesis is
 what is called the feed-forward neural network (multilayer perceptron,
 a.k.a. MLP). The feed forward neural network is essentially a series of
 logistic regression models stacked on top of each other, with the
-final layer being either another logicstic regression or linear
+final layer being either another logistic regression or linear
 regression model depending on whether or not a classification or
 regression problem is being solved \cite{Murphy}. The leftmost
 layer of this stack is called the input layer and consists of a set of
 neurons ${x_i|x_1,x_2,x_3,...,x_m}$ representing the input's
 features. Each neuron in the hidden layer transforms the values from
 the previous layer via weighted linear summation $w_1X_1 + w_2x_2 +...+w_mx_m$
-which is then passed into a non linear-action function $g()$, such as the
+which is then passed into a non linear action function $g()$, such as the
 logistic function or the hyperbolic tangent function. It is important to note
 that $g$ must be non-linear, otherwise the entire model will collapse into a
 large linear regression model of the form $y = w^T(Vx)$ \cite{Murphy}.
 
-The multi-layer perceptrons created in this experiment will be trained used in
+The multi-layer perceptrons created in this experiment will be trained
 by an error propagation/training technique called backpropagation.
 Backpropagation is a procedure that repeatedly adjusts the weights of the
 connections in a neural network so as to minimize a measure of the difference
 between the actual output vector of the net and the desired output
 vector \cite{Rumelhart}. In order to accomplish this, the algorithm
-adjusts the weights of the nerual network by considering the error of
-the outputs then minimizes this error via gradient decent with respect
+adjusts the weights of the neural network by considering the error of
+the outputs then minimizes this error via gradient descent with respect
 to each of the weights within the network. Specifically, the gradient
-vector of the negative log likelihood error on the output neurons is
+vector of the negative log-likelihood error on the output neurons is
 computed by use of the chain rule of calculus.\cite{Murphy}. Say we
 have a one layer neural network in which the hidden layer is described
 by $\alpha^{L} = \sigma(w^{L}\alpha^{L-1} + b^{L}) = \sigma(z^{L})$,
@@ -358,7 +377,7 @@ be said to be $\Theta = (V,W)$ where $V$ is the weight vector for the input
 layer and $W$ is the weight vector for the hidden layer. The error (or
 more specifically the costs function) of a such a network is given by:
 $$J(\Theta ) = - \sum_n\sum_k(\hat{y}_{nk}(\Theta)-y_{nk})^2$$
-in the case of regression, and via cross entropy
+in the case of regression, and via cross-entropy
 $$J(\Theta ) = - \sum_n\sum_ky_{nk}log\hat{y}_{nk}(\Theta)$$
 in the case of classification. The gradient of this error $\nabla_{\Theta}J$
 is found via the chain rule of calculus:
@@ -370,7 +389,7 @@ This equation is easiest to understand if read from right to left.
 Notice how in each stage the rates being compared are between nearest
 elements, first the error to the output that produced it, then the output
 to the element to which the non-linearity is applied, then finally the the
-non-linerity recieving value to the weight vector. The result of this
+non-linerity receiving value to the weight vector. The result of this
 calculation easily gives us the direction of the gradient, the negative of
 which we will use to modify $w^{L}$ in a direction that will reduce the output
 error. Reduction of the error of a multilayer perceptron with more
@@ -378,15 +397,18 @@ than one neuron in each layer works mostly the same way. Once again,
 the chain rule of calculus is used in order to find the derivative of
 the output error with respect to the weights of the connections
 between the hidden layer before the output neurons and the output
-neurons $\frac{\partial C}{\partial w^{L}_{n-j}}$ where $L$ is the
+neurons $\frac{\partial C}{\partial w^{L}_{n-j}}$, where $L$ is the
 target neurons layer (the last layer in this case), $n$ is the index of
 a neuron within this layer, and $j$ is the index of the neuron in the
-previous layer $L-1$ from which neuron $n$ is recieving input (note
+previous layer $L-1$ from which neuron $n$ is receiving input (note
 that in this case the hyphen does not mean subtract, but rather
 indicates that there is a connection between these neurons). For an output
 neuron, its error is then given by:
 $$\frac{\partial C}{\partial w^{L}_{n-j}} = \frac{\partial z^{L}_{j}}{\partial w^{L}_{n-j}}\frac{\partial \alpha^{L}_{j}}{\partial z^{L}_{j}}\frac{\partial C}{\partial \alpha^{L}_{j}}$$
-with the error relative to neurons earlier in the network being calculable by continuing usage of the chain rule.
+with the error relative to neurons earlier in the network being calculable by
+continuing usage of the chain rule.
 
-%For an excellent and intuitive explanation of how neural networks work, pls consider viewing the animated overview of the method at 3Blue1Brown's youtube channel.
+%For an excellent and intuitive explanation of how neural networks work,
+%pls consider viewing the animated overview of the method at 3Blue1Brown's
+%youtube channel.
 % WAY TOO INFORMAL!
