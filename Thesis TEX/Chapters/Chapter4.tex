@@ -8,11 +8,11 @@ We will call this assertion the null hypothesis, that is to say our null
 hypothesis is that the meta-learning strategies used in this experiment
 are equal.
 
-In order to test the null hypothesis, 30 such samples of the kind described
+In order to test the null hypothesis, 30 samples of the kind described
 in Chapter 3 were collected. The metrics of interest on these samples are
 contained in the tables within this chapter. How often the algorithms placed
 first, second, or third can be seen in table 4.1. The average of these
-placements across all samples, i.e the algorithms average placements, can be
+placements across all samples, $i.e.$, the algorithms average placements, can be
 seen in table 4.2. Table 4.3 contains the proportion of probability for the
 results contained in table 4.1. Table 4.4 contains the average of the
 proportion of probabilities contained in table 4.3 across all samples.
@@ -84,29 +84,29 @@ compares the performance of 3 meta-learning algorithms. As such, the expected
 average number of first, second, and third place finishes given that the
 meta-learning algorithms are equal is 3.3. The values seen within the placement
 counts table given equal meta-learning algorithms should more often than not be
-either 3 or 4 and the averages of the placements across all samples should all
+either 3 or 4, and the averages of the placements across all samples should all
 be near 3.3. Instead, it appears that the sampler performed the best,
-with an average number of first place finshes of 4.5. Moreover most of the
+with an average number of first place finishes of 4.5. Moreover, most of the
 averages present in table 4.2 seem to be farther away from the expected value of
 3.3 than one would intuitively expect if the meta-learning algorithms were
 truly equal. Whether or not these results fall far enough outside
 expectation in order to reject the null hypothesis requires analysis with the
-machinary of classical statistics. Three well established hypothesis testing
+machinery of classical statistics. Three well established hypothesis testing
 measures are the method of calculating sampling distribution probabilities,
-analysis of variance (anova) and t score analysis. A brief description of each
+analysis of variance (ANOVA) and t score analysis. A brief description of each
 of these statistical methods and the result from their usage follows.
 
 \subsection{Exact Sampling Distribution}
-The following description losely follows the procedure described in \cite{Cohen}.
+The following description loosely follows the procedure described in \cite{Cohen}.
 In it, the author asks the reader to imagine testing a coin to see whether or
-not it is fair, flipping the coin 1,2,..N times. He then asks the reader to
-consider whether some proportion of heads is actually fair from 0/N, 1/N.., N/N
-heads. The propability that some proportion of heads p = i/N is fair can be
+not it is fair, flipping the coin 1,2,..,N times. He then asks the reader to
+consider whether some proportion of heads is actually fair from 0/N, 1/N..,N/N
+heads. The probability that some proportion of heads p = i/N is fair can be
 calculated exactly with the binomial distribution
 $$\frac{N!}{i!(N-i)!}r^{i}(1-r)^{N-i}$$
 This situation is analogous to the number of first, second, or third place
-finishes some meta-algorithm obtained in this thesis experiment. The probabilty
-of proportions for each of the meta-learning algorithms can be seen in table 4.3
+finishes some meta-algorithm obtained in this thesis experiment. The probability
+of proportions for each of the meta-learning algorithms can be seen in table 4.3,
 and the average of these proportions across all samples can be seen in table 4.4.
 
 \begin{table}
@@ -162,52 +162,48 @@ Second &        0.10 &       0.19 &         0.11 \\
 Third  &        0.19 &       0.20 &         0.16 \\
 \bottomrule
 \end{tabular}
-\caption{Average of proportion probabilities across all samples}
+\caption{Averages of proportion probabilities across all samples}
 \end{table}
 
 We can calculate the probability of drawing either of the values closest
-to expectation, 3 or 4, by use of the previously mentioned binomial distribution,
+to expectation, 3 or 4, by using of the previously mentioned binomial distribution,
 with $N = 10$, $r = 0.33$, and $i$ being either 3 or 4. The values we get for
-the propabilities of the most expected values are then 0.26 and 0.22
+the probabilities of the most expected values are then 0.26 and 0.22
 respectively. The average of all values within this table is
 0.15, significantly lower than the probability of the expected value.
 Still, this is not enough to reject the null hypothesis as proportion
-probability analysis does not come with a rejection criteria.
+probability analysis does not come with a rejection criterion.
 
 \subsection{Analysis of Variance}
 Analysis of variance is a test that decomposes the variance in data and shows
-how much of it is due to random variations and how much is due to the influence
+how much of the variance is due to random variations and how much is due to the influence
 of a factor \cite{Cohen}. It allows one to measure the probability that the means
-of a group of distributions is the same. It is often used as an exploratory tool
+of a group of distributions are the same. It is often used as an exploratory tool
 to explain observations, and it is in this spirit that it is used here.
 
-To perform anova, one requires the means of the groups under consideration, the
+To perform ANOVA, one requires the means of the groups under consideration, the
 variance of the groups under consideration, the ``grand  mean'' of the groups
 under consideration (the mean of each group mean), and the ``grand variance''
 of the groups under consideration (the normalized sum of the variances of the
 group). The grand mean and grand variance are then used to find the mean square
 value of the deviations of the variances within and between the groups. The
 test is then comprised of taking the ration between these values, with rejection
-or acceptance of the null hypothesis (in the case of anova almost always that
-the means are equal) then depending on how many ``degrees of freedom'' were
+or acceptance of the null hypothesis (which in the case of ANOVA is almost always that
+the means are equal), depending on how many ``degrees of freedom'' were
 involved in the calculation of the mean squared values.
 
-Inspecting the representative equations clarifies the procedure. Consider first,
+Inspecting the representative equations clarifies the procedure. Consider first
 the deviation of a value from its grand mean:
-
 $$e_{j,k} = (x_{j,k} - \overline{x}_{G}),$$
-
 where $x$ is an observed value, $e$ is its variance, $j$ is a groups label
 and $k$ is the within group label of the given value. Taking the sum of the
 squares of all of these across each of the groups gives us the sample grand
 variance:
-
 $$s_{G}^{2} = \frac{\sum{}_{j}\sum_{k}{(x_{j,k} - \overline{x}_{G})^{2}}}{N-1} = \frac{SS_{total}}{df_{total}},$$
-
 where the total degrees of freedom $df$ is equal to the total number of items in
-all the groups  $N$ minus the one way that the variances are not free to vary 1
+all the groups $N$, minus the one way that the variances are not free to vary 1
 (the grand variance itself). The total sum of squares $SS_{total}$ can be broken
-up into two components: $SS_{total} = SS_{between} + SS_{within}$ where the sum
+up into two components: $SS_{total} = SS_{between} + SS_{within}$, where the sum
 of squares between the groups is equal to:
 
 $$SS_{between} = \sum_{j}n_{j}(\overline{x}_{j}-\overline{x}_{G})^{2},$$
@@ -218,7 +214,7 @@ $$SS_{within} = \sum_{j}\sum_{k}(x_{j,k} - \overline{x}_{j})^{2}.$$
 
 By taking the degrees of freedom between groups and within groups, we can obtain
 the mean square deviations between and within the groups via division. The
-degrees of freedom between the groups is equal to the number of groups $j$ minus 1
+degrees of freedom between the groups is equal to the number of groups $j$ minus 1,
 and the number of degrees of freedom within the groups is equal to the total
 number of items $N$ minus the number of groups those items are contained within
 $j$. The mean square deviations are then as follows:
@@ -239,7 +235,7 @@ determine the critical point within this distribution are $j-1$ and $N-j$, which
 are the degrees of freedom of the $F$ values numerator and denominator.
 
 An analysis of variance of the results of this experiment was conducted by passing
-the results into an excel spread sheet then running excels native anova tool on
+the results into an Excel spreadsheet, and running Excel's native ANOVA tool on
 the items. The results where as follows:
 
 \begin{figure}[H]
@@ -263,8 +259,8 @@ the items. The results where as follows:
 \caption{ANOVA analysis of third placements}
 \end{figure}
 
-The probability of the ``F'' values of the first and second placement columns is
-increadibly low, leading one to suspect that we can reject the null hypothesis.
+The probabilities of the ``F'' values of the first and third placement columns are
+incredibly low, leading one to suspect that we can reject the null hypothesis.
 This suspicion will be confirmed and formalized in the next section after we
 apply the $t$ test.
 
@@ -280,9 +276,9 @@ the mean of the distribution of comparison.
 
 The decision as to whether or not a specific $t$ score value implies a result
 is from a different distribution depends on how many samples were used in the
-calculation of the sample mean and on what the desired confidence interval is.
+calculation of the sample mean and on the desired confidence interval.
 The critical threshold used in order to make this decision is gained by the use
-of $t$ distribution table. In the case where 30 samples are used and the desired
+of a $t$ distribution table. In the case where 30 samples are used and the desired
 margin of error is 5\%, the critical thresholds for a two-tailed $t$ test are
 -2.042 and 2.042. If the averaged values of the $t$ scores fall outside of
 these bounds then we can reject the null hypothesis with a 5 \% margin of error.
@@ -290,7 +286,7 @@ The standard deviations for each of the samples can be seen in table 4.5. Taking
 these with the average placement results available in table 4.2 allows the
 calculating of the desired $t$ scores, which can be seen in table 4.6. Taking
 the average of the absolute value of each of these $t$ scores
-yeilds 5.11. We can thus comfortably reject the null hypothesis.
+yields 5.11. We can thus comfortably reject the null hypothesis.
 
 
 \begin{table}
@@ -358,5 +354,5 @@ Second &       7.97 &      -0.11 &       -11.36 \\
 Third  &      -2.42 &      -1.77 &         3.61 \\
 \bottomrule
 \end{tabular}
-\caption{t scores of placement averages}
+\caption{$t$ scores of placement averages}
 \end{table}

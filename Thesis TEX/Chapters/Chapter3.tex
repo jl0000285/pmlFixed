@@ -12,7 +12,7 @@ of the meta learners. The general flow of the program that constitutes this
 experiment begins with a set of unprocessed datasets, then extracts the
 meta features that are required to perform dataset clustering and to
 run the active meta learning strategy. The program then constructs 10
-metalearning bases with the elements in these sets chosen at random. A run with
+meta learning bases with the elements in these sets chosen at random. A run with
 every machine algorithm and dataset combination is then performed, with the
 results being stored in the experiments database. Learning curves for each
 dataset/algorithm combination are then crafted. Finally, enough information now
@@ -26,23 +26,23 @@ Chapter 4.
 
 \begin{figure}
   \includegraphics{Chapters/Images/MetaLearnerFLowchart/MetaLearnerFlowchart.pdf}
-  \caption{A visual representation of this experiments program flow}
+  \caption{A visual representation of this experiment's program flow}
 \end{figure}
 
 \section{Data Parsing}
-The data used in this experiment comes from the UCI Irvine Machine learning
+The data used in this experiment come from the UCI Irvine Machine learning
 repository, the obtainment of which was accomplished via the use of a bash
 shell script that allowed the downloading of every dataset in the repository
 all at once. To make use of a dataset from the repository, the algorithms used
 in this experiment required a vector representation of the dataset currently
 being analyzed; the data could not be used without first translating it into
 this form. As such, I needed to do two things with the data before making use
-of them: ensure that the data could be parsed into a vector via the use of program,
+of them: ensure that the data could be parsed into a vector via the use of a program,
 then write a program in order to do this. The strategy I employed in order to
 accomplish these goals was twofold: I first went through the set of candidate
-datasets and ensured non of them was in a format so exotic that they could not
+datasets and ensured that non of them were in a format so exotic that they could not
 be parsed programmatically. Manual examination of the files revealed that those
-of either the .data, .svm, or .dat format were agreeable to formating and so it
+of either the .data, .svm, or .dat format were agreeable to formatting and so it
 is these that were processed by the parser. These files were then inspected by the
 parser, with each dataset's column vectors being inspected one by one. Those
 column vectors containing only numerical data were left as is, those with any
@@ -52,15 +52,15 @@ unique string. Rather than storing the numerical representation of each dataset
 within the database, the parsed form of a given dataset is crafted when it is
 needed, saving an enormous amount of disk space.
 
-\section{Meta feature extraction}
+\section{Meta Feature Extraction}
 The existence of a parser allows us to craft the first table needed for this
 experiment which is one containing the meta features of those datasets that are
-parsable. Being as how the datasets used within this project have vastly
+parsable. Since the datasets used within this project have vastly
 differing structures with respect to metrics such as the number of features
 and the maximum and minimum values of these features, the project requires a set
-of normalized meta-features that are applicable to any possible individual
+of normalized meta features that are applicable to any possible individual
 distribution or set of probability distribution(s). A set of features that meet
-this criteria are weighted mean, coefficient of variation, skewness, kurtosis, and
+these criteria are weighted mean, coefficient of variation, skewness, kurtosis, and
 entropy. The vector that represents a given dataset is crafted by taking the
 value of each of these attributes for each of said datasets features then
 normalizing them by dividing by the total number of features within that dataset,
@@ -72,16 +72,16 @@ column $i$, and $N$ is the number of columns within dataset $d$. The vector that
 represents a given dataset is then determined to be
 $V_d = (F_{1d}, F_{2d},..., F_{ad})$.
 
-\section{Metabase construction and performance testing}
+\section{Metabase Construction and Performance Testing}
 The work of a meta learning algorithm is essentially the applying the things
 known from a specific set of datasets towards a new, unlabeled dataset. That
 initial set of datasets is known as a meta database, which I shorten to metabase
 for convenience. The core premise of this experiment is the determination as to
-whether or not one meta learning strategy may or may not dominate other
+whether one meta learning strategy may or may not dominate other
 meta learning strategies across a set of different metabases. As such, this
 experiment requires multiple sets of metabases in order to produce samples
 that can be used to test our hypothesis. The datasets in a given metabase are
-randomly chosen from the set of all datasets then stored in the database. There
+randomly chosen from the set of all datasets stored in the database. There
 are 10 of these per sample, each being a fifth the size of the entire set of
 datasets. Testing the performance of a meta learner is done by using the
 meta learning strategy with some given metabase and applying it to every other

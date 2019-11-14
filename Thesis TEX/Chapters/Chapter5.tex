@@ -13,7 +13,7 @@ accuracy. Each algorithm would make this guess for each dataset in the
 collection of available datasets excluding the datasets within the current
 metabase. A new metabase would then be chosen at random and the process would be
 repeated 9 more times, giving a number between 0 and 10 for how many times
-each algorithm got the First, second, or third most correct guesses.
+each algorithm got the first, second, or third most correct guesses.
 This process was repeated 30 times, resulting in 30 samples. $t$ test analysis
 was then performed, giving an average among the absolute values of each of
 the position $t$ scores of 5.11, allowing us to reject the null
@@ -27,8 +27,8 @@ testing the results with noisy datasets, and even testing the results with
 artificially generated datasets. One could also test the results of this
 procedure with an intermediary parameter tuning step, that is to say
 we could tune the parameters of the various base algorithms to fit the domain
-of the dataset currently being analyzed. Also, a future researcher might also
+of the dataset currently being analyzed. Also, a future researcher might
 choose to vary the algorithm used to classify the meta features, as here we
-make use of the k-means clustering algorithm to make our choice from the meta
-features of our modified meta bases and the selection of a different algorithm
+only make use of the $k$-means clustering algorithm to make our choice from the meta
+features of our modified meta bases. The selection of a different algorithm
 could change the results.
