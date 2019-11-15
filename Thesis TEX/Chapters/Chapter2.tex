@@ -8,7 +8,7 @@ Introduced in Wolpert and Macready's ``No Free Lunch Theorems for Optimization''
 algorithms, when averaged out across all datasets, should be the same; that is
 to say there is no one algorithm that is universally the best. The root cause of
 this phenomenon is in that differing algorithms make different assumptions
-about the distributions from which the data the algorithms work with arise. A
+about the distributions from which the data the algorithm's data arises. A
 learning algorithm with an implicit assumption of a random distribution will
 have a far lower test case classification accuracy than an algorithm that
 assumes a Gaussian distribution if the distribution from which the set of
@@ -19,9 +19,9 @@ relative to the classifier with a random assumption.
 \section{On Meta Learning}
 Before describing each of the individual meta learners compared within this
 experiment, it is necessary to describe what a meta learning algorithm is.
-Much like regular machine learning algorithms, meta learning algorithms process
-inputs and make predictions on new instances from experience. Where meta learners
-differ from base learners is in the scope of the level of their adaptation; whereas
+Much like regular machine learning algorithms, meta learning algorithms use regularities
+within processed inputs to make predictions on new instances (\textit{i.e} generalization).
+Where meta learners differ from base learners is in the scope of the level of their adaptation; whereas
 learning at the base level is focused on accumulating experience on a specific
 learning task ($e.g.$, credit rating, medical diagnosis, mine-rock discrimination,
 fraud detection, etc.), learning at the meta level is concerned with accumulating
@@ -170,7 +170,7 @@ Image borrowed from \cite{Leite}
 %----------------------------------------------------------------------------------------
 \section{Summary of Producible Machines}
 The strategies mentioned in the previous section all have advisory modes in which
-some kind of vector representation of an unprocessed dataset is consumed and a
+a vector representation of an unprocessed dataset is consumed and a
 prediction as to what algorithm would best be able to classify its data is made.
 The machines that these strategies can choose from are the $k$-means clustering
 algorithm, a neural network, a naive Bayes classifier, the support
@@ -210,8 +210,8 @@ directly solve the resulting set of linear equations for the minimum of
 the summed squares.
 %--------------------------------------------------------------------------------------------
 \subsection{Naive Bayes}
-The Naive Bayes classifier algorithm fits a set of data to the Bayes' Theorem with a
-strong assumption of feature independence. Given a set of discrete-valued
+The Na\"{i}ve Bayes classifier algorithm uses Bayes rule to construct a classifier
+that makes a simplifying assumption. Given a set of discrete-valued
 features $x \in {1,...,K}^D$, we can calculate the class conditional density for
 each feature, then, with our assumption of independence, generate a guess
 at what the class should be for a new input, by multiplying the conditional
@@ -238,7 +238,7 @@ with a no, this individual is not likely to purchase a house.
 
 %--------------------------------------------------------------------------------------------
 \subsection{Support Vector Machine}
-The support vector machine (SVM) is a two-group classification algorithm that
+The support vector machine (SVM) is a binary classification algorithm that
 attempts to find a hyperplane that separates the inputs within a given input
 space with a maximum margin of separation between the hyperplane and the
 ``support vectors,'' those vectors on either side of the hyperplane
