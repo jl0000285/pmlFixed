@@ -1,6 +1,6 @@
 \documentclass[12pt]{report}
 \usepackage{fontspec}
-\usepackage[paper=letterpaper, top=0.875in, bottom=1.6375in, left=1in, right=1in, nohead, driver=xetex]{geometry}
+\usepackage[paper=letterpaper, top=1in, bottom=1in, left=1in, right=1in, nohead, driver=xetex]{geometry}
 \usepackage{setspace}
 \usepackage[utf8]{inputenc}
 \usepackage{tocloft}
@@ -9,6 +9,7 @@
 \usepackage{graphicx}
 \usepackage{amssymb}
 \usepackage{booktabs}
+%\usepackage{abstract}
 %\usepackage{standalone}
 %\usepackage{pgf,tikz}
 %\usetikzlibrary{babel}
@@ -27,6 +28,23 @@
 \titlespacing{\section}{0pt}{16pt}{0pt}
 
 \tocloftpagestyle{plain}
+
+%\setlength{\absleftindent}{\leftmargin}
+%\setlength{\absrightindent}{\rightmargin}
+%\setlength{\abstitleskip}{\topmargin}
+
+%--Redefining abstract to fix spacing issue---------
+\renewenvironment{abstract}{%
+      \titlepage
+     %\null\vfil
+      %\@beginparpenalty\@lowpenalty
+      \begin{center}%
+        \bfseries \abstractname
+        %\@endparpenalty\@M
+      \end{center}}%
+     {\par\vfil\null\endtitlepage}
+%---------------------------------------------
+
 
 \setlength{\cftbeforetoctitleskip}{-16pt}
 \setlength{\cftaftertoctitleskip}{0pt}

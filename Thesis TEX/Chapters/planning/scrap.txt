@@ -1,0 +1,18 @@
+From naive bayes explanation 
+
+This manual calculation of the posterior for every new data point is only
+possible when the number of examples is low. When the number of datapoints is
+high, extraction of the parameters for the appropriate assumed distribution ison of
+the posterior, one must extract the parameters of the assumed distributions of
+the various portions of the equation (for the data likelihoods, the prior,
+the marginals, etc). For this example
+the data likelihoods and marginals are all Gaussian. The relative means of each
+of the distributions can easily be seen from the data table (35,000, 40, 15 for
+each of the features marginal and conditional probabilities). The variances can
+be calculated by summing the distances from the means and dividing by the number
+of points in each given distribution, at which point all the means and variances
+will be known. Plugging these values into the definition of the Gaussian
+$$p(x|\mu,\rho^{2})=\frac{1}{\sqrt{2\pi\rho^{2}}}e^{\frac{x-\mu^{2}}{\rho^{2}}}$$
+would give us the probability for each of the values for a given new data point,
+at which point the calculation of the posterior would follow in exactly the same
+fashion as the ``by hand'' example.
